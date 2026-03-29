@@ -21,7 +21,7 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
   useEffect(() => {
     if (isFocused && !editing) {
       setEditing(true);
-      setDraft(column.type === 'currency' ? String(value) : String(value));
+      setDraft(String(value));
       setInvalid(false);
     }
   }, [isFocused, editing, value, column.type]);
@@ -91,7 +91,7 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
   return (
     <td
       ref={cellRef}
-      className={`px-2 py-1 border-b border-r border-gray-200 dark:border-gray-700 ${column.width} cursor-text`}
+      className={`px-3 py-2 border-b border-r border-gray-100 dark:border-zinc-800 ${column.width} cursor-text`}
       onClick={() => {
         if (!editing) {
           onFocus();
@@ -104,10 +104,10 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
           type={column.type === 'date' ? 'date' : column.type === 'currency' ? 'number' : 'text'}
           step={column.type === 'currency' ? '0.01' : undefined}
           min={column.type === 'currency' ? '0' : undefined}
-          className={`w-full text-xs px-1.5 py-0.5 rounded border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 ${
+          className={`w-full text-sm px-2 py-1 rounded-md border bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 ${
             invalid
               ? 'border-red-400 focus:ring-red-400'
-              : 'border-gray-300 dark:border-gray-600 focus:ring-teal-500'
+              : 'border-gray-300 dark:border-zinc-600 focus:ring-orange-500 focus:border-transparent'
           }`}
           value={draft}
           onChange={(e) => {
@@ -118,8 +118,8 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
           onBlur={handleBlur}
         />
       ) : (
-        <span className="text-xs text-gray-900 dark:text-gray-100 block truncate">
-          {displayValue || <span className="text-gray-400 dark:text-gray-500">—</span>}
+        <span className="text-sm text-gray-800 dark:text-zinc-200 block truncate">
+          {displayValue || <span className="text-gray-300 dark:text-zinc-700">—</span>}
         </span>
       )}
     </td>

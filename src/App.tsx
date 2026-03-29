@@ -9,7 +9,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AppProvider>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <div className="min-h-screen bg-white dark:bg-zinc-950 text-gray-900 dark:text-gray-100">
           <Header />
           <Routes>
             <Route path="/" element={<ProjectList />} />

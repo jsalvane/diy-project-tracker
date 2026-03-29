@@ -11,32 +11,32 @@ interface Props {
 
 export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueStores, uniqueCategories }: Props) {
   const inputCls =
-    'text-xs px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500';
+    'text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent';
 
   return (
-    <div className="flex flex-wrap items-end gap-2 mb-3">
+    <div className="flex flex-wrap items-end gap-3 mb-4">
       <div>
-        <label className="block text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">From</label>
+        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">From</label>
         <input
           type="date"
-          className={inputCls + ' w-32'}
+          className={inputCls + ' w-36'}
           value={filters.dateFrom}
           onChange={(e) => setFilter('dateFrom', e.target.value)}
         />
       </div>
       <div>
-        <label className="block text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">To</label>
+        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">To</label>
         <input
           type="date"
-          className={inputCls + ' w-32'}
+          className={inputCls + ' w-36'}
           value={filters.dateTo}
           onChange={(e) => setFilter('dateTo', e.target.value)}
         />
       </div>
       <div>
-        <label className="block text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">Store</label>
+        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">Store</label>
         <select
-          className={inputCls + ' w-32'}
+          className={inputCls + ' w-36'}
           value={filters.store}
           onChange={(e) => setFilter('store', e.target.value)}
         >
@@ -47,9 +47,9 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
         </select>
       </div>
       <div>
-        <label className="block text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">Category</label>
+        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">Category</label>
         <select
-          className={inputCls + ' w-32'}
+          className={inputCls + ' w-36'}
           value={filters.category}
           onChange={(e) => setFilter('category', e.target.value)}
         >
@@ -60,10 +60,10 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
         </select>
       </div>
       <div>
-        <label className="block text-[10px] text-gray-500 dark:text-gray-400 mb-0.5">Search</label>
+        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">Search</label>
         <input
           type="text"
-          className={inputCls + ' w-40'}
+          className={inputCls + ' w-44'}
           placeholder="Search entries..."
           value={filters.search}
           onChange={(e) => setFilter('search', e.target.value)}
@@ -72,9 +72,9 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
       {isFiltered && (
         <button
           onClick={clearFilters}
-          className="text-xs px-2 py-1.5 text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+          className="text-sm font-medium px-3 py-1.5 text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 rounded-lg transition-colors"
         >
-          Clear filters
+          Clear
         </button>
       )}
     </div>

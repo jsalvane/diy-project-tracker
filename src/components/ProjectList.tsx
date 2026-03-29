@@ -39,17 +39,17 @@ export function ProjectList() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
           Projects
-          <span className="text-gray-400 dark:text-gray-500 font-normal ml-2">
+          <span className="text-gray-400 dark:text-zinc-600 font-normal ml-2 text-base">
             {state.projects.length}
           </span>
         </h1>
         <button
           onClick={() => { setEditingProject(undefined); setShowForm(true); }}
-          className="text-sm px-3 py-1.5 rounded bg-teal-600 text-white hover:bg-teal-700"
+          className="text-sm font-medium px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
         >
           + New Project
         </button>
@@ -59,13 +59,13 @@ export function ProjectList() {
         <EmptyState message="No projects yet. Create one to get started.">
           <button
             onClick={() => setShowForm(true)}
-            className="text-sm text-teal-600 dark:text-teal-400 hover:underline"
+            className="text-sm text-orange-500 dark:text-orange-400 hover:underline"
           >
             Create your first project
           </button>
         </EmptyState>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sortedProjects.map((project) => (
             <ProjectCard
               key={project.id}

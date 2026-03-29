@@ -72,16 +72,13 @@ export function EntriesTable({ entries, projectId }: Props) {
       description: '',
       price: 0,
     });
-    // Focus the first cell of the new row after render
     setTimeout(() => {
-      // New entry will be sorted to top (today's date), find its index
       const newSorted = [...entries, entry].sort((a, b) => b.date.localeCompare(a.date));
       const idx = newSorted.findIndex((e) => e.id === entry.id);
       setFocusedCell({ row: idx >= 0 ? idx : 0, col: 0 });
     }, 0);
   }, [addEntry, projectId, entries]);
 
-  // Keyboard shortcut: N for new row (when not editing)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (
@@ -103,24 +100,24 @@ export function EntriesTable({ entries, projectId }: Props) {
 
   return (
     <div>
-      <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div className="overflow-x-auto border border-gray-200 dark:border-zinc-800 rounded-xl">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+            <tr className="bg-gray-50 dark:bg-zinc-900 sticky top-0 z-10">
               {cols.map((col) => (
                 <th
                   key={col.key}
-                  className={`text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2 py-2 border-b border-r border-gray-200 dark:border-gray-700 ${col.width}`}
+                  className={`text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest px-3 py-3 border-b border-r border-gray-200 dark:border-zinc-800 ${col.width}`}
                 >
                   {col.label}
                 </th>
               ))}
-              <th className="w-10 px-2 py-2 border-b border-gray-200 dark:border-gray-700" />
+              <th className="w-10 px-2 py-3 border-b border-gray-200 dark:border-zinc-800" />
             </tr>
           </thead>
           <tbody>
             {sorted.map((entry, rowIdx) => (
-              <tr key={entry.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <tr key={entry.id} className="hover:bg-orange-50/40 dark:hover:bg-orange-950/10 transition-colors">
                 {cols.map((col, colIdx) => (
                   <EditableCell
                     key={col.key}
@@ -132,10 +129,10 @@ export function EntriesTable({ entries, projectId }: Props) {
                     onFocus={() => setFocusedCell({ row: rowIdx, col: colIdx })}
                   />
                 ))}
-                <td className="px-1 py-1 border-b border-gray-200 dark:border-gray-700 text-center">
+                <td className="px-1 py-2 border-b border-gray-100 dark:border-zinc-800 text-center">
                   <button
                     onClick={() => deleteEntry(entry.id)}
-                    className="text-xs text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-0.5"
+                    className="text-sm text-gray-300 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 p-0.5 transition-colors"
                     title="Delete entry"
                   >
                     ✕
@@ -147,24 +144,25 @@ export function EntriesTable({ entries, projectId }: Props) {
               <tr>
                 <td
                   colSpan={cols.length + 1}
-                  className="text-center text-xs text-gray-400 dark:text-gray-500 py-8"
+                  className="text-center text-sm text-gray-400 dark:text-zinc-600 py-10"
                 >
-                  No entries yet. Add one below or press <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px]">N</kbd>
+                  No entries yet. Add one below or press{' '}
+                  <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 rounded text-xs font-mono">N</kbd>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-      <div className="mt-2 flex items-center gap-3">
+      <div className="mt-3 flex items-center gap-3">
         <button
           onClick={handleAddRow}
-          className="text-xs px-3 py-1.5 rounded border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400"
+          className="text-sm font-medium px-3 py-1.5 rounded-lg border border-dashed border-gray-300 dark:border-zinc-700 text-gray-500 dark:text-zinc-500 hover:border-orange-400 hover:text-orange-500 dark:hover:border-orange-700 dark:hover:text-orange-400 transition-colors"
         >
           + Add Entry
         </button>
-        <span className="text-[10px] text-gray-400 dark:text-gray-500">
-          Press <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">N</kbd> to add a row
+        <span className="text-xs text-gray-400 dark:text-zinc-600">
+          Press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 rounded font-mono">N</kbd> to add a row
         </span>
       </div>
     </div>

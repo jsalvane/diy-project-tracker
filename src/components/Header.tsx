@@ -6,24 +6,24 @@ export function Header() {
   const location = useLocation();
 
   return (
-    <header className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-0 z-30">
-      <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="font-semibold text-sm text-gray-900 dark:text-gray-100 hover:text-teal-600 dark:hover:text-teal-400">
+    <header className="border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-30">
+      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-5">
+          <Link to="/" className="font-bold text-base tracking-tight text-gray-900 dark:text-white hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
             DIY Tracker
           </Link>
           {location.pathname !== '/' && (
-            <Link to="/" className="text-xs text-gray-500 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400">
+            <Link to="/" className="text-sm text-gray-400 dark:text-zinc-500 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
               &larr; All Projects
             </Link>
           )}
         </div>
         <button
           onClick={toggleDarkMode}
-          className="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="text-sm px-3 py-1.5 rounded-md border border-gray-300 dark:border-zinc-700 text-gray-600 dark:text-zinc-400 hover:border-gray-400 dark:hover:border-zinc-500 transition-colors"
           title="Toggle dark mode"
         >
-          {state.darkMode ? '☀ Light' : '● Dark'}
+          {state.darkMode ? '☀ Light' : '◑ Dark'}
         </button>
       </div>
     </header>
