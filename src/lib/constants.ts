@@ -1,7 +1,7 @@
 import type { ColumnDef, ProjectStatus } from './types';
 
 export const STORAGE_KEY = 'diy-project-tracker';
-export const STORAGE_VERSION = 1;
+export const STORAGE_VERSION = 2;
 
 export const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: 'planned', label: 'Planned' },

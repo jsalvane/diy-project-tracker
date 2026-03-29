@@ -23,9 +23,19 @@ export interface Entry {
   updatedAt: string; // ISO datetime
 }
 
+export interface Task {
+  id: string;
+  projectId: string;
+  text: string;
+  completed: boolean;
+  createdAt: string; // ISO datetime
+  updatedAt: string; // ISO datetime
+}
+
 export interface AppState {
   projects: Project[];
   entries: Entry[];
+  tasks: Task[];
   darkMode: boolean;
 }
 

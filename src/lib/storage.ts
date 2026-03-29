@@ -6,11 +6,13 @@ interface StorageEnvelope {
   version: number;
   projects: AppState['projects'];
   entries: AppState['entries'];
+  tasks: AppState['tasks'];
   darkMode: boolean;
 }
 
-// Add migrations here as needed: { [fromVersion]: (data) => migratedData }
-const migrations: Record<number, (data: StorageEnvelope) => StorageEnvelope> = {};
+const migrations: Record<number, (data: StorageEnvelope) => StorageEnvelope> = {
+  1: (data) => ({ ...data, version: 2, tasks: [] }),
+};
 
 function migrate(data: StorageEnvelope): StorageEnvelope {
   let current = data;
@@ -37,6 +39,7 @@ export function loadState(): AppState {
     return {
       projects: migrated.projects,
       entries: migrated.entries,
+      tasks: migrated.tasks ?? [],
       darkMode: migrated.darkMode ?? false,
     };
   } catch {
@@ -49,6 +52,7 @@ export function saveState(state: AppState): void {
     version: STORAGE_VERSION,
     projects: state.projects,
     entries: state.entries,
+    tasks: state.tasks,
     darkMode: state.darkMode,
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
@@ -59,6 +63,7 @@ function createInitialState(): AppState {
   return {
     projects: seed.projects,
     entries: seed.entries,
+    tasks: seed.tasks,
     darkMode: false,
   };
 }

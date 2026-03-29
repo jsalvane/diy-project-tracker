@@ -1,9 +1,9 @@
-import type { Project, Entry } from './types';
+import type { Project, Entry, Task } from './types';
 import { generateId } from './utils';
 
 const ts = (d: string) => new Date(d).toISOString();
 
-export function createSeedData(): { projects: Project[]; entries: Entry[] } {
+export function createSeedData(): { projects: Project[]; entries: Entry[]; tasks: Task[] } {
   const basementId = generateId();
   const deckId = generateId();
   const bathroomId = generateId();
@@ -134,5 +134,28 @@ export function createSeedData(): { projects: Project[]; entries: Entry[] } {
     },
   ];
 
-  return { projects, entries };
+  const tasks: Task[] = [
+    // Basement Remodel — complete, all tasks done
+    { id: generateId(), projectId: basementId, text: 'Frame interior walls', completed: true, createdAt: ts('2025-10-14'), updatedAt: ts('2025-10-20') },
+    { id: generateId(), projectId: basementId, text: 'Hang and tape drywall', completed: true, createdAt: ts('2025-10-14'), updatedAt: ts('2025-11-10') },
+    { id: generateId(), projectId: basementId, text: 'Install recessed lighting', completed: true, createdAt: ts('2025-10-14'), updatedAt: ts('2025-11-20') },
+    { id: generateId(), projectId: basementId, text: 'Lay vinyl plank flooring', completed: true, createdAt: ts('2025-10-14'), updatedAt: ts('2025-12-05') },
+    { id: generateId(), projectId: basementId, text: 'Paint walls and trim', completed: true, createdAt: ts('2025-10-14'), updatedAt: ts('2025-12-15') },
+
+    // Deck Repair — active, mix of done and open
+    { id: generateId(), projectId: deckId, text: 'Remove rotted boards', completed: true, createdAt: ts('2026-01-28'), updatedAt: ts('2026-02-10') },
+    { id: generateId(), projectId: deckId, text: 'Replace joist hangers', completed: true, createdAt: ts('2026-01-28'), updatedAt: ts('2026-02-12') },
+    { id: generateId(), projectId: deckId, text: 'Install new deck boards', completed: false, createdAt: ts('2026-01-28'), updatedAt: ts('2026-01-28') },
+    { id: generateId(), projectId: deckId, text: 'Sand and apply stain', completed: false, createdAt: ts('2026-01-28'), updatedAt: ts('2026-01-28') },
+    { id: generateId(), projectId: deckId, text: 'Install new railing sections', completed: false, createdAt: ts('2026-01-28'), updatedAt: ts('2026-01-28') },
+
+    // Bathroom Update — planned, all open
+    { id: generateId(), projectId: bathroomId, text: 'Confirm vanity dimensions before delivery', completed: false, createdAt: ts('2026-03-10'), updatedAt: ts('2026-03-10') },
+    { id: generateId(), projectId: bathroomId, text: 'Remove old vanity and shut off plumbing', completed: false, createdAt: ts('2026-03-10'), updatedAt: ts('2026-03-10') },
+    { id: generateId(), projectId: bathroomId, text: 'Paint walls before installing vanity', completed: false, createdAt: ts('2026-03-10'), updatedAt: ts('2026-03-10') },
+    { id: generateId(), projectId: bathroomId, text: 'Install vanity and connect plumbing', completed: false, createdAt: ts('2026-03-10'), updatedAt: ts('2026-03-10') },
+    { id: generateId(), projectId: bathroomId, text: 'Hang mirror and install lighting', completed: false, createdAt: ts('2026-03-10'), updatedAt: ts('2026-03-10') },
+  ];
+
+  return { projects, entries, tasks };
 }

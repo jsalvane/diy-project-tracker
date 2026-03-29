@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, useRef, useCallback, type ReactNode } from 'react';
-import type { AppState, Project, Entry, ToastItem } from '../lib/types';
+import type { AppState, Project, Entry, Task, ToastItem } from '../lib/types';
 import { loadState, saveState } from '../lib/storage';
 import { generateId, now } from '../lib/utils';
 import { useState } from 'react';
@@ -13,7 +13,11 @@ type Action =
   | { type: 'UPDATE_ENTRY'; payload: Entry }
   | { type: 'DELETE_ENTRY'; payload: string }
   | { type: 'RESTORE_ENTRY'; payload: Entry }
-  | { type: 'RESTORE_PROJECT'; payload: { project: Project; entries: Entry[] } }
+  | { type: 'RESTORE_PROJECT'; payload: { project: Project; entries: Entry[]; tasks: Task[] } }
+  | { type: 'ADD_TASK'; payload: Task }
+  | { type: 'UPDATE_TASK'; payload: Task }
+  | { type: 'DELETE_TASK'; payload: string }
+  | { type: 'RESTORE_TASK'; payload: Task }
   | { type: 'TOGGLE_DARK_MODE' };
 
 function reducer(state: AppState, action: Action): AppState {
@@ -34,6 +38,7 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         projects: state.projects.filter((p) => p.id !== action.payload),
         entries: state.entries.filter((e) => e.projectId !== action.payload),
+        tasks: state.tasks.filter((t) => t.projectId !== action.payload),
       };
     case 'ADD_ENTRY':
       return { ...state, entries: [...state.entries, action.payload] };
@@ -56,7 +61,21 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         projects: [...state.projects, action.payload.project],
         entries: [...state.entries, ...action.payload.entries],
+        tasks: [...state.tasks, ...action.payload.tasks],
       };
+    case 'ADD_TASK':
+      return { ...state, tasks: [...state.tasks, action.payload] };
+    case 'UPDATE_TASK':
+      return {
+        ...state,
+        tasks: state.tasks.map((t) =>
+          t.id === action.payload.id ? action.payload : t
+        ),
+      };
+    case 'DELETE_TASK':
+      return { ...state, tasks: state.tasks.filter((t) => t.id !== action.payload) };
+    case 'RESTORE_TASK':
+      return { ...state, tasks: [...state.tasks, action.payload] };
     case 'TOGGLE_DARK_MODE':
       return { ...state, darkMode: !state.darkMode };
     default:
@@ -72,6 +91,9 @@ interface AppContextValue {
   addEntry: (data: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => Entry;
   updateEntry: (entry: Entry) => void;
   deleteEntry: (id: string) => void;
+  addTask: (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Task;
+  toggleTask: (task: Task) => void;
+  deleteTask: (id: string) => void;
   toggleDarkMode: () => void;
   toasts: ToastItem[];
   dismissToast: (id: string) => void;
@@ -121,13 +143,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const deleteProject = useCallback((id: string) => {
     const project = state.projects.find((p) => p.id === id);
     const projectEntries = state.entries.filter((e) => e.projectId === id);
+    const projectTasks = state.tasks.filter((t) => t.projectId === id);
     dispatch({ type: 'DELETE_PROJECT', payload: id });
     if (project) {
       showToast(`Deleted "${project.name}"`, () => {
-        dispatch({ type: 'RESTORE_PROJECT', payload: { project, entries: projectEntries } });
+        dispatch({ type: 'RESTORE_PROJECT', payload: { project, entries: projectEntries, tasks: projectTasks } });
       });
     }
-  }, [state.projects, state.entries, showToast]);
+  }, [state.projects, state.entries, state.tasks, showToast]);
 
   const addEntry = useCallback((data: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
     const entry: Entry = { ...data, id: generateId(), createdAt: now(), updatedAt: now() };
@@ -149,6 +172,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [state.entries, showToast]);
 
+  const addTask = useCallback((data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const task: Task = { ...data, id: generateId(), createdAt: now(), updatedAt: now() };
+    dispatch({ type: 'ADD_TASK', payload: task });
+    return task;
+  }, []);
+
+  const toggleTask = useCallback((task: Task) => {
+    dispatch({ type: 'UPDATE_TASK', payload: { ...task, completed: !task.completed, updatedAt: now() } });
+  }, []);
+
+  const deleteTask = useCallback((id: string) => {
+    const task = state.tasks.find((t) => t.id === id);
+    dispatch({ type: 'DELETE_TASK', payload: id });
+    if (task) {
+      showToast('Task deleted', () => {
+        dispatch({ type: 'RESTORE_TASK', payload: task });
+      });
+    }
+  }, [state.tasks, showToast]);
+
   const toggleDarkMode = useCallback(() => {
     dispatch({ type: 'TOGGLE_DARK_MODE' });
   }, []);
@@ -163,6 +206,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addEntry,
         updateEntry,
         deleteEntry,
+        addTask,
+        toggleTask,
+        deleteTask,
         toggleDarkMode,
         toasts,
         dismissToast,

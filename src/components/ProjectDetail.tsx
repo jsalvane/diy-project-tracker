@@ -7,6 +7,7 @@ import { ProjectForm } from './ProjectForm';
 import { ConfirmDialog } from './ConfirmDialog';
 import { Filters } from './Filters';
 import { EntriesTable } from './EntriesTable';
+import { TaskList } from './TaskList';
 import { formatCurrency, formatDate, calcDuration, todayStr } from '../lib/utils';
 import type { Project } from '../lib/types';
 
@@ -24,6 +25,7 @@ export function ProjectDetail() {
     uniqueStores, uniqueCategories,
   } = useFilters(projectEntries);
 
+  const [activeTab, setActiveTab] = useState<'expenses' | 'tasks'>('expenses');
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -41,6 +43,7 @@ export function ProjectDetail() {
   const endDate = project.finishDate || (project.status === 'active' ? todayStr() : '');
   const duration = calcDuration(project.startDate, endDate);
   const isInProgress = project.status === 'active' && !project.finishDate;
+  const openTaskCount = state.tasks.filter((t) => t.projectId === id && !t.completed).length;
 
   const handleSave = (data: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
     updateProject({ ...project, ...data });
@@ -97,31 +100,59 @@ export function ProjectDetail() {
         />
       </div>
 
-      {/* Filters */}
-      <Filters
-        filters={filters}
-        setFilter={setFilter}
-        clearFilters={clearFilters}
-        isFiltered={isFiltered}
-        uniqueStores={uniqueStores}
-        uniqueCategories={uniqueCategories}
-      />
+      {/* Tab bar */}
+      <div className="flex gap-1 border-b border-gray-200 dark:border-zinc-800 mb-5">
+        {(['expenses', 'tasks'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2.5 text-sm font-medium capitalize border-b-2 -mb-px transition-colors ${
+              activeTab === tab
+                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                : 'border-transparent text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300'
+            }`}
+          >
+            {tab === 'expenses' ? 'Expenses' : (
+              <span className="flex items-center gap-1.5">
+                Tasks
+                {openTaskCount > 0 && (
+                  <span className="text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400 px-1.5 py-0.5 rounded-full leading-none">
+                    {openTaskCount}
+                  </span>
+                )}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
 
-      {/* Filtered totals */}
-      {isFiltered && (
-        <div className="text-sm text-gray-600 dark:text-zinc-400 mb-3 flex gap-5">
-          <span>
-            Filtered: <strong className="text-gray-900 dark:text-white font-semibold">{formatCurrency(filteredTotal)}</strong>
-            <span className="text-gray-400 dark:text-zinc-600 ml-1">({filteredEntries.length} of {projectEntries.length})</span>
-          </span>
-          <span className="text-gray-400 dark:text-zinc-600">
-            Total: {formatCurrency(grandTotal)}
-          </span>
-        </div>
+      {/* Tab content */}
+      {activeTab === 'expenses' ? (
+        <>
+          <Filters
+            filters={filters}
+            setFilter={setFilter}
+            clearFilters={clearFilters}
+            isFiltered={isFiltered}
+            uniqueStores={uniqueStores}
+            uniqueCategories={uniqueCategories}
+          />
+          {isFiltered && (
+            <div className="text-sm text-gray-600 dark:text-zinc-400 mb-3 flex gap-5">
+              <span>
+                Filtered: <strong className="text-gray-900 dark:text-white font-semibold">{formatCurrency(filteredTotal)}</strong>
+                <span className="text-gray-400 dark:text-zinc-600 ml-1">({filteredEntries.length} of {projectEntries.length})</span>
+              </span>
+              <span className="text-gray-400 dark:text-zinc-600">
+                Total: {formatCurrency(grandTotal)}
+              </span>
+            </div>
+          )}
+          <EntriesTable entries={filteredEntries} projectId={project.id} />
+        </>
+      ) : (
+        <TaskList projectId={project.id} />
       )}
-
-      {/* Table */}
-      <EntriesTable entries={filteredEntries} projectId={project.id} />
 
       {/* Last updated */}
       <p className="text-xs text-gray-400 dark:text-zinc-600 mt-5">
