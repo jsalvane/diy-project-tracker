@@ -8,6 +8,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { Filters } from './Filters';
 import { EntriesTable } from './EntriesTable';
 import { TaskList } from './TaskList';
+import { CategoryChart } from './CategoryChart';
 import { formatCurrency, formatDate, calcDuration, todayStr } from '../lib/utils';
 import type { Project } from '../lib/types';
 
@@ -25,7 +26,7 @@ export function ProjectDetail() {
     uniqueStores, uniqueCategories,
   } = useFilters(projectEntries);
 
-  const [activeTab, setActiveTab] = useState<'expenses' | 'tasks'>('expenses');
+  const [activeTab, setActiveTab] = useState<'expenses' | 'tasks' | 'chart'>('expenses');
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -102,7 +103,7 @@ export function ProjectDetail() {
 
       {/* Tab bar */}
       <div className="flex gap-1 border-b border-gray-200 dark:border-zinc-800 mb-5">
-        {(['expenses', 'tasks'] as const).map((tab) => (
+        {(['expenses', 'tasks', 'chart'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -112,16 +113,18 @@ export function ProjectDetail() {
                 : 'border-transparent text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300'
             }`}
           >
-            {tab === 'expenses' ? 'Expenses' : (
-              <span className="flex items-center gap-1.5">
-                Tasks
-                {openTaskCount > 0 && (
-                  <span className="text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400 px-1.5 py-0.5 rounded-full leading-none">
-                    {openTaskCount}
-                  </span>
-                )}
-              </span>
-            )}
+            {tab === 'expenses' ? 'Expenses'
+              : tab === 'chart' ? 'By Category'
+              : (
+                <span className="flex items-center gap-1.5">
+                  Tasks
+                  {openTaskCount > 0 && (
+                    <span className="text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400 px-1.5 py-0.5 rounded-full leading-none">
+                      {openTaskCount}
+                    </span>
+                  )}
+                </span>
+              )}
           </button>
         ))}
       </div>
@@ -150,8 +153,10 @@ export function ProjectDetail() {
           )}
           <EntriesTable entries={filteredEntries} projectId={project.id} />
         </>
-      ) : (
+      ) : activeTab === 'tasks' ? (
         <TaskList projectId={project.id} />
+      ) : (
+        <CategoryChart entries={projectEntries} />
       )}
 
       {/* Last updated */}

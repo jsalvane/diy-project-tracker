@@ -11,6 +11,7 @@ export function ProjectList() {
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | undefined>();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showOthers, setShowOthers] = useState(true);
 
   const handleSave = (data: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (editingProject) {
@@ -34,8 +35,20 @@ export function ProjectList() {
     }
   };
 
-  const sortedProjects = [...state.projects].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  const byUpdatedAt = (a: Project, b: Project) =>
+    new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+
+  const activeProjects = state.projects.filter((p) => p.status === 'active').sort(byUpdatedAt);
+  const otherProjects = state.projects.filter((p) => p.status !== 'active').sort(byUpdatedAt);
+
+  const renderCard = (project: Project) => (
+    <ProjectCard
+      key={project.id}
+      project={project}
+      entries={state.entries.filter((e) => e.projectId === project.id)}
+      onEdit={() => handleEdit(project)}
+      onDelete={() => setDeletingId(project.id)}
+    />
   );
 
   return (
@@ -55,7 +68,7 @@ export function ProjectList() {
         </button>
       </div>
 
-      {sortedProjects.length === 0 ? (
+      {state.projects.length === 0 ? (
         <EmptyState message="No projects yet. Create one to get started.">
           <button
             onClick={() => setShowForm(true)}
@@ -65,16 +78,44 @@ export function ProjectList() {
           </button>
         </EmptyState>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {sortedProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              entries={state.entries.filter((e) => e.projectId === project.id)}
-              onEdit={() => handleEdit(project)}
-              onDelete={() => setDeletingId(project.id)}
-            />
-          ))}
+        <div className="space-y-6">
+          {activeProjects.length > 0 ? (
+            <>
+              {/* Active projects — always visible */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {activeProjects.map(renderCard)}
+              </div>
+
+              {/* Other projects — collapsible */}
+              {otherProjects.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setShowOthers((v) => !v)}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-zinc-500 hover:text-gray-800 dark:hover:text-zinc-200 transition-colors mb-4"
+                  >
+                    <span className={`transition-transform duration-200 inline-block ${showOthers ? 'rotate-90' : ''}`}>
+                      ▶
+                    </span>
+                    Other Projects
+                    <span className="text-gray-400 dark:text-zinc-600 font-normal">
+                      {otherProjects.length}
+                    </span>
+                  </button>
+
+                  {showOthers && (
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {otherProjects.map(renderCard)}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            /* No active projects — show all flat */
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {otherProjects.map(renderCard)}
+            </div>
+          )}
         </div>
       )}
 

@@ -19,6 +19,7 @@ export interface Entry {
   category: string;
   description: string;
   price: number;
+  receiptUrl?: string; // URL to receipt file in Supabase Storage
   createdAt: string; // ISO datetime
   updatedAt: string; // ISO datetime
 }
@@ -58,4 +59,52 @@ export interface ToastItem {
   id: string;
   message: string;
   undoAction?: () => void;
+}
+
+export interface BudgetItem {
+  id: string;
+  name: string;
+  dueGroup: '15' | '30';
+  billAmount: number;
+  payment: number;
+  status: 'pending' | 'paid' | 'partial';
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreditCard {
+  id: string;
+  name: string;
+  servicer: string;
+  creditLimit: number;
+  annualFee: number;
+  openDate: string;
+  status: 'active' | 'closed';
+  closedDate: string;
+  inquiries: number;
+  inquiryNote: string;
+  isChargeCard: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Loan {
+  id: string;
+  name: string;
+  owner: string;
+  balance: number;
+  interestRate: number;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LoanPayment {
+  id: string;
+  loanId: string;
+  paymentDate: string;
+  amount: number;
+  createdAt: string;
 }
