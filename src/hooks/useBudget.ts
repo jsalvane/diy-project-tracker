@@ -11,7 +11,7 @@ function mapBudgetItem(row: any): BudgetItem {
     dueGroup: row.due_group,
     billAmount: row.bill_amount ?? 0,
     payment: row.payment ?? 0,
-    status: row.status ?? 'pending',
+    status: row.status ?? 'auto',
     sortOrder: row.sort_order ?? 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -33,6 +33,11 @@ function mapCreditCard(row: any): CreditCard {
     inquiryNote: row.inquiry_note ?? '',
     isChargeCard: row.is_charge_card ?? false,
     sortOrder: row.sort_order ?? 0,
+    balance: row.balance ?? 0,
+    billDueGroup: row.bill_due_date
+      ? (row.bill_due_date.endsWith('-15') ? '15' : row.bill_due_date.endsWith('-30') ? '30' : '')
+      : '' as '15' | '30' | '',
+    billStatus: row.bill_status === 'paid' || row.bill_status === 'auto' ? 'auto' : 'manual',
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -132,7 +137,10 @@ export function useBudget() {
       open_date: card.openDate || null, status: card.status,
       closed_date: card.closedDate || null, inquiries: card.inquiries,
       inquiry_note: card.inquiryNote, is_charge_card: card.isChargeCard,
-      sort_order: card.sortOrder, created_at: card.createdAt, updated_at: card.updatedAt,
+      sort_order: card.sortOrder, balance: card.balance,
+      bill_due_date: card.billDueGroup === '15' ? '2000-01-15' : card.billDueGroup === '30' ? '2000-01-30' : null,
+      bill_status: card.billStatus ?? 'manual',
+      created_at: card.createdAt, updated_at: card.updatedAt,
     });
     return card;
   }, []);
@@ -146,6 +154,9 @@ export function useBudget() {
       status: updated.status, closed_date: updated.closedDate || null,
       inquiries: updated.inquiries, inquiry_note: updated.inquiryNote,
       is_charge_card: updated.isChargeCard, sort_order: updated.sortOrder,
+      balance: updated.balance,
+      bill_due_date: updated.billDueGroup === '15' ? '2000-01-15' : updated.billDueGroup === '30' ? '2000-01-30' : null,
+      bill_status: updated.billStatus,
       updated_at: updated.updatedAt,
     }).eq('id', updated.id);
   }, []);

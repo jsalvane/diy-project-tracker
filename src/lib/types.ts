@@ -67,7 +67,7 @@ export interface BudgetItem {
   dueGroup: '15' | '30';
   billAmount: number;
   payment: number;
-  status: 'pending' | 'paid' | 'partial';
+  status: 'auto' | 'manual';
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
@@ -86,6 +86,9 @@ export interface CreditCard {
   inquiryNote: string;
   isChargeCard: boolean;
   sortOrder: number;
+  balance: number;
+  billDueGroup: '15' | '30' | '';
+  billStatus: 'auto' | 'manual';
   createdAt: string;
   updatedAt: string;
 }

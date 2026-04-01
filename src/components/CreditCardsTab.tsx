@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { CreditCard } from '../lib/types';
 import { formatCurrency, formatDate, todayStr } from '../lib/utils';
+// formatDate used in closed cards table
 
 type Props = {
   creditCards: CreditCard[];
@@ -146,11 +147,11 @@ function CardModal({
             </div>
             <div>
               <label className={labelCls}>Credit Limit ($)</label>
-              <input className={inputCls} type="number" min="0" step="100" value={form.creditLimit} onChange={e => set('creditLimit', e.target.value)} placeholder="0" />
+              <input className={inputCls} type="number" min="0" step="100" value={form.creditLimit} onChange={e => set('creditLimit', e.target.value)} onFocus={e => e.target.select()} placeholder="0" />
             </div>
             <div>
               <label className={labelCls}>Annual Fee ($)</label>
-              <input className={inputCls} type="number" min="0" step="1" value={form.annualFee} onChange={e => set('annualFee', e.target.value)} placeholder="0" />
+              <input className={inputCls} type="number" min="0" step="1" value={form.annualFee} onChange={e => set('annualFee', e.target.value)} onFocus={e => e.target.select()} placeholder="0" />
             </div>
             <div>
               <label className={labelCls}>Date Opened</label>
@@ -164,7 +165,7 @@ function CardModal({
             )}
             <div>
               <label className={labelCls}>Recent Inquiries</label>
-              <input className={inputCls} type="number" min="0" value={form.inquiries} onChange={e => set('inquiries', e.target.value)} placeholder="0" />
+              <input className={inputCls} type="number" min="0" value={form.inquiries} onChange={e => set('inquiries', e.target.value)} onFocus={e => e.target.select()} placeholder="0" />
             </div>
             <div className={form.status === 'closed' ? '' : 'col-span-2'}>
               <label className={labelCls}>Inquiry Note</label>
@@ -223,6 +224,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
   const totalAnnualFees = creditCards.filter(c => c.status === 'active').reduce((s, c) => s + c.annualFee, 0);
 
   function handleSave(form: CardForm) {
+    const existing = typeof modal === 'object' ? modal : null;
     const data = {
       name: form.name.trim(),
       servicer: form.servicer.trim(),
@@ -235,6 +237,9 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
       inquiryNote: form.inquiryNote.trim(),
       isChargeCard: form.isChargeCard,
       sortOrder: creditCards.length,
+      balance: existing?.balance ?? 0,
+      billDueGroup: existing?.billDueGroup ?? '',
+      billStatus: existing?.billStatus ?? 'manual' as const,
     };
 
     if (modal && typeof modal === 'object') {
@@ -331,78 +336,125 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
         </button>
       </div>
 
-      {/* Active cards table */}
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden mb-8">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 dark:bg-zinc-900">
-              <th className={thCls}>Card</th>
-              <th className={thCls}>Servicer</th>
-              <th className={`${thCls} text-right`}>Limit</th>
-              <th className={`${thCls} text-right`}>Ann Fee</th>
-              <th className={thCls}>Opened</th>
-              <th className={`${thCls} text-right`}>Age</th>
-              <th className={`${thCls} text-right`}>Inquiries</th>
-              <th className="w-16 px-2 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
-            {activeCards.length === 0 && (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-sm text-gray-400 dark:text-zinc-500">
-                  No active cards yet
-                </td>
-              </tr>
-            )}
-            {activeCards.map(card => {
-              const ageMonths = card.openDate ? monthsBetween(card.openDate, today) : null;
-              const ageLabel = ageMonths === null ? '—' : ageMonths >= 12 ? `${(ageMonths / 12).toFixed(1)}y` : `${ageMonths}mo`;
-              const counts524 = card.openDate && card.openDate > cutoff;
+      {/* Active cards table — grouped by servicer */}
+      {(() => {
+        // Build servicer groups sorted by total limit desc
+        const servicerMap = new Map<string, typeof activeCards>();
+        for (const card of activeCards) {
+          const key = card.servicer?.toUpperCase() || 'OTHER';
+          if (!servicerMap.has(key)) servicerMap.set(key, []);
+          servicerMap.get(key)!.push(card);
+        }
+        const servicerGroups = [...servicerMap.entries()].sort(
+          ([, a], [, b]) =>
+            b.reduce((s, c) => s + (c.isChargeCard ? 0 : c.creditLimit), 0) -
+            a.reduce((s, c) => s + (c.isChargeCard ? 0 : c.creditLimit), 0)
+        );
 
-              return (
-                <tr key={card.id} className="group hover:bg-gray-50 dark:hover:bg-zinc-900/40">
-                  <td className={tdCls}>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{card.name}</span>
-                      {card.isChargeCard && (
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400">charge</span>
-                      )}
-                      {counts524 && (
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400">5/24</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className={tdCls}>{card.servicer || '—'}</td>
-                  <td className={`${tdCls} text-right`}>
-                    {card.isChargeCard ? <span className="text-gray-400 dark:text-zinc-500 text-xs">No preset</span> : formatCurrency(card.creditLimit)}
-                  </td>
-                  <td className={`${tdCls} text-right`}>
-                    {card.annualFee > 0 ? formatCurrency(card.annualFee) : <span className="text-gray-400 dark:text-zinc-500">—</span>}
-                  </td>
-                  <td className={tdCls}>{card.openDate ? formatDate(card.openDate) : '—'}</td>
-                  <td className={`${tdCls} text-right`}>{ageLabel}</td>
-                  <td className={`${tdCls} text-right`}>
-                    <span>{card.inquiries}</span>
-                    {card.inquiryNote && (
-                      <span className="ml-1.5 text-xs text-gray-400 dark:text-zinc-500">({card.inquiryNote})</span>
-                    )}
-                  </td>
-                  <td className="px-2 py-2.5">
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => setModal(card)} className="p-1 text-gray-400 hover:text-orange-400 transition-colors">
-                        <PencilIcon />
-                      </button>
-                      <button onClick={() => deleteCreditCard(card.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
-                        <TrashIcon />
-                      </button>
-                    </div>
-                  </td>
+        return (
+          <div className="rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden mb-8">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-zinc-900">
+                  <th className={thCls}>Card</th>
+                  <th className={`${thCls} text-right`}>Limit</th>
+                  <th className={`${thCls} text-right`}>Ann Fee</th>
+                  <th className={thCls}>Opened</th>
+                  <th className={`${thCls} text-right`}>Age</th>
+                  <th className={`${thCls} text-center`}>Due</th>
+                  <th className="w-16 px-2 py-3" />
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {activeCards.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-gray-400 dark:text-zinc-500">
+                      No active cards yet
+                    </td>
+                  </tr>
+                )}
+                {servicerGroups.map(([servicer, cards]) => {
+                  const groupLimit = cards.filter(c => !c.isChargeCard).reduce((s, c) => s + c.creditLimit, 0);
+                  const groupFees = cards.reduce((s, c) => s + c.annualFee, 0);
+                  return (
+                    <>
+                      {/* Servicer header row */}
+                      <tr key={`hdr-${servicer}`} className="bg-gray-50 dark:bg-zinc-900/60 border-t border-gray-200 dark:border-zinc-800">
+                        <td className="px-4 py-2">
+                          <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">{servicer}</span>
+                        </td>
+                        <td className="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-zinc-400">
+                          {groupLimit > 0 ? formatCurrency(groupLimit) : '—'}
+                        </td>
+                        <td className="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-zinc-400">
+                          {groupFees > 0 ? formatCurrency(groupFees) : '—'}
+                        </td>
+                        <td colSpan={4} />
+                      </tr>
+                      {/* Card rows */}
+                      {cards.map(card => {
+                        const ageMonths = card.openDate ? monthsBetween(card.openDate, today) : null;
+                        const ageLabel = ageMonths === null ? '—' : ageMonths >= 12 ? `${(ageMonths / 12).toFixed(1)}y` : `${ageMonths}mo`;
+                        const counts524 = card.openDate && card.openDate > cutoff;
+                        return (
+                          <tr key={card.id} className="group hover:bg-gray-50 dark:hover:bg-zinc-900/40 border-t border-gray-100 dark:border-zinc-800/60">
+                            <td className={tdCls}>
+                              <div className="flex items-center gap-2 pl-3">
+                                <span className="font-medium">{card.name}</span>
+                                {card.isChargeCard && (
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400">charge</span>
+                                )}
+                                {counts524 && (
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400">5/24</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className={`${tdCls} text-right`}>
+                              {card.isChargeCard ? <span className="text-gray-400 dark:text-zinc-500 text-xs">No preset</span> : formatCurrency(card.creditLimit)}
+                            </td>
+                            <td className={`${tdCls} text-right`}>
+                              {card.annualFee > 0 ? formatCurrency(card.annualFee) : <span className="text-gray-400 dark:text-zinc-500">—</span>}
+                            </td>
+                            <td className={tdCls}>{card.openDate ? formatDate(card.openDate) : '—'}</td>
+                            <td className={`${tdCls} text-right`}>{ageLabel}</td>
+                            <td className="px-4 py-2.5 text-center">
+                              <div className="inline-flex rounded-lg border border-gray-200 dark:border-zinc-700 overflow-hidden text-xs font-semibold">
+                                {(['15', '30'] as const).map(g => (
+                                  <button
+                                    key={g}
+                                    onClick={() => updateCreditCard({ ...card, billDueGroup: card.billDueGroup === g ? '' : g })}
+                                    className={`px-2.5 py-1 transition-colors ${
+                                      card.billDueGroup === g
+                                        ? 'bg-orange-500 text-white'
+                                        : 'text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800'
+                                    }`}
+                                  >
+                                    {g}th
+                                  </button>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="px-2 py-2.5">
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => setModal(card)} className="p-1 text-gray-400 hover:text-orange-400 transition-colors">
+                                  <PencilIcon />
+                                </button>
+                                <button onClick={() => deleteCreditCard(card.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                                  <TrashIcon />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+      })()}
 
       {/* Closed cards collapsible */}
       <button
