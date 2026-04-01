@@ -255,45 +255,6 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
 
   return (
     <div>
-      {/* 5/24 Status Banner */}
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-5 mb-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Chase 5/24 Status</h2>
-          <span className={`text-sm font-bold ${count524 >= 5 ? 'text-red-500' : count524 >= 4 ? 'text-orange-400' : 'text-green-500'}`}>
-            {count524} / 5 slots used
-          </span>
-        </div>
-        {/* Progress bar */}
-        <div className="w-full h-2 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-3">
-          <div
-            className={`h-full rounded-full transition-all ${count524 >= 5 ? 'bg-red-500' : count524 >= 4 ? 'bg-orange-400' : 'bg-green-500'}`}
-            style={{ width: `${Math.min(100, (count524 / 5) * 100)}%` }}
-          />
-        </div>
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-zinc-400">
-          <span>
-            {slotsRemaining > 0
-              ? `${slotsRemaining} slot${slotsRemaining !== 1 ? 's' : ''} remaining`
-              : 'No slots — Chase will deny new applications'}
-          </span>
-          {nextSlotDate && (
-            <span>
-              Next slot opens <span className="font-semibold text-gray-700 dark:text-zinc-200">{formatDate(nextSlotDate)}</span>
-              {' '}({cards524[0].name})
-            </span>
-          )}
-        </div>
-        {cards524.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {cards524.map(c => (
-              <span key={c.id} className="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-medium">
-                {c.name} ({formatDate(c.openDate)})
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-4">
@@ -518,6 +479,45 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
           </table>
         </div>
       )}
+
+      {/* 5/24 Status Banner */}
+      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-5 mt-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Chase 5/24 Status</h2>
+          <span className={`text-sm font-bold ${count524 >= 5 ? 'text-red-500' : count524 >= 4 ? 'text-orange-400' : 'text-green-500'}`}>
+            {count524} / 5 slots used
+          </span>
+        </div>
+        {/* Progress bar */}
+        <div className="w-full h-2 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-3">
+          <div
+            className={`h-full rounded-full transition-all ${count524 >= 5 ? 'bg-red-500' : count524 >= 4 ? 'bg-orange-400' : 'bg-green-500'}`}
+            style={{ width: `${Math.min(100, (count524 / 5) * 100)}%` }}
+          />
+        </div>
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-zinc-400">
+          <span>
+            {slotsRemaining > 0
+              ? `${slotsRemaining} slot${slotsRemaining !== 1 ? 's' : ''} remaining`
+              : 'No slots — Chase will deny new applications'}
+          </span>
+          {nextSlotDate && (
+            <span>
+              Next slot opens <span className="font-semibold text-gray-700 dark:text-zinc-200">{formatDate(nextSlotDate)}</span>
+              {' '}({cards524[0].name})
+            </span>
+          )}
+        </div>
+        {cards524.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {cards524.map(c => (
+              <span key={c.id} className="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-medium">
+                {c.name} ({formatDate(c.openDate)})
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       {modal && (
         <CardModal

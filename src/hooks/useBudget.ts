@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import type { BudgetItem, CreditCard, Loan, LoanPayment } from '../lib/types';
-import { generateId, now } from '../lib/utils';
+import { generateId, now, todayStr } from '../lib/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapBudgetItem(row: any): BudgetItem {
@@ -52,6 +52,7 @@ function mapLoan(row: any): Loan {
     balance: row.balance ?? 0,
     interestRate: row.interest_rate ?? 0,
     sortOrder: row.sort_order ?? 0,
+    balanceDate: row.balance_date ?? (row.updated_at ? row.updated_at.slice(0, 10) : todayStr()),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -174,7 +175,8 @@ export function useBudget() {
     await supabase.from('loans').insert({
       id: loan.id, name: loan.name, owner: loan.owner,
       balance: loan.balance, interest_rate: loan.interestRate,
-      sort_order: loan.sortOrder, created_at: loan.createdAt, updated_at: loan.updatedAt,
+      sort_order: loan.sortOrder, balance_date: loan.balanceDate,
+      created_at: loan.createdAt, updated_at: loan.updatedAt,
     });
     return loan;
   }, []);
@@ -185,7 +187,7 @@ export function useBudget() {
     await supabase.from('loans').update({
       name: updated.name, owner: updated.owner, balance: updated.balance,
       interest_rate: updated.interestRate, sort_order: updated.sortOrder,
-      updated_at: updated.updatedAt,
+      balance_date: updated.balanceDate, updated_at: updated.updatedAt,
     }).eq('id', updated.id);
   }, []);
 
@@ -197,6 +199,16 @@ export function useBudget() {
 
   // --- Loan Payments ---
 
+  function accrueToDate(loan: Loan, targetDateStr: string): number {
+    const dailyRate = loan.interestRate / 100 / 365;
+    if (dailyRate < 1e-10) return loan.balance;
+    const from = new Date(loan.balanceDate + 'T00:00:00');
+    const to   = new Date(targetDateStr   + 'T00:00:00');
+    const days = Math.round((to.getTime() - from.getTime()) / 86400000);
+    if (days <= 0) return loan.balance;
+    return loan.balance + loan.balance * dailyRate * days;
+  }
+
   const addLoanPayment = useCallback(async (data: Omit<LoanPayment, 'id' | 'createdAt'>) => {
     const payment: LoanPayment = { ...data, id: generateId(), createdAt: now() };
     setLoanPayments(prev =>
@@ -207,8 +219,28 @@ export function useBudget() {
       payment_date: payment.paymentDate, amount: payment.amount,
       created_at: payment.createdAt,
     });
+
+    // Apply payment: accrue interest to payment date, subtract payment, save new snapshot
+    const loan = loans.find(l => l.id === data.loanId);
+    if (loan) {
+      const accruedBalance = accrueToDate(loan, data.paymentDate);
+      const newBalance = Math.max(0, accruedBalance - data.amount);
+      const updatedLoan: Loan = {
+        ...loan,
+        balance: Math.round(newBalance * 100) / 100,
+        balanceDate: data.paymentDate,
+        updatedAt: now(),
+      };
+      setLoans(prev => prev.map(l => l.id === updatedLoan.id ? updatedLoan : l));
+      await supabase.from('loans').update({
+        balance: updatedLoan.balance,
+        balance_date: updatedLoan.balanceDate,
+        updated_at: updatedLoan.updatedAt,
+      }).eq('id', updatedLoan.id);
+    }
+
     return payment;
-  }, []);
+  }, [loans]);
 
   const deleteLoanPayment = useCallback(async (id: string) => {
     setLoanPayments(prev => prev.filter(p => p.id !== id));

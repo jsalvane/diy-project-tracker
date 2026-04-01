@@ -31,7 +31,7 @@ function useIncome(key: string) {
     setIncomeState(val);
     await supabase
       .from('budget_settings')
-      .upsert({ key: settingsKey, value: String(val), updated_at: new Date().toISOString() });
+      .upsert({ key: settingsKey, value: String(val), updated_at: new Date().toISOString() }, { onConflict: 'key' });
   }
 
   return [income, setIncome] as const;
@@ -185,7 +185,7 @@ function Section({
     'bg-white dark:bg-zinc-800 border border-orange-400 rounded px-2 py-0.5 text-sm text-gray-900 dark:text-white outline-none';
 
   return (
-    <div className="mb-10">
+    <div>
       <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">
         Due {title === '15' ? '15th' : '30th'}
       </h2>
@@ -357,8 +357,8 @@ export function MonthlyBudget({ budgetItems, addBudgetItem, updateBudgetItem, de
   const due30 = budgetItems.filter(i => i.dueGroup === '30').sort((a, b) => a.sortOrder - b.sortOrder);
 
   const activeCards = creditCards.filter(c => c.status === 'active' && c.billDueGroup);
-  const ccDue15 = activeCards.filter(c => c.billDueGroup === '15');
-  const ccDue30 = activeCards.filter(c => c.billDueGroup === '30');
+  const ccDue15 = activeCards.filter(c => c.billDueGroup === '15').sort((a, b) => (a.servicer || '').localeCompare(b.servicer || ''));
+  const ccDue30 = activeCards.filter(c => c.billDueGroup === '30').sort((a, b) => (a.servicer || '').localeCompare(b.servicer || ''));
 
   const [income15, setIncome15] = useIncome('15');
   const [income30, setIncome30] = useIncome('30');
@@ -376,7 +376,7 @@ export function MonthlyBudget({ budgetItems, addBudgetItem, updateBudgetItem, de
   }
 
   return (
-    <div>
+    <div className="grid grid-cols-2 gap-8">
       <Section
         title="15"
         items={due15}

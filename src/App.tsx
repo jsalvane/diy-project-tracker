@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import { FinancialProvider } from './context/FinancialContext';
 import { Header } from './components/Header';
 import { Toast } from './components/Toast';
 import { ProjectList } from './components/ProjectList';
@@ -40,7 +41,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AppProvider>
-        <AppShell />
+        <FinancialProvider>
+          <AppShell />
+        </FinancialProvider>
       </AppProvider>
     </BrowserRouter>
   );

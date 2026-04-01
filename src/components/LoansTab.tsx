@@ -36,6 +36,16 @@ function monthsToPayoff(balance: number, annualRatePct: number, monthlyPayment: 
   return Math.ceil(-Math.log(1 - ratio) / Math.log(1 + r));
 }
 
+function accrueToDate(balance: number, annualRatePct: number, fromDate: string, toDate: string): number {
+  const dailyRate = annualRatePct / 100 / 365;
+  if (dailyRate < 1e-10) return balance;
+  const from = new Date(fromDate + 'T00:00:00');
+  const to   = new Date(toDate   + 'T00:00:00');
+  const days = Math.round((to.getTime() - from.getTime()) / 86400000);
+  if (days <= 0) return balance;
+  return balance + balance * dailyRate * days;
+}
+
 function addMonthsLabel(months: number): string {
   const d = new Date();
   d.setMonth(d.getMonth() + months);
@@ -105,11 +115,11 @@ function LoanModal({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>Current Balance ($)</label>
-              <input className={inputCls} type="number" min="0" step="0.01" value={form.balance} onChange={e => setForm(f => ({ ...f, balance: e.target.value }))} placeholder="0.00" required />
+              <input className={inputCls} type="number" min="0" step="0.01" value={form.balance} onChange={e => setForm(f => ({ ...f, balance: e.target.value }))} onFocus={e => e.target.select()} placeholder="0.00" required />
             </div>
             <div>
               <label className={labelCls}>Interest Rate (%)</label>
-              <input className={inputCls} type="number" min="0" step="0.001" value={form.interestRate} onChange={e => setForm(f => ({ ...f, interestRate: e.target.value }))} placeholder="5.00" required />
+              <input className={inputCls} type="number" min="0" step="0.001" value={form.interestRate} onChange={e => setForm(f => ({ ...f, interestRate: e.target.value }))} onFocus={e => e.target.select()} placeholder="5.00" required />
             </div>
           </div>
           <div className="flex gap-3 pt-2">
@@ -169,7 +179,7 @@ function PaymentModal({
           </div>
           <div>
             <label className={labelCls}>Amount ($) *</label>
-            <input className={inputCls} type="number" min="0.01" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" required />
+            <input className={inputCls} type="number" min="0.01" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} onFocus={e => e.target.select()} placeholder="0.00" required />
           </div>
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
@@ -189,7 +199,10 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
   const [loanModal, setLoanModal] = useState<null | 'add' | Loan>(null);
   const [paymentModal, setPaymentModal] = useState(false);
 
-  const totalBalance = loans.reduce((s, l) => s + l.balance, 0);
+  const today = todayStr();
+  const totalBalance = loans.reduce((s, l) =>
+    s + accrueToDate(l.balance, l.interestRate, l.balanceDate, today), 0
+  );
   const totalPaidThisYear = loanPayments
     .filter(p => p.paymentDate.startsWith(new Date().getFullYear().toString()))
     .reduce((s, p) => s + p.amount, 0);
@@ -215,6 +228,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
       balance: parseFloat(form.balance) || 0,
       interestRate: parseFloat(form.interestRate) || 0,
       sortOrder: loans.length,
+      balanceDate: todayStr(),
     };
     if (loanModal && typeof loanModal === 'object') {
       updateLoan({ ...loanModal, ...data });
@@ -293,8 +307,9 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
               </tr>
             )}
             {loans.map(loan => {
+              const currentBalance = accrueToDate(loan.balance, loan.interestRate, loan.balanceDate, today);
               const avg = avgRecentPayment(loan.id);
-              const months = monthsToPayoff(loan.balance, loan.interestRate, avg);
+              const months = monthsToPayoff(currentBalance, loan.interestRate, avg);
               const payoffLabel = months !== null ? addMonthsLabel(months) : avg > 0 ? 'Interest > payment' : '—';
               const paymentCount = loanPayments.filter(p => p.loanId === loan.id).length;
 
@@ -302,7 +317,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
                 <tr key={loan.id} className="group hover:bg-gray-50 dark:hover:bg-zinc-900/40">
                   <td className={`${tdCls} font-medium`}>{loan.name}</td>
                   <td className={tdCls}>{loan.owner || '—'}</td>
-                  <td className={`${tdCls} text-right font-semibold`}>{formatCurrency(loan.balance)}</td>
+                  <td className={`${tdCls} text-right font-semibold`}>{formatCurrency(currentBalance)}</td>
                   <td className={`${tdCls} text-right`}>{loan.interestRate.toFixed(3)}%</td>
                   <td className={`${tdCls} text-right`}>
                     {avg > 0 ? (

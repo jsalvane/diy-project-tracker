@@ -100,6 +100,7 @@ export interface Loan {
   balance: number;
   interestRate: number;
   sortOrder: number;
+  balanceDate: string;
   createdAt: string;
   updatedAt: string;
 }
