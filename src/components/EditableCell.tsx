@@ -9,9 +9,10 @@ interface Props {
   onSave: (value: string | number) => void;
   onNavigate: (direction: 'tab' | 'shift-tab' | 'enter' | 'escape') => void;
   onFocus: () => void;
+  dimmed?: boolean;
 }
 
-export function EditableCell({ value, column, isFocused, onSave, onNavigate, onFocus }: Props) {
+export function EditableCell({ value, column, isFocused, onSave, onNavigate, onFocus, dimmed }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(String(value));
   const [invalid, setInvalid] = useState(false);
@@ -118,7 +119,7 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
           onBlur={handleBlur}
         />
       ) : (
-        <span className="text-sm text-gray-800 dark:text-zinc-200 block truncate">
+        <span className={`text-sm block truncate ${dimmed ? 'text-amber-700/70 dark:text-amber-400/60 italic' : 'text-gray-800 dark:text-zinc-200'}`}>
           {displayValue || <span className="text-gray-300 dark:text-zinc-700">—</span>}
         </span>
       )}

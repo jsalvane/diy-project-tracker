@@ -43,7 +43,10 @@ export function useFilters(entries: Entry[]) {
   }, [entries, filters]);
 
   const filteredTotal = useMemo(() => sumPrices(filteredEntries.map((e) => e.price)), [filteredEntries]);
-  const grandTotal = useMemo(() => sumPrices(entries.map((e) => e.price)), [entries]);
+  const confirmedEntries = useMemo(() => entries.filter((e) => !e.isPending), [entries]);
+  const pendingEntries = useMemo(() => entries.filter((e) => e.isPending), [entries]);
+  const grandTotal = useMemo(() => sumPrices(confirmedEntries.map((e) => e.price)), [confirmedEntries]);
+  const pendingTotal = useMemo(() => sumPrices(pendingEntries.map((e) => e.price)), [pendingEntries]);
 
   const uniqueStores = useMemo(() => [...new Set(entries.map((e) => e.store))].sort(), [entries]);
   const uniqueCategories = useMemo(() => [...new Set(entries.map((e) => e.category))].sort(), [entries]);
@@ -56,6 +59,7 @@ export function useFilters(entries: Entry[]) {
     filteredEntries,
     filteredTotal,
     grandTotal,
+    pendingTotal,
     uniqueStores,
     uniqueCategories,
   };

@@ -22,7 +22,7 @@ export function ProjectDetail() {
 
   const {
     filters, setFilter, clearFilters, isFiltered,
-    filteredEntries, filteredTotal, grandTotal,
+    filteredEntries, filteredTotal, grandTotal, pendingTotal,
     uniqueStores, uniqueCategories,
   } = useFilters(projectEntries);
 
@@ -86,8 +86,14 @@ export function ProjectDetail() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-7">
         <SummaryCard label="Total Spent" value={formatCurrency(grandTotal)} />
+        <SummaryCard
+          label="Pending"
+          value={formatCurrency(pendingTotal)}
+          sub={pendingTotal > 0 ? `projected: ${formatCurrency(grandTotal + pendingTotal)}` : undefined}
+          accent={pendingTotal > 0}
+        />
         <SummaryCard label="Entries" value={String(projectEntries.length)} />
         <SummaryCard
           label="Duration"
@@ -183,11 +189,11 @@ export function ProjectDetail() {
   );
 }
 
-function SummaryCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function SummaryCard({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: boolean }) {
   return (
-    <div className="bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl px-4 py-3.5">
+    <div className={`border rounded-xl px-4 py-3.5 ${accent ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800'}`}>
       <div className="text-xs font-medium text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{label}</div>
-      <div className="text-xl font-bold text-gray-900 dark:text-white">{value}</div>
+      <div className={`text-xl font-bold ${accent ? 'text-amber-700 dark:text-amber-400' : 'text-gray-900 dark:text-white'}`}>{value}</div>
       {sub && <div className="text-xs text-orange-500 dark:text-orange-400 mt-0.5">{sub}</div>}
     </div>
   );

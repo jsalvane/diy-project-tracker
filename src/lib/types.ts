@@ -19,6 +19,7 @@ export interface Entry {
   category: string;
   description: string;
   price: number;
+  isPending: boolean; // true = future/anticipated charge, not yet spent
   receiptUrl?: string; // URL to receipt file in Supabase Storage
   createdAt: string; // ISO datetime
   updatedAt: string; // ISO datetime
@@ -111,4 +112,30 @@ export interface LoanPayment {
   paymentDate: string;
   amount: number;
   createdAt: string;
+}
+
+export type GiftStatus = 'want' | 'purchased' | 'cancelled';
+export type GiftPriority = 'high' | 'medium' | 'low';
+
+export interface GiftRecipient {
+  id: string;
+  name: string;
+  budget: number; // 0 = unset
+  occasion: string;
+  color: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Gift {
+  id: string;
+  recipientId: string;
+  idea: string;
+  cost: number;
+  status: GiftStatus;
+  priority: GiftPriority;
+  notes: string;
+  link: string;
+  createdAt: string;
+  updatedAt: string;
 }

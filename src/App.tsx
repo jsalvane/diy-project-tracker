@@ -7,7 +7,9 @@ import { ProjectList } from './components/ProjectList';
 import { ProjectDetail } from './components/ProjectDetail';
 import { FinancialHealth } from './components/FinancialHealth';
 import { Budget } from './components/Budget';
+import { Gifts } from './components/Gifts';
 import { useApp } from './context/AppContext';
+import { PinLock } from './components/PinLock';
 
 function AppShell() {
   const { loading } = useApp();
@@ -31,6 +33,7 @@ function AppShell() {
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/financial-health" element={<FinancialHealth />} />
         <Route path="/budget" element={<Budget />} />
+        <Route path="/gifts" element={<Gifts />} />
       </Routes>
       <Toast />
     </div>
@@ -40,11 +43,13 @@ function AppShell() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppProvider>
-        <FinancialProvider>
-          <AppShell />
-        </FinancialProvider>
-      </AppProvider>
+      <PinLock>
+        <AppProvider>
+          <FinancialProvider>
+            <AppShell />
+          </FinancialProvider>
+        </AppProvider>
+      </PinLock>
     </BrowserRouter>
   );
 }

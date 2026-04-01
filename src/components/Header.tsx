@@ -5,6 +5,7 @@ const TABS = [
   { path: '/', label: 'Projects' },
   { path: '/financial-health', label: 'Financial Health' },
   { path: '/budget', label: 'Budget' },
+  { path: '/gifts', label: 'Gifts' },
 ];
 
 export function Header() {

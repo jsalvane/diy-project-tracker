@@ -110,6 +110,7 @@ function mapEntry(row: any): Entry {
     category: row.category ?? '',
     description: row.description ?? '',
     price: row.price ?? 0,
+    isPending: row.is_pending ?? false,
     receiptUrl: row.receipt_url ?? '',
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -150,6 +151,7 @@ function entryToRow(e: Entry) {
     category: e.category,
     description: e.description,
     price: e.price,
+    is_pending: e.isPending ?? false,
     receipt_url: e.receiptUrl || null,
     created_at: e.createdAt,
     updated_at: e.updatedAt,
@@ -189,6 +191,9 @@ interface AppContextValue {
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
+
+// Track our own change IDs to skip echoed realtime events
+const localChangeIds = new Set<string>();
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const initialDarkMode = localStorage.getItem(DARK_MODE_KEY) === 'true';
@@ -254,6 +259,50 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Realtime subscriptions for cross-device sync
+  useEffect(() => {
+    const channel = supabase
+      .channel('db-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, (payload) => {
+        const id = (payload.new as { id?: string })?.id ?? (payload.old as { id?: string })?.id;
+        if (id && localChangeIds.has(id)) return;
+        if (payload.eventType === 'INSERT') {
+          dispatch({ type: 'ADD_PROJECT', payload: mapProject(payload.new) });
+        } else if (payload.eventType === 'UPDATE') {
+          dispatch({ type: 'UPDATE_PROJECT', payload: mapProject(payload.new) });
+        } else if (payload.eventType === 'DELETE') {
+          dispatch({ type: 'DELETE_PROJECT', payload: (payload.old as { id: string }).id });
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'entries' }, (payload) => {
+        const id = (payload.new as { id?: string })?.id ?? (payload.old as { id?: string })?.id;
+        if (id && localChangeIds.has(id)) return;
+        if (payload.eventType === 'INSERT') {
+          dispatch({ type: 'ADD_ENTRY', payload: mapEntry(payload.new) });
+        } else if (payload.eventType === 'UPDATE') {
+          dispatch({ type: 'UPDATE_ENTRY', payload: mapEntry(payload.new) });
+        } else if (payload.eventType === 'DELETE') {
+          dispatch({ type: 'DELETE_ENTRY', payload: (payload.old as { id: string }).id });
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, (payload) => {
+        const id = (payload.new as { id?: string })?.id ?? (payload.old as { id?: string })?.id;
+        if (id && localChangeIds.has(id)) return;
+        if (payload.eventType === 'INSERT') {
+          dispatch({ type: 'ADD_TASK', payload: mapTask(payload.new) });
+        } else if (payload.eventType === 'UPDATE') {
+          dispatch({ type: 'UPDATE_TASK', payload: mapTask(payload.new) });
+        } else if (payload.eventType === 'DELETE') {
+          dispatch({ type: 'DELETE_TASK', payload: (payload.old as { id: string }).id });
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   // Sync dark mode to localStorage + DOM
   useEffect(() => {
     localStorage.setItem(DARK_MODE_KEY, String(state.darkMode));
@@ -274,23 +323,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addProject = useCallback((data: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
     const project: Project = { ...data, id: generateId(), createdAt: now(), updatedAt: now() };
+    localChangeIds.add(project.id);
     dispatch({ type: 'ADD_PROJECT', payload: project });
-    supabase.from('projects').insert(projectToRow(project));
+    supabase.from('projects').insert(projectToRow(project))
+      .then(({ error }) => {
+        if (error) console.error('addProject error:', error);
+        setTimeout(() => localChangeIds.delete(project.id), 3000);
+      });
     return project;
   }, []);
 
   const updateProject = useCallback((project: Project) => {
     const updated = { ...project, updatedAt: now() };
+    localChangeIds.add(updated.id);
     dispatch({ type: 'UPDATE_PROJECT', payload: updated });
-    supabase.from('projects').update(projectToRow(updated)).eq('id', updated.id);
+    supabase.from('projects').update(projectToRow(updated)).eq('id', updated.id)
+      .then(({ error }) => {
+        if (error) console.error('updateProject error:', error);
+        setTimeout(() => localChangeIds.delete(updated.id), 3000);
+      });
   }, []);
 
   const deleteProject = useCallback((id: string) => {
     const project = state.projects.find((p) => p.id === id);
     const projectEntries = state.entries.filter((e) => e.projectId === id);
     const projectTasks = state.tasks.filter((t) => t.projectId === id);
+    localChangeIds.add(id);
     dispatch({ type: 'DELETE_PROJECT', payload: id });
-    supabase.from('projects').delete().eq('id', id);
+    supabase.from('projects').delete().eq('id', id)
+      .then(({ error }) => {
+        if (error) console.error('deleteProject error:', error);
+        setTimeout(() => localChangeIds.delete(id), 3000);
+      });
     if (project) {
       showToast(`Deleted "${project.name}"`, async () => {
         await supabase.from('projects').insert(projectToRow(project));
@@ -303,21 +367,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addEntry = useCallback((data: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => {
     const entry: Entry = { ...data, id: generateId(), createdAt: now(), updatedAt: now() };
+    localChangeIds.add(entry.id);
     dispatch({ type: 'ADD_ENTRY', payload: entry });
-    supabase.from('entries').insert(entryToRow(entry));
+    supabase.from('entries').insert(entryToRow(entry))
+      .then(({ error }) => {
+        if (error) console.error('addEntry error:', error);
+        setTimeout(() => localChangeIds.delete(entry.id), 3000);
+      });
     return entry;
   }, []);
 
   const updateEntry = useCallback((entry: Entry) => {
     const updated = { ...entry, updatedAt: now() };
+    localChangeIds.add(updated.id);
     dispatch({ type: 'UPDATE_ENTRY', payload: updated });
-    supabase.from('entries').update(entryToRow(updated)).eq('id', updated.id);
+    supabase.from('entries').update(entryToRow(updated)).eq('id', updated.id)
+      .then(({ error }) => {
+        if (error) console.error('updateEntry error:', error);
+        setTimeout(() => localChangeIds.delete(updated.id), 3000);
+      });
   }, []);
 
   const deleteEntry = useCallback((id: string) => {
     const entry = state.entries.find((e) => e.id === id);
+    localChangeIds.add(id);
     dispatch({ type: 'DELETE_ENTRY', payload: id });
-    supabase.from('entries').delete().eq('id', id);
+    supabase.from('entries').delete().eq('id', id)
+      .then(({ error }) => {
+        if (error) console.error('deleteEntry error:', error);
+        setTimeout(() => localChangeIds.delete(id), 3000);
+      });
     if (entry) {
       showToast('Entry deleted', async () => {
         await supabase.from('entries').insert(entryToRow(entry));
@@ -328,21 +407,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addTask = useCallback((data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     const task: Task = { ...data, id: generateId(), createdAt: now(), updatedAt: now() };
+    localChangeIds.add(task.id);
     dispatch({ type: 'ADD_TASK', payload: task });
-    supabase.from('tasks').insert(taskToRow(task));
+    supabase.from('tasks').insert(taskToRow(task))
+      .then(({ error }) => {
+        if (error) console.error('addTask error:', error);
+        setTimeout(() => localChangeIds.delete(task.id), 3000);
+      });
     return task;
   }, []);
 
   const toggleTask = useCallback((task: Task) => {
     const updated = { ...task, completed: !task.completed, updatedAt: now() };
+    localChangeIds.add(updated.id);
     dispatch({ type: 'UPDATE_TASK', payload: updated });
-    supabase.from('tasks').update(taskToRow(updated)).eq('id', updated.id);
+    supabase.from('tasks').update(taskToRow(updated)).eq('id', updated.id)
+      .then(({ error }) => {
+        if (error) console.error('toggleTask error:', error);
+        setTimeout(() => localChangeIds.delete(updated.id), 3000);
+      });
   }, []);
 
   const deleteTask = useCallback((id: string) => {
     const task = state.tasks.find((t) => t.id === id);
+    localChangeIds.add(id);
     dispatch({ type: 'DELETE_TASK', payload: id });
-    supabase.from('tasks').delete().eq('id', id);
+    supabase.from('tasks').delete().eq('id', id)
+      .then(({ error }) => {
+        if (error) console.error('deleteTask error:', error);
+        setTimeout(() => localChangeIds.delete(id), 3000);
+      });
     if (task) {
       showToast('Task deleted', async () => {
         await supabase.from('tasks').insert(taskToRow(task));
