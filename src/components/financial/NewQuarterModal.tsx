@@ -8,17 +8,27 @@ interface NewQuarterModalProps {
   onCancel: () => void;
 }
 
-function nextQuarterLabel(label: string): string {
-  const match = label.match(/Q([1-4])\s+(\d{4})/i);
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function nextMonthLabel(label: string): string {
+  const match = label.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})$/i);
   if (!match) return '';
-  const q = parseInt(match[1], 10);
+  const idx = MONTHS.findIndex((m) => m.toLowerCase() === match[1].toLowerCase());
+  if (idx === -1) return '';
   const year = parseInt(match[2], 10);
-  if (q < 4) return `Q${q + 1} ${year}`;
-  return `Q1 ${year + 1}`;
+  return idx < 11 ? `${MONTHS[idx + 1]} ${year}` : `${MONTHS[0]} ${year + 1}`;
+}
+
+function suggestNextMonth(previousLabel: string): string {
+  // Try month format first, fall back to today's month
+  const fromPrev = nextMonthLabel(previousLabel);
+  if (fromPrev) return fromPrev;
+  const now = new Date();
+  return `${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 }
 
 export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQuarterModalProps) {
-  const suggested = previousQuarter ? nextQuarterLabel(previousQuarter.quarterLabel) : '';
+  const suggested = previousQuarter ? suggestNextMonth(previousQuarter.quarterLabel) : '';
   const [label, setLabel] = useState(suggested);
   const [date, setDate] = useState(todayStr());
 
@@ -62,7 +72,7 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
       <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
         <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1">
-          New Quarter
+          New Month
         </h2>
         {previousQuarter ? (
           <p className="text-sm text-gray-500 dark:text-zinc-400 mb-5">
@@ -70,20 +80,20 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
           </p>
         ) : (
           <p className="text-sm text-gray-500 dark:text-zinc-400 mb-5">
-            No previous quarter to clone from. Starting with blank values.
+            No previous month to clone from. Starting with blank values.
           </p>
         )}
 
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 dark:text-zinc-400 mb-1">
-              Quarter Label
+              Month Label
             </label>
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="Q2 2026"
+              placeholder="Apr 2026"
               className={INPUT_CLASS}
               autoFocus
             />
@@ -113,7 +123,7 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
             disabled={!label.trim()}
             className="px-5 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Create Quarter
+            Create Month
           </button>
         </div>
       </div>

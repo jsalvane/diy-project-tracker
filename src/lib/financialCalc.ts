@@ -164,7 +164,7 @@ export function computeValidationFlags(
     flags.push({
       field: 'quarterLabel',
       severity: 'error',
-      message: `Quarter label "${q.quarterLabel}" is used by another quarter. Labels must be unique.`,
+      message: `Month label "${q.quarterLabel}" is used by another entry. Labels must be unique.`,
     });
   }
 
@@ -173,7 +173,7 @@ export function computeValidationFlags(
     flags.push({
       field: 'quarterLabel',
       severity: 'error',
-      message: 'Quarter label is required.',
+      message: 'Month label is required.',
     });
   }
   if (!q.dateCaptured) {

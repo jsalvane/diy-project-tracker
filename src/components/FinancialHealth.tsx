@@ -95,8 +95,8 @@ export function FinancialHealth() {
           </h1>
           <p className="text-sm text-gray-500 dark:text-zinc-400 mt-0.5">
             {state.quarters.length === 0
-              ? 'No quarters tracked yet'
-              : `${state.quarters.length} quarter${state.quarters.length !== 1 ? 's' : ''} tracked`}
+              ? 'No months tracked yet'
+              : `${state.quarters.length} month${state.quarters.length !== 1 ? 's' : ''} tracked`}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -109,7 +109,7 @@ export function FinancialHealth() {
             onClick={() => setShowNewQuarterModal(true)}
             className="px-4 py-2 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors whitespace-nowrap"
           >
-            + New Quarter
+            + New Month
           </button>
         </div>
       </div>
@@ -186,23 +186,23 @@ export function FinancialHealth() {
             <div className="text-center py-20 border border-dashed border-gray-200 dark:border-zinc-800 rounded-xl">
               <div className="text-4xl mb-3 opacity-30">📊</div>
               <p className="text-base font-semibold text-gray-700 dark:text-zinc-300">
-                No quarters yet
+                No months yet
               </p>
               <p className="text-sm text-gray-400 dark:text-zinc-500 mt-1 mb-4">
-                Create your first quarter to start tracking your financial health.
+                Create your first month to start tracking your financial health.
               </p>
               <button
                 onClick={() => setShowNewQuarterModal(true)}
                 className="px-5 py-2 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
               >
-                Create First Quarter
+                Create First Month
               </button>
             </div>
           ) : mode === 'edit' && draft ? (
             <div>
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                  Editing {activeQuarter.quarterLabel}
+                  Editing {activeQuarter.quarterLabel} snapshot
                 </h2>
               </div>
               <QuarterForm

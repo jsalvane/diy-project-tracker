@@ -46,18 +46,18 @@ export function QuarterForm({ quarter, onChange, onSave, onCancel }: QuarterForm
       {/* Header fields */}
       <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
         <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-4">
-          Quarter Info
+          Month Info
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-600 dark:text-zinc-400 mb-1">
-              Quarter Label
+              Month Label
             </label>
             <input
               type="text"
               value={quarter.quarterLabel}
               onChange={(e) => emit({ ...quarter, quarterLabel: e.target.value })}
-              placeholder="Q1 2026"
+              placeholder="Apr 2026"
               className={INPUT_CLASS}
             />
           </div>
@@ -236,7 +236,7 @@ export function QuarterForm({ quarter, onChange, onSave, onCancel }: QuarterForm
           value={quarter.notes}
           onChange={(e) => emit({ ...quarter, notes: e.target.value })}
           rows={4}
-          placeholder="Any observations, context, or reminders for this quarter..."
+          placeholder="Any observations, context, or reminders for this month..."
           className="w-full text-sm px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
         />
       </div>

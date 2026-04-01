@@ -4,7 +4,7 @@ import type { FinancialQuarter, FinancialState } from './financialTypes';
 export function createFinancialSeedData(): FinancialState {
   const quarter: FinancialQuarter = {
     id: generateId(),
-    quarterLabel: 'Q1 2026',
+    quarterLabel: 'Mar 2026',
     dateCaptured: '2026-03-31',
     assets: {
       cash: 62000,
