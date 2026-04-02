@@ -96,7 +96,7 @@ export function FinancialDashboard({ quarter, priorQuarter, allQuarters, onEdit,
         />
         <KpiCard
           label="Emergency Fund"
-          value={derived.emergencyFundMonths.toFixed(1) + ' mo'}
+          value={Math.round(derived.emergencyFundMonths) + ' mo'}
           sub={
             derived.emergencyFundStatus === 'above'
               ? 'Above target'
@@ -143,7 +143,7 @@ export function FinancialDashboard({ quarter, priorQuarter, allQuarters, onEdit,
           label="Emergency Fund"
           value={derived.emergencyFundMonths}
           max={12}
-          displayValue={derived.emergencyFundMonths.toFixed(1) + ' mo'}
+          displayValue={Math.round(derived.emergencyFundMonths) + ' mo'}
           zones={{ green: 50, amber: 25 }} // 6mo / 12mo = 50%, 3mo = 25%
         />
         <HealthGauge

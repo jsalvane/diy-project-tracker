@@ -128,7 +128,7 @@ export function computeValidationFlags(
       flags.push({
         field: m.field,
         severity: 'warning',
-        message: `${m.label}: reported ${m.isPct ? m.reported.toFixed(1) + '%' : formatNum(m.reported)} but calculated ${m.isPct ? m.calculated.toFixed(1) + '%' : formatNum(m.calculated)}`,
+        message: `${m.label}: reported ${m.isPct ? Math.round(m.reported) + '%' : formatNum(m.reported)} but calculated ${m.isPct ? Math.round(m.calculated) + '%' : formatNum(m.calculated)}`,
         calculated: m.calculated,
         reported: m.reported,
       });

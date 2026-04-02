@@ -277,7 +277,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                       activeCards.length
                   );
                   return avgMonths >= 12
-                    ? `${(avgMonths / 12).toFixed(1)}y`
+                    ? `${Math.round(avgMonths / 12)}y`
                     : `${avgMonths}mo`;
                 })()
               : '—'}
@@ -355,7 +355,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                       {/* Card rows */}
                       {cards.map(card => {
                         const ageMonths = card.openDate ? monthsBetween(card.openDate, today) : null;
-                        const ageLabel = ageMonths === null ? '—' : ageMonths >= 12 ? `${(ageMonths / 12).toFixed(1)}y` : `${ageMonths}mo`;
+                        const ageLabel = ageMonths === null ? '—' : ageMonths >= 12 ? `${Math.round(ageMonths / 12)}y` : `${ageMonths}mo`;
                         const counts524 = card.openDate && card.openDate > cutoff;
                         return (
                           <tr key={card.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
@@ -453,7 +453,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                     ? monthsBetween(card.openDate, card.closedDate)
                     : null;
                 const ageLabel =
-                  ageAtClose === null ? '—' : ageAtClose >= 12 ? `${(ageAtClose / 12).toFixed(1)}y` : `${ageAtClose}mo`;
+                  ageAtClose === null ? '—' : ageAtClose >= 12 ? `${Math.round(ageAtClose / 12)}y` : `${ageAtClose}mo`;
 
                 return (
                   <tr key={card.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] opacity-70">

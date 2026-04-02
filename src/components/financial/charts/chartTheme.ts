@@ -78,5 +78,5 @@ export function fmtCurrency(n: number): string {
 }
 
 export function fmtPct(n: number): string {
-  return n.toFixed(1) + '%';
+  return Math.round(n) + '%';
 }

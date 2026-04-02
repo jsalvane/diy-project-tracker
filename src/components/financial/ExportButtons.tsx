@@ -23,7 +23,7 @@ function fmtCurrency(n: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(n);
 }
 
@@ -49,10 +49,10 @@ export function ExportButtons({ quarters, activeQuarter, onImport }: ExportButto
       ['cashOnHand', fmtCurrency(activeQuarter.assets.cash), fmtCurrency(activeQuarter.reportedSummaryValues.cashOnHand), String(Math.abs(activeQuarter.assets.cash - activeQuarter.reportedSummaryValues.cashOnHand) <= 0.01), flagMap.get('cashOnHand')?.message ?? ''],
       ['retirementAssets', fmtCurrency(derived.retirementAssets), fmtCurrency(activeQuarter.reportedSummaryValues.retirementAssets), String(Math.abs(derived.retirementAssets - activeQuarter.reportedSummaryValues.retirementAssets) <= 0.01), flagMap.get('retirementAssets')?.message ?? ''],
       ['kidsSavingsTotal', fmtCurrency(derived.kidsSavingsTotal), fmtCurrency(activeQuarter.reportedSummaryValues.kidsSavingsTotal), String(Math.abs(derived.kidsSavingsTotal - activeQuarter.reportedSummaryValues.kidsSavingsTotal) <= 0.01), flagMap.get('kidsSavingsTotal')?.message ?? ''],
-      ['debtToAssetRatio', derived.debtToAssetRatio.toFixed(1) + '%', activeQuarter.reportedSummaryValues.debtToAssetRatio.toFixed(1) + '%', String(Math.abs(derived.debtToAssetRatio - activeQuarter.reportedSummaryValues.debtToAssetRatio) <= 0.01), flagMap.get('debtToAssetRatio')?.message ?? ''],
+      ['debtToAssetRatio', Math.round(derived.debtToAssetRatio) + '%', Math.round(activeQuarter.reportedSummaryValues.debtToAssetRatio) + '%', String(Math.abs(derived.debtToAssetRatio - activeQuarter.reportedSummaryValues.debtToAssetRatio) <= 0.01), flagMap.get('debtToAssetRatio')?.message ?? ''],
       ['housingCost', fmtCurrency(derived.housingCost), fmtCurrency(activeQuarter.reportedSummaryValues.housingCost), String(Math.abs(derived.housingCost - activeQuarter.reportedSummaryValues.housingCost) <= 0.01), flagMap.get('housingCost')?.message ?? ''],
-      ['housingCostPct', derived.housingCostPctOfTakeHome.toFixed(1) + '%', activeQuarter.reportedSummaryValues.housingCostPctOfTakeHome.toFixed(1) + '%', String(Math.abs(derived.housingCostPctOfTakeHome - activeQuarter.reportedSummaryValues.housingCostPctOfTakeHome) <= 0.01), flagMap.get('housingCostPctOfTakeHome')?.message ?? ''],
-      ['emergencyFundMonths', derived.emergencyFundMonths.toFixed(1) + ' mo', '', '', ''],
+      ['housingCostPct', Math.round(derived.housingCostPctOfTakeHome) + '%', Math.round(activeQuarter.reportedSummaryValues.housingCostPctOfTakeHome) + '%', String(Math.abs(derived.housingCostPctOfTakeHome - activeQuarter.reportedSummaryValues.housingCostPctOfTakeHome) <= 0.01), flagMap.get('housingCostPctOfTakeHome')?.message ?? ''],
+      ['emergencyFundMonths', Math.round(derived.emergencyFundMonths) + ' mo', '', '', ''],
       ['emergencyFundStatus', derived.emergencyFundStatus, activeQuarter.reportedSummaryValues.emergencyFundStatus, '', ''],
     ];
 
@@ -99,7 +99,7 @@ export function ExportButtons({ quarters, activeQuarter, onImport }: ExportButto
         onClick={handleCsvExport}
         disabled={!activeQuarter}
         title="Export current quarter summary as CSV"
-        className="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="btn-ghost text-[12px] px-3 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         Export CSV
       </button>
@@ -107,14 +107,14 @@ export function ExportButtons({ quarters, activeQuarter, onImport }: ExportButto
         onClick={handleJsonExport}
         disabled={quarters.length === 0}
         title="Export all quarters as JSON"
-        className="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="btn-ghost text-[12px] px-3 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         Export JSON
       </button>
       <button
         onClick={() => { setImportError(null); fileInputRef.current?.click(); }}
         title="Import all quarters from JSON"
-        className="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+        className="btn-ghost text-[12px] px-3 py-1.5"
       >
         Import JSON
       </button>

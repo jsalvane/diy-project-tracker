@@ -19,7 +19,7 @@ function fmt(n: number | undefined, format: FormatType): string {
       maximumFractionDigits: 0,
     }).format(n);
   }
-  if (format === 'pct') return n.toFixed(1) + '%';
+  if (format === 'pct') return Math.round(n) + '%';
   return n.toLocaleString();
 }
 

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { FinancialProvider } from './context/FinancialContext';
 import { Header } from './components/Header';
@@ -8,6 +8,7 @@ import { ProjectDetail } from './components/ProjectDetail';
 import { FinancialHealth } from './components/FinancialHealth';
 import { Budget } from './components/Budget';
 import { Gifts } from './components/Gifts';
+import { Maintenance } from './components/Maintenance';
 import { useApp } from './context/AppContext';
 import { PinLock } from './components/PinLock';
 
@@ -16,24 +17,31 @@ function AppShell() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-gray-400 dark:text-zinc-500">Loading…</span>
+      <div className="min-h-screen bg-[#f6f6fb] dark:bg-[#07070f] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-8 h-8">
+            <div className="absolute inset-0 rounded-full border border-[#6366f1]/20" />
+            <div className="absolute inset-0 rounded-full border-t border-[#6366f1] animate-spin" />
+          </div>
+          <span className="text-[12px] font-medium tracking-[0.06em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)]">
+            Loading
+          </span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-[#f6f6fb] dark:bg-[#07070f] text-[#0a0a14] dark:text-[#e2e2f0]">
       <Header />
       <Routes>
-        <Route path="/" element={<ProjectList />} />
+        <Route path="/" element={<Navigate to="/budget" replace />} />
+        <Route path="/projects" element={<ProjectList />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/financial-health" element={<FinancialHealth />} />
         <Route path="/budget" element={<Budget />} />
         <Route path="/gifts" element={<Gifts />} />
+        <Route path="/maintenance" element={<Maintenance />} />
       </Routes>
       <Toast />
     </div>

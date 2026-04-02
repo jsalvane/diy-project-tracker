@@ -129,9 +129,26 @@ export function useGifts() {
     await supabase.from('gifts').delete().eq('id', id);
   }, []);
 
+  const reseedGifts = useCallback(async () => {
+    await supabase.from('gift_recipients').delete().neq('id', '');
+    const seed = createGiftSeedData();
+    await supabase.from('gift_recipients').insert(seed.recipients.map(r => ({
+      id: r.id, name: r.name, budget: r.budget, occasion: r.occasion,
+      color: r.color, created_at: r.createdAt, updated_at: r.updatedAt,
+    })));
+    await supabase.from('gifts').insert(seed.gifts.map(g => ({
+      id: g.id, recipient_id: g.recipientId, idea: g.idea, cost: g.cost,
+      status: g.status, priority: g.priority, notes: g.notes, link: g.link,
+      created_at: g.createdAt, updated_at: g.updatedAt,
+    })));
+    setRecipients(seed.recipients);
+    setGifts(seed.gifts);
+  }, []);
+
   return {
     recipients, gifts, loading,
     addRecipient, updateRecipient, deleteRecipient,
     addGift, updateGift, deleteGift,
+    reseedGifts,
   };
 }

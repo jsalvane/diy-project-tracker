@@ -2,9 +2,10 @@ import { useApp } from '../context/AppContext';
 import { Link, useLocation } from 'react-router-dom';
 
 const TABS = [
-  { path: '/',                label: 'Projects'  },
-  { path: '/financial-health', label: 'Financial' },
   { path: '/budget',           label: 'Budget'    },
+  { path: '/financial-health', label: 'Financial' },
+  { path: '/projects',         label: 'Projects'  },
+  { path: '/maintenance',      label: 'Maintenance' },
   { path: '/gifts',            label: 'Gifts'     },
 ];
 
@@ -45,7 +46,7 @@ export function Header() {
   const location = useLocation();
 
   const isProjectDetail = location.pathname.startsWith('/project/');
-  const activeTab = isProjectDetail ? '/' : location.pathname;
+  const activeTab = isProjectDetail ? '/projects' : location.pathname;
 
   return (
     <header className="sticky top-0 z-30 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] glass">
@@ -77,7 +78,7 @@ export function Header() {
           {/* Back link or nav */}
           {isProjectDetail ? (
             <Link
-              to="/"
+              to="/projects"
               className="flex items-center gap-1 text-[12px] font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
             >
               <ChevronLeft />

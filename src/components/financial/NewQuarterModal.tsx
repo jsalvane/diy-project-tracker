@@ -20,20 +20,24 @@ function nextMonthLabel(label: string): string {
 }
 
 function suggestNextMonth(previousLabel: string): string {
-  // Try month format first, fall back to today's month
   const fromPrev = nextMonthLabel(previousLabel);
   if (fromPrev) return fromPrev;
   const now = new Date();
   return `${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 }
 
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5">
+      {children}
+    </label>
+  );
+}
+
 export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQuarterModalProps) {
   const suggested = previousQuarter ? suggestNextMonth(previousQuarter.quarterLabel) : '';
   const [label, setLabel] = useState(suggested);
   const [date, setDate] = useState(todayStr());
-
-  const INPUT_CLASS =
-    'w-full text-sm px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent';
 
   function handleConfirm() {
     if (!label.trim()) return;
@@ -69,62 +73,67 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
-        <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1">
-          New Month
-        </h2>
-        {previousQuarter ? (
-          <p className="text-sm text-gray-500 dark:text-zinc-400 mb-5">
-            Cloning from <strong>{previousQuarter.quarterLabel}</strong>. All values are carried forward as placeholders — update any that changed. Annual retirement YTD is reset to 0. Notes are cleared.
-          </p>
-        ) : (
-          <p className="text-sm text-gray-500 dark:text-zinc-400 mb-5">
-            No previous month to clone from. Starting with blank values.
-          </p>
-        )}
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-zinc-400 mb-1">
-              Month Label
-            </label>
-            <input
-              type="text"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="Apr 2026"
-              className={INPUT_CLASS}
-              autoFocus
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-zinc-400 mb-1">
-              Date Captured
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className={INPUT_CLASS}
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-3 mt-6">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-fade-in p-4">
+      <div
+        className="bg-[#ffffff] dark:bg-[#0f0f1a] border border-[rgba(0,0,20,0.08)] dark:border-[rgba(255,255,255,0.07)] rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6)] w-full max-w-md animate-scale-in"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
+          <h2 className="text-[14px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.015em]">New Month</h2>
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+            className="w-6 h-6 flex items-center justify-center rounded-md text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] hover:text-[rgba(10,10,20,0.65)] dark:hover:text-[rgba(226,226,240,0.6)] hover:bg-[rgba(0,0,20,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
           >
-            Cancel
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/>
+            </svg>
           </button>
-          <button
-            onClick={handleConfirm}
-            disabled={!label.trim()}
-            className="px-5 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Create Month
-          </button>
+        </div>
+
+        <div className="p-6">
+          {previousQuarter ? (
+            <p className="text-[12.5px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] mb-5 leading-relaxed">
+              Cloning from <strong className="text-[#0a0a14] dark:text-[#e2e2f0]">{previousQuarter.quarterLabel}</strong>. All values are carried forward — update any that changed. Retirement YTD is reset to 0.
+            </p>
+          ) : (
+            <p className="text-[12.5px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] mb-5">
+              No previous month to clone from. Starting with blank values.
+            </p>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <FieldLabel>Month Label</FieldLabel>
+              <input
+                type="text"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                placeholder="Apr 2026"
+                className="field"
+                autoFocus
+              />
+            </div>
+            <div>
+              <FieldLabel>Date Captured</FieldLabel>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="field"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 mt-6">
+            <button onClick={onCancel} className="btn-ghost">Cancel</button>
+            <button
+              onClick={handleConfirm}
+              disabled={!label.trim()}
+              className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Create Month
+            </button>
+          </div>
         </div>
       </div>
     </div>

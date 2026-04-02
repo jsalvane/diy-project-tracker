@@ -124,10 +124,10 @@ export function HistoryView({ quarters }: HistoryViewProps) {
                       {fmtCurrency(d.monthlySurplus)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-gray-700 dark:text-zinc-300">
-                      {d.debtToAssetRatio.toFixed(1)}%
+                      {Math.round(d.debtToAssetRatio)}%
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-gray-700 dark:text-zinc-300">
-                      {d.emergencyFundMonths.toFixed(1)} mo
+                      {Math.round(d.emergencyFundMonths)} mo
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-gray-700 dark:text-zinc-300">
                       {fmtCurrency(d.retirementAssets)}
@@ -260,11 +260,11 @@ export function HistoryView({ quarters }: HistoryViewProps) {
                 label={q.quarterLabel}
                 value={d.debtToAssetRatio}
                 maxValue={100}
-                formattedValue={d.debtToAssetRatio.toFixed(1) + '%'}
+                formattedValue={Math.round(d.debtToAssetRatio) + '%'}
                 delta={delta !== undefined ? -delta : undefined}
                 formattedDelta={
                   delta !== undefined
-                    ? (delta <= 0 ? '' : '+') + delta.toFixed(1) + '%'
+                    ? (delta <= 0 ? '' : '+') + Math.round(delta) + '%'
                     : undefined
                 }
                 color="bg-amber-500"

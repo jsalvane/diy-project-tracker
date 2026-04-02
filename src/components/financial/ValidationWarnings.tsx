@@ -9,7 +9,7 @@ function formatVal(n: number | undefined): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(n);
 }
 

@@ -9,12 +9,20 @@ interface Props {
   onCancel: () => void;
 }
 
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5">
+      {children}
+    </label>
+  );
+}
+
 export function ProjectForm({ project, onSave, onCancel }: Props) {
-  const [name, setName] = useState(project?.name ?? '');
-  const [status, setStatus] = useState<ProjectStatus>(project?.status ?? 'planned');
+  const [name, setName]           = useState(project?.name ?? '');
+  const [status, setStatus]       = useState<ProjectStatus>(project?.status ?? 'planned');
   const [startDate, setStartDate] = useState(project?.startDate ?? todayStr());
   const [finishDate, setFinishDate] = useState(project?.finishDate ?? '');
-  const [notes, setNotes] = useState(project?.notes ?? '');
+  const [notes, setNotes]         = useState(project?.notes ?? '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,23 +30,36 @@ export function ProjectForm({ project, onSave, onCancel }: Props) {
     onSave({ name: name.trim(), status, startDate, finishDate, notes: notes.trim() });
   };
 
-  const inputCls =
-    'w-full text-sm px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent';
-
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50" onClick={onCancel}>
+    <div
+      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-fade-in"
+      onClick={onCancel}
+    >
       <div
-        className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-zinc-800"
+        className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6)] p-6 max-w-md w-full mx-4 mb-4 sm:mb-0 border border-[rgba(0,0,20,0.08)] dark:border-[rgba(255,255,255,0.07)] animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-5">
-          {project ? 'Edit Project' : 'New Project'}
-        </h3>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-[15px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.02em]">
+            {project ? 'Edit Project' : 'New Project'}
+          </h3>
+          <button
+            onClick={onCancel}
+            className="w-6 h-6 flex items-center justify-center rounded-md text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] hover:text-[rgba(10,10,20,0.65)] dark:hover:text-[rgba(226,226,240,0.6)] hover:bg-[rgba(0,0,20,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <line x1="2" y1="2" x2="14" y2="14"/>
+              <line x1="14" y1="2" x2="2" y2="14"/>
+            </svg>
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">Project Name</label>
+            <Label>Project Name</Label>
             <input
-              className={inputCls}
+              className="field"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Kitchen Remodel"
@@ -46,11 +67,12 @@ export function ProjectForm({ project, onSave, onCancel }: Props) {
               required
             />
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">Status</label>
+              <Label>Status</Label>
               <select
-                className={inputCls}
+                className="field"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as ProjectStatus)}
               >
@@ -61,48 +83,45 @@ export function ProjectForm({ project, onSave, onCancel }: Props) {
             </div>
             <div />
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">Start Date</label>
+              <Label>Start Date</Label>
               <input
                 type="date"
-                className={inputCls}
+                className="field"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">Finish Date</label>
+              <Label>Finish Date</Label>
               <input
                 type="date"
-                className={inputCls}
+                className="field"
                 value={finishDate}
                 onChange={(e) => setFinishDate(e.target.value)}
               />
             </div>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1.5">Notes</label>
+            <Label>Notes</Label>
             <textarea
-              className={inputCls + ' resize-none'}
+              className="field resize-none"
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Optional notes..."
+              placeholder="Optional notes…"
             />
           </div>
+
+          {/* Actions */}
           <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="text-sm font-medium px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
-            >
+            <button type="button" onClick={onCancel} className="btn-ghost">
               Cancel
             </button>
-            <button
-              type="submit"
-              className="text-sm font-medium px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-            >
+            <button type="submit" className="btn-primary">
               {project ? 'Save Changes' : 'Create Project'}
             </button>
           </div>

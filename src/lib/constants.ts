@@ -4,25 +4,33 @@ export const STORAGE_KEY = 'diy-project-tracker';
 export const STORAGE_VERSION = 2;
 
 export const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
-  { value: 'planned', label: 'Planned' },
-  { value: 'active', label: 'Active' },
+  { value: 'planned',  label: 'Planned'  },
+  { value: 'active',   label: 'Active'   },
   { value: 'complete', label: 'Complete' },
-  { value: 'on_hold', label: 'On Hold' },
+  { value: 'on_hold',  label: 'On Hold'  },
 ];
 
+// dot color + text color pairs used by StatusBadge
 export const STATUS_COLORS: Record<ProjectStatus, string> = {
-  planned: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
-  active: 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300',
-  complete: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
-  on_hold: 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300',
+  planned:  'text-[#6366f1] dark:text-[#818cf8]',
+  active:   'text-[#16a34a] dark:text-[#22c55e]',
+  complete: 'text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]',
+  on_hold:  'text-[#d97706] dark:text-[#f59e0b]',
+};
+
+export const STATUS_DOT: Record<ProjectStatus, string> = {
+  planned:  'bg-[#6366f1] dark:bg-[#818cf8]',
+  active:   'bg-[#16a34a] dark:bg-[#22c55e]',
+  complete: 'bg-[rgba(10,10,20,0.25)] dark:bg-[rgba(226,226,240,0.2)]',
+  on_hold:  'bg-[#d97706] dark:bg-[#f59e0b]',
 };
 
 export const ENTRY_COLUMNS: ColumnDef[] = [
-  { key: 'date', label: 'Date', type: 'date', width: 'w-32' },
-  { key: 'store', label: 'Store', type: 'text', width: 'w-36' },
-  { key: 'category', label: 'Category', type: 'text', width: 'w-32' },
-  { key: 'description', label: 'Description', type: 'text', width: 'min-w-48 flex-1' },
-  { key: 'price', label: 'Price', type: 'currency', width: 'w-28' },
+  { key: 'date',        label: 'Date',        type: 'date',     width: 'w-32'         },
+  { key: 'store',       label: 'Store',       type: 'text',     width: 'w-36'         },
+  { key: 'category',    label: 'Category',    type: 'text',     width: 'w-32'         },
+  { key: 'description', label: 'Description', type: 'text',     width: 'min-w-48 flex-1' },
+  { key: 'price',       label: 'Price',       type: 'currency', width: 'w-28'         },
 ];
 
 export const EMPTY_FILTER = {

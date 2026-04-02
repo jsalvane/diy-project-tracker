@@ -318,7 +318,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
                   <td className={`${tdCls} font-medium`}>{loan.name}</td>
                   <td className={tdCls}>{loan.owner || '—'}</td>
                   <td className={`${tdCls} text-right font-semibold`}>{formatCurrency(currentBalance)}</td>
-                  <td className={`${tdCls} text-right`}>{loan.interestRate.toFixed(3)}%</td>
+                  <td className={`${tdCls} text-right`}>{Math.round(loan.interestRate)}%</td>
                   <td className={`${tdCls} text-right`}>
                     {avg > 0 ? (
                       <span title={`Based on last ${Math.min(paymentCount, 3)} payment${paymentCount !== 1 ? 's' : ''}`}>

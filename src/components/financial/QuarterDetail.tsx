@@ -21,7 +21,7 @@ function fmtCurrency(n: number): string {
 }
 
 function fmtPct(n: number): string {
-  return n.toFixed(1) + '%';
+  return Math.round(n) + '%';
 }
 
 const EF_STATUS_HIGHLIGHT = {
@@ -151,7 +151,7 @@ export function QuarterDetail({ quarter, priorQuarter }: QuarterDetailProps) {
         />
         <KpiCard
           label="Emergency Fund"
-          value={derived.emergencyFundMonths.toFixed(1) + ' mo'}
+          value={Math.round(derived.emergencyFundMonths) + ' mo'}
           sub={derived.emergencyFundStatus === 'above' ? 'Above target' : derived.emergencyFundStatus === 'on_target' ? 'On target' : 'Below target'}
           highlight={EF_STATUS_HIGHLIGHT[derived.emergencyFundStatus]}
         />
