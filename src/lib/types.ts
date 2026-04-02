@@ -139,3 +139,54 @@ export interface Gift {
   createdAt: string;
   updatedAt: string;
 }
+
+// ── Maintenance ─────────────────────────────────────────────────────────
+
+export type MaintenanceGroup = 'home' | 'machines';
+
+export type MaintenanceCategory =
+  | 'hvac' | 'electrical' | 'plumbing' | 'exterior' | 'interior'
+  | 'appliances' | 'safety' | 'windows-doors'
+  | 'vehicles' | 'power-tools' | 'lawn-garden' | 'snow-winter'
+  | 'generator' | 'recreational' | 'other';
+
+export type RecurrenceType = 'date' | 'usage' | 'seasonal' | 'custom';
+
+export type RecurrenceUnit =
+  | 'days' | 'months' | 'years'
+  | 'miles' | 'hours' | 'uses'
+  | 'pre-season' | 'post-season' | 'winter' | 'spring'
+  | 'summer' | 'fall' | 'season-end' | 'post-salt';
+
+export type MaintenanceDueStatus =
+  | 'overdue' | 'due-today' | 'due-this-week' | 'upcoming' | 'no-date';
+
+export interface MaintenanceTask {
+  id: string;
+  name: string;
+  group: MaintenanceGroup;
+  category: MaintenanceCategory;
+  instructions: string;
+  recurrenceType: RecurrenceType;
+  recurrenceUnit: RecurrenceUnit | '';
+  recurrenceValue: number;
+  nextDueDate: string;
+  currentUsage: number;
+  lastCompletionUsage: number;
+  isPreset: boolean;
+  icon: string;
+  snoozedUntil: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MaintenanceCompletion {
+  id: string;
+  taskId: string;
+  completedAt: string;
+  notes: string;
+  cost: number;
+  photoUrl: string;
+  usageAtCompletion: number;
+  createdAt: string;
+}
