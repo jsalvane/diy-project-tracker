@@ -43,7 +43,7 @@ const STATUS_CYCLE: BudgetItem['status'][] = ['auto', 'manual'];
 
 const STATUS_STYLES: Record<BudgetItem['status'], string> = {
   auto: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-  manual: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
+  manual: 'bg-[rgba(99,102,241,0.1)] text-[#6366f1] dark:bg-[rgba(129,140,248,0.1)] dark:text-[#818cf8]',
 };
 
 function TrashIcon() {
@@ -74,9 +74,9 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
   }
 
   return (
-    <div className="grid grid-cols-3 gap-3 mb-4">
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-3">
-        <div className="text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500 mb-1">Income</div>
+    <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3">
+        <div className="text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Income</div>
         {editing ? (
           <input
             autoFocus
@@ -88,11 +88,11 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
             onFocus={e => e.target.select()}
             onBlur={commit}
             onKeyDown={e => e.key === 'Enter' && commit()}
-            className="w-full bg-white dark:bg-zinc-800 border border-orange-400 rounded px-2 py-0.5 text-lg font-bold text-gray-900 dark:text-white outline-none"
+            className="w-full bg-[#ffffff] dark:bg-[#161626] border border-[#6366f1] dark:border-[#818cf8] rounded px-2 py-0.5 text-lg font-bold text-[#0a0a14] dark:text-[#e2e2f0] outline-none"
           />
         ) : (
           <div
-            className="text-xl font-bold text-gray-900 dark:text-white cursor-pointer hover:text-orange-400 transition-colors"
+            className="text-xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] cursor-pointer hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
             onClick={startEdit}
             title="Click to edit income"
           >
@@ -100,12 +100,12 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
           </div>
         )}
       </div>
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-3">
-        <div className="text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500 mb-1">Bills</div>
-        <div className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(bills)}</div>
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3">
+        <div className="text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Bills</div>
+        <div className="text-xl font-bold text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(bills)}</div>
       </div>
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-3">
-        <div className="text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500 mb-1">Surplus</div>
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3">
+        <div className="text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Surplus</div>
         <div className={`text-xl font-bold ${surplus >= 0 ? 'text-green-500' : 'text-red-500'}`}>
           {formatCurrency(surplus)}
         </div>
@@ -182,36 +182,36 @@ function Section({
   }
 
   const inputCls =
-    'bg-white dark:bg-zinc-800 border border-orange-400 rounded px-2 py-0.5 text-sm text-gray-900 dark:text-white outline-none';
+    'bg-[#ffffff] dark:bg-[#161626] border border-[#6366f1] dark:border-[#818cf8] rounded px-2 py-0.5 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none';
 
   return (
     <div>
-      <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">
+      <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0] mb-3">
         Due {title === '15' ? '15th' : '30th'}
       </h2>
 
       <IncomeSummary income={income} bills={totalBill} onIncomeChange={onIncomeChange} />
 
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden">
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 dark:bg-zinc-900 text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500">
+            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
               <th className="text-left px-4 py-3 font-medium">Name</th>
               <th className="text-right px-4 py-3 font-medium">Payment</th>
               <th className="text-center px-4 py-3 font-medium">Status</th>
               <th className="w-8 px-2 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
             {items.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-400 dark:text-zinc-500">
+                <td colSpan={4} className="px-4 py-6 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
                   No bills yet
                 </td>
               </tr>
             )}
             {items.map(item => (
-              <tr key={item.id} className="group hover:bg-gray-50 dark:hover:bg-zinc-900/40">
+              <tr key={item.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
                 {/* Name */}
                 <td className="px-4 py-2.5">
                   {editing?.id === item.id && editing.field === 'name' ? (
@@ -225,7 +225,7 @@ function Section({
                     />
                   ) : (
                     <span
-                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-orange-400 transition-colors"
+                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
                       onClick={() => startEdit(item, 'name')}
                     >
                       {item.name}
@@ -250,7 +250,7 @@ function Section({
                     />
                   ) : (
                     <span
-                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-orange-400 transition-colors"
+                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
                       onClick={() => startEdit(item, 'payment')}
                     >
                       {formatCurrency(item.payment)}
@@ -272,7 +272,7 @@ function Section({
                 <td className="px-2 py-2.5 text-center">
                   <button
                     onClick={() => onDelete(item.id)}
-                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                    className="opacity-0 group-hover:opacity-100 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-all"
                   >
                     <TrashIcon />
                   </button>
@@ -281,13 +281,13 @@ function Section({
             ))}
             {ccBills.length > 0 && (
               <>
-                <tr className="bg-gray-50 dark:bg-zinc-900/60 border-t border-gray-200 dark:border-zinc-800">
+                <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
                   <td colSpan={4} className="px-4 py-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">Credit Cards</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">Credit Cards</span>
                   </td>
                 </tr>
                 {ccBills.map(card => (
-                  <tr key={card.id} className="hover:bg-gray-50 dark:hover:bg-zinc-900/40 border-t border-gray-100 dark:border-zinc-800/60">
+                  <tr key={card.id} className="hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
                     <td className="px-4 py-2.5 pl-7 text-gray-800 dark:text-gray-200">{card.name}</td>
                     <td className="px-4 py-2.5 text-right">
                       {editingCcId === card.id ? (
@@ -304,7 +304,7 @@ function Section({
                         />
                       ) : (
                         <span
-                          className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-orange-400 transition-colors"
+                          className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
                           onClick={() => startCcEdit(card)}
                         >
                           {formatCurrency(card.balance)}
@@ -329,11 +329,11 @@ function Section({
             )}
           </tbody>
           <tfoot>
-            <tr className="bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-700 text-sm font-semibold">
-              <td className="px-4 py-3 text-gray-500 dark:text-zinc-400">Total</td>
-              <td className="px-4 py-3 text-right text-gray-900 dark:text-white">{formatCurrency(totalBill)}</td>
+            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] text-sm font-semibold">
+              <td className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">Total</td>
+              <td className="px-4 py-3 text-right text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(totalBill)}</td>
               <td colSpan={2} className="px-4 py-3 text-right">
-                <span className={remaining > 0.005 ? 'text-orange-400' : 'text-green-500'}>
+                <span className={remaining > 0.005 ? 'text-[#6366f1] dark:text-[#818cf8]' : 'text-green-500'}>
                   {remaining > 0.005 ? `${formatCurrency(remaining)} left` : 'Fully paid'}
                 </span>
               </td>
@@ -344,7 +344,7 @@ function Section({
 
       <button
         onClick={onAdd}
-        className="mt-3 flex items-center gap-1.5 text-sm font-medium text-orange-400 hover:text-orange-300 transition-colors"
+        className="mt-3 flex items-center gap-1.5 text-sm font-medium text-[#6366f1] dark:text-[#818cf8] hover:text-[#4f46e5] transition-colors"
       >
         <span className="text-lg leading-none">+</span> Add bill
       </button>
@@ -376,7 +376,7 @@ export function MonthlyBudget({ budgetItems, addBudgetItem, updateBudgetItem, de
   }
 
   return (
-    <div className="grid grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
       <Section
         title="15"
         items={due15}

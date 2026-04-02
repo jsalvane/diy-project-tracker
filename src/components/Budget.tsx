@@ -8,8 +8,8 @@ type Tab = 'monthly' | 'cards' | 'loans';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'monthly', label: 'Monthly Budget' },
-  { id: 'cards', label: 'Credit Cards' },
-  { id: 'loans', label: 'Loans' },
+  { id: 'cards',   label: 'Credit Cards'   },
+  { id: 'loans',   label: 'Loans'          },
 ];
 
 export function Budget() {
@@ -17,18 +17,19 @@ export function Budget() {
   const budget = useBudget();
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Budget</h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-5 py-6 sm:py-10">
+      <h1 className="text-[22px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.035em] mb-4 sm:mb-7">Budget</h1>
 
-      <div className="flex border-b border-gray-200 dark:border-zinc-800 mb-8">
+      {/* Tabs */}
+      <div className="flex border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] mb-5 sm:mb-8 gap-0">
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${
+            className={`px-3 sm:px-5 py-2.5 text-[13px] font-medium border-b-2 transition-colors -mb-px ${
               activeTab === tab.id
-                ? 'border-orange-400 text-orange-400'
-                : 'border-transparent text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200'
+                ? 'border-[#6366f1] dark:border-[#818cf8] text-[#6366f1] dark:text-[#818cf8]'
+                : 'border-transparent text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0]'
             }`}
           >
             {tab.label}
@@ -38,13 +39,16 @@ export function Budget() {
 
       {budget.loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+          <div className="relative w-8 h-8">
+            <div className="absolute inset-0 rounded-full border border-[#6366f1]/20" />
+            <div className="absolute inset-0 rounded-full border-t border-[#6366f1] animate-spin" />
+          </div>
         </div>
       ) : (
         <>
           {activeTab === 'monthly' && <MonthlyBudget {...budget} />}
-          {activeTab === 'cards' && <CreditCardsTab {...budget} />}
-          {activeTab === 'loans' && <LoansTab {...budget} />}
+          {activeTab === 'cards'   && <CreditCardsTab {...budget} />}
+          {activeTab === 'loans'   && <LoansTab {...budget} />}
         </>
       )}
     </div>

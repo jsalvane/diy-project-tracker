@@ -72,8 +72,8 @@ function PencilIcon() {
   );
 }
 
-const inputCls = 'w-full rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-orange-400 transition-colors';
-const labelCls = 'block text-xs font-medium text-gray-500 dark:text-zinc-400 mb-1';
+const inputCls = 'w-full rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-[#ffffff] dark:bg-[#161626] px-3 py-2 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none focus:border-[#6366f1] transition-colors';
+const labelCls = 'block text-xs font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-1';
 
 function LoanModal({
   initial,
@@ -98,10 +98,10 @@ function LoanModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-zinc-800">
-          <h2 className="font-semibold text-gray-900 dark:text-white text-sm">{initial ? 'Edit Loan' : 'Add Loan'}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors text-lg leading-none">✕</button>
+      <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
+          <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm">{initial ? 'Edit Loan' : 'Add Loan'}</h2>
+          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
@@ -123,10 +123,10 @@ function LoanModal({
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
               Cancel
             </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors">
+            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] text-white transition-colors">
               {initial ? 'Save Changes' : 'Add Loan'}
             </button>
           </div>
@@ -159,10 +159,10 @@ function PaymentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-zinc-800">
-          <h2 className="font-semibold text-gray-900 dark:text-white text-sm">Log Payment</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors text-lg leading-none">✕</button>
+      <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
+          <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm">Log Payment</h2>
+          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
@@ -182,10 +182,10 @@ function PaymentModal({
             <input className={inputCls} type="number" min="0.01" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} onFocus={e => e.target.select()} placeholder="0.00" required />
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
               Cancel
             </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors">
+            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] text-white transition-colors">
               Log Payment
             </button>
           </div>
@@ -247,48 +247,48 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
     setPaymentModal(false);
   }
 
-  const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500';
+  const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]';
   const tdCls = 'px-4 py-3 text-sm text-gray-800 dark:text-gray-200';
 
   return (
     <div>
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-4">
-          <div className="text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500 mb-1">Total Balance</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(totalBalance)}</div>
-          <div className="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">{loans.length} loan{loans.length !== 1 ? 's' : ''}</div>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-8">
+        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Total Balance</div>
+          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] truncate">{formatCurrency(totalBalance)}</div>
+          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">{loans.length} loan{loans.length !== 1 ? 's' : ''}</div>
         </div>
-        <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-4">
-          <div className="text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500 mb-1">Paid This Year</div>
-          <div className="text-2xl font-bold text-green-500">{formatCurrency(totalPaidThisYear)}</div>
-          <div className="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">{new Date().getFullYear()}</div>
+        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Paid This Year</div>
+          <div className="text-lg sm:text-2xl font-bold text-green-500 truncate">{formatCurrency(totalPaidThisYear)}</div>
+          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">{new Date().getFullYear()}</div>
         </div>
-        <div className="rounded-xl border border-gray-200 dark:border-zinc-800 p-4">
-          <div className="text-xs uppercase tracking-wider text-gray-400 dark:text-zinc-500 mb-1">Est. Debt-Free</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Est. Debt-Free</div>
+          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0]">
             {maxMonths !== null ? addMonthsLabel(maxMonths) : '—'}
           </div>
-          <div className="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">based on recent payments</div>
+          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">based on recent payments</div>
         </div>
       </div>
 
       {/* Loans table header */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-gray-900 dark:text-white">Loans</h2>
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0]">Loans</h2>
         <button
           onClick={() => setLoanModal('add')}
-          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white transition-colors"
+          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] text-white transition-colors"
         >
           <span className="text-base leading-none">+</span> Add Loan
         </button>
       </div>
 
       {/* Loans table */}
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden mb-8">
-        <table className="w-full text-sm">
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto mb-5 sm:mb-8">
+        <table className="w-full text-sm min-w-[520px]">
           <thead>
-            <tr className="bg-gray-50 dark:bg-zinc-900">
+            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
               <th className={thCls}>Loan</th>
               <th className={thCls}>Owner</th>
               <th className={`${thCls} text-right`}>Balance</th>
@@ -298,10 +298,10 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
               <th className="w-16 px-2 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
             {loans.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-sm text-gray-400 dark:text-zinc-500">
+                <td colSpan={7} className="px-4 py-8 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
                   No loans yet
                 </td>
               </tr>
@@ -314,7 +314,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
               const paymentCount = loanPayments.filter(p => p.loanId === loan.id).length;
 
               return (
-                <tr key={loan.id} className="group hover:bg-gray-50 dark:hover:bg-zinc-900/40">
+                <tr key={loan.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
                   <td className={`${tdCls} font-medium`}>{loan.name}</td>
                   <td className={tdCls}>{loan.owner || '—'}</td>
                   <td className={`${tdCls} text-right font-semibold`}>{formatCurrency(currentBalance)}</td>
@@ -325,20 +325,20 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
                         {formatCurrency(avg)}
                       </span>
                     ) : (
-                      <span className="text-gray-400 dark:text-zinc-500 text-xs">No history</span>
+                      <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] text-xs">No history</span>
                     )}
                   </td>
                   <td className={`${tdCls} text-right`}>
-                    <span className={months !== null ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-400 dark:text-zinc-500'}>
+                    <span className={months !== null ? 'text-green-600 dark:text-green-400 font-medium' : 'text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]'}>
                       {payoffLabel}
                     </span>
                   </td>
                   <td className="px-2 py-3">
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => setLoanModal(loan)} className="p-1 text-gray-400 hover:text-orange-400 transition-colors">
+                      <button onClick={() => setLoanModal(loan)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors">
                         <PencilIcon />
                       </button>
-                      <button onClick={() => deleteLoan(loan.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors">
+                      <button onClick={() => deleteLoan(loan.id)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors">
                         <TrashIcon />
                       </button>
                     </div>
@@ -351,31 +351,31 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
       </div>
 
       {/* Payment History */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-gray-900 dark:text-white">Payment History</h2>
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0]">Payment History</h2>
         <button
           onClick={() => setPaymentModal(true)}
           disabled={loans.length === 0}
-          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg border border-orange-400 text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg border border-[#6366f1] dark:border-[#818cf8] text-[#6366f1] dark:text-[#818cf8] hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <span className="text-base leading-none">+</span> Log Payment
         </button>
       </div>
 
-      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto">
+        <table className="w-full text-sm min-w-[320px]">
           <thead>
-            <tr className="bg-gray-50 dark:bg-zinc-900">
+            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
               <th className={thCls}>Date</th>
               <th className={thCls}>Loan</th>
               <th className={`${thCls} text-right`}>Amount</th>
               <th className="w-8 px-2 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
+          <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
             {loanPayments.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-sm text-gray-400 dark:text-zinc-500">
+                <td colSpan={4} className="px-4 py-8 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
                   No payments logged yet
                 </td>
               </tr>
@@ -383,16 +383,16 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
             {loanPayments.map(payment => {
               const loan = loans.find(l => l.id === payment.loanId);
               return (
-                <tr key={payment.id} className="group hover:bg-gray-50 dark:hover:bg-zinc-900/40">
+                <tr key={payment.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
                   <td className={tdCls}>{formatDate(payment.paymentDate)}</td>
                   <td className={tdCls}>
                     {loan ? (
                       <span>
                         {loan.name}
-                        {loan.owner && <span className="text-gray-400 dark:text-zinc-500 ml-1">({loan.owner})</span>}
+                        {loan.owner && <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] ml-1">({loan.owner})</span>}
                       </span>
                     ) : (
-                      <span className="text-gray-400 dark:text-zinc-500">Unknown</span>
+                      <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">Unknown</span>
                     )}
                   </td>
                   <td className={`${tdCls} text-right font-semibold text-green-600 dark:text-green-400`}>
@@ -401,7 +401,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
                   <td className="px-2 py-3 text-center">
                     <button
                       onClick={() => deleteLoanPayment(payment.id)}
-                      className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                      className="opacity-0 group-hover:opacity-100 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-all"
                     >
                       <TrashIcon />
                     </button>
@@ -412,8 +412,8 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
           </tbody>
           {loanPayments.length > 0 && (
             <tfoot>
-              <tr className="bg-gray-50 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-700 font-semibold text-sm">
-                <td colSpan={2} className="px-4 py-3 text-gray-500 dark:text-zinc-400">
+              <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] font-semibold text-sm">
+                <td colSpan={2} className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
                   Total ({loanPayments.length} payment{loanPayments.length !== 1 ? 's' : ''})
                 </td>
                 <td className="px-4 py-3 text-right text-green-600 dark:text-green-400">

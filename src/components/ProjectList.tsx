@@ -6,19 +6,39 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { EmptyState } from './EmptyState';
 import type { Project } from '../lib/types';
 
+function PlusIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+      <line x1="8" y1="2" x2="8" y2="14"/>
+      <line x1="2" y1="8" x2="14" y2="8"/>
+    </svg>
+  );
+}
+
+function ChevronRight({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="11" height="11"
+      viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5"
+      strokeLinecap="round" strokeLinejoin="round"
+      className={`transition-transform duration-200 ${open ? 'rotate-90' : ''}`}
+    >
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>
+  );
+}
+
 export function ProjectList() {
   const { state, addProject, updateProject, deleteProject } = useApp();
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm]     = useState(false);
   const [editingProject, setEditingProject] = useState<Project | undefined>();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showOthers, setShowOthers] = useState(true);
 
   const handleSave = (data: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingProject) {
-      updateProject({ ...editingProject, ...data });
-    } else {
-      addProject(data);
-    }
+    if (editingProject) updateProject({ ...editingProject, ...data });
+    else addProject(data);
     setShowForm(false);
     setEditingProject(undefined);
   };
@@ -29,17 +49,14 @@ export function ProjectList() {
   };
 
   const handleConfirmDelete = () => {
-    if (deletingId) {
-      deleteProject(deletingId);
-      setDeletingId(null);
-    }
+    if (deletingId) { deleteProject(deletingId); setDeletingId(null); }
   };
 
   const byUpdatedAt = (a: Project, b: Project) =>
     new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
 
   const activeProjects = state.projects.filter((p) => p.status === 'active').sort(byUpdatedAt);
-  const otherProjects = state.projects.filter((p) => p.status !== 'active').sort(byUpdatedAt);
+  const otherProjects  = state.projects.filter((p) => p.status !== 'active').sort(byUpdatedAt);
 
   const renderCard = (project: Project) => (
     <ProjectCard
@@ -52,19 +69,26 @@ export function ProjectList() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-          Projects
-          <span className="text-gray-400 dark:text-zinc-600 font-normal ml-2 text-base">
-            {state.projects.length}
-          </span>
-        </h1>
+    <div className="max-w-6xl mx-auto px-4 sm:px-5 py-6 sm:py-10">
+
+      {/* Page header */}
+      <div className="flex items-center justify-between mb-5 sm:mb-8">
+        <div>
+          <h1 className="text-[22px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.035em]">
+            Projects
+          </h1>
+          {state.projects.length > 0 && (
+            <p className="text-[12px] font-medium text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] mt-0.5 tracking-[0.01em]">
+              {state.projects.length} {state.projects.length === 1 ? 'project' : 'projects'} total
+            </p>
+          )}
+        </div>
         <button
           onClick={() => { setEditingProject(undefined); setShowForm(true); }}
-          className="text-sm font-medium px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+          className="btn-primary"
         >
-          + New Project
+          <PlusIcon />
+          New Project
         </button>
       </div>
 
@@ -72,38 +96,48 @@ export function ProjectList() {
         <EmptyState message="No projects yet. Create one to get started.">
           <button
             onClick={() => setShowForm(true)}
-            className="text-sm text-orange-500 dark:text-orange-400 hover:underline"
+            className="text-[13px] font-medium text-[#6366f1] dark:text-[#818cf8] hover:underline"
           >
             Create your first project
           </button>
         </EmptyState>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-8">
           {activeProjects.length > 0 ? (
             <>
-              {/* Active projects — always visible */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {activeProjects.map(renderCard)}
+              {/* Active section */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[11px] font-semibold tracking-[0.07em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)]">Active</span>
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[rgba(22,163,74,0.12)] dark:bg-[rgba(34,197,94,0.12)] text-[10px] font-bold text-[#16a34a] dark:text-[#22c55e]">
+                    {activeProjects.length}
+                  </span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {activeProjects.map(renderCard)}
+                </div>
               </div>
 
-              {/* Other projects — collapsible */}
+              {/* Other section */}
               {otherProjects.length > 0 && (
                 <div>
                   <button
                     onClick={() => setShowOthers((v) => !v)}
-                    className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-zinc-500 hover:text-gray-800 dark:hover:text-zinc-200 transition-colors mb-4"
+                    className="flex items-center gap-2 mb-3 group"
                   >
-                    <span className={`transition-transform duration-200 inline-block ${showOthers ? 'rotate-90' : ''}`}>
-                      ▶
+                    <span className="text-[11px] font-semibold tracking-[0.07em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] group-hover:text-[rgba(10,10,20,0.55)] dark:group-hover:text-[rgba(226,226,240,0.48)] transition-colors">
+                      Other
                     </span>
-                    Other Projects
-                    <span className="text-gray-400 dark:text-zinc-600 font-normal">
+                    <span className="text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] group-hover:text-[rgba(10,10,20,0.5)] dark:group-hover:text-[rgba(226,226,240,0.4)] transition-colors">
+                      <ChevronRight open={showOthers} />
+                    </span>
+                    <span className="text-[11px] font-medium text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">
                       {otherProjects.length}
                     </span>
                   </button>
 
                   {showOthers && (
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 animate-fade-in">
                       {otherProjects.map(renderCard)}
                     </div>
                   )}
@@ -111,8 +145,7 @@ export function ProjectList() {
               )}
             </>
           ) : (
-            /* No active projects — show all flat */
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {otherProjects.map(renderCard)}
             </div>
           )}
@@ -130,7 +163,7 @@ export function ProjectList() {
       {deletingId && (
         <ConfirmDialog
           title="Delete project?"
-          message="This will delete the project and all its entries. You can undo this action briefly after deletion."
+          message="This will permanently delete the project and all its entries. You can undo briefly after deletion."
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingId(null)}
         />
