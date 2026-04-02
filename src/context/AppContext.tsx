@@ -252,9 +252,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.error('Failed to load from Supabase:', err);
       } finally {
-        setLoading(false);
+        // Minimum display time so the loading screen is always visible
+        const elapsed = Date.now() - start;
+        const remaining = Math.max(0, 1500 - elapsed);
+        setTimeout(() => setLoading(false), remaining);
       }
     }
+    const start = Date.now();
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
