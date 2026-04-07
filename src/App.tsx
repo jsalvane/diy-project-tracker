@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { FinancialProvider } from './context/FinancialContext';
 import { Header } from './components/Header';
@@ -7,8 +7,11 @@ import { ProjectList } from './components/ProjectList';
 import { ProjectDetail } from './components/ProjectDetail';
 import { FinancialHealth } from './components/FinancialHealth';
 import { Budget } from './components/Budget';
+import { Money } from './components/Money';
 import { Gifts } from './components/Gifts';
-import { Maintenance } from './components/Maintenance';
+import { Maintenance } from './components/maintenance/Maintenance';
+import { Scratchpad } from './components/Scratchpad';
+import { Dashboard } from './components/Dashboard';
 import { useApp } from './context/AppContext';
 import { PinLock } from './components/PinLock';
 
@@ -124,21 +127,15 @@ function AppShell() {
                 <path d="M28 2 A26 26 0 0 0 2 28" stroke="rgba(129,140,248,0.5)" strokeWidth="1" strokeLinecap="round" />
               </svg>
               {/* Logo icon */}
-              <div style={{
-                width: 40, height: 40,
-                borderRadius: 10,
-                background: 'rgba(99,102,241,0.1)',
-                border: '1px solid rgba(129,140,248,0.3)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                animation: 'ls-logo-glow 3s ease-in-out infinite',
-              }}>
-                <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="2" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.9"/>
-                  <rect x="9" y="2" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.55"/>
-                  <rect x="2" y="9" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.55"/>
-                  <rect x="9" y="9" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.9"/>
-                </svg>
-              </div>
+              <img
+                src="/apple-touch-icon.png"
+                alt="JS"
+                style={{
+                  width: 40, height: 40,
+                  borderRadius: 10,
+                  animation: 'ls-logo-glow 3s ease-in-out infinite',
+                }}
+              />
             </div>
 
             {/* Label + dots */}
@@ -171,13 +168,15 @@ function AppShell() {
     <div className="min-h-screen bg-[#f6f6fb] dark:bg-[#07070f] text-[#0a0a14] dark:text-[#e2e2f0]">
       <Header />
       <Routes>
-        <Route path="/" element={<Navigate to="/budget" replace />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/projects" element={<ProjectList />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
+        <Route path="/money" element={<Money />} />
         <Route path="/financial-health" element={<FinancialHealth />} />
         <Route path="/budget" element={<Budget />} />
         <Route path="/gifts" element={<Gifts />} />
         <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="/scratchpad" element={<Scratchpad />} />
       </Routes>
       <Toast />
     </div>

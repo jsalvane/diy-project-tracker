@@ -2,11 +2,11 @@ import { useApp } from '../context/AppContext';
 import { Link, useLocation } from 'react-router-dom';
 
 const TABS = [
-  { path: '/budget',           label: 'Budget'    },
-  { path: '/financial-health', label: 'Financial' },
-  { path: '/projects',         label: 'Projects'  },
-  { path: '/maintenance',      label: 'Maintenance' },
-  { path: '/gifts',            label: 'Gifts'     },
+  { path: '/money',       label: 'Money'       },
+  { path: '/projects',    label: 'Projects'    },
+  { path: '/maintenance', label: 'Maintenance' },
+  { path: '/gifts',       label: 'Gifts'       },
+  { path: '/scratchpad',  label: 'Scratchpad'  },
 ];
 
 function SunIcon() {
@@ -46,7 +46,9 @@ export function Header() {
   const location = useLocation();
 
   const isProjectDetail = location.pathname.startsWith('/project/');
-  const activeTab = isProjectDetail ? '/projects' : location.pathname;
+  const rawTab = isProjectDetail ? '/projects' : location.pathname;
+  // Legacy routes redirect visually to Money
+  const activeTab = (rawTab === '/budget' || rawTab === '/financial-health') ? '/money' : rawTab;
 
   return (
     <header className="sticky top-0 z-30 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] glass">
@@ -59,14 +61,12 @@ export function Header() {
             className="flex items-center gap-2 group"
           >
             {/* Logo mark */}
-            <div className="w-6 h-6 rounded-[6px] bg-[#6366f1] dark:bg-[#818cf8] flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(99,102,241,0.35)]">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="2" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
-                <rect x="9" y="2" width="5" height="5" rx="1" fill="white" opacity="0.6"/>
-                <rect x="2" y="9" width="5" height="5" rx="1" fill="white" opacity="0.6"/>
-                <rect x="9" y="9" width="5" height="5" rx="1" fill="white" opacity="0.9"/>
-              </svg>
-            </div>
+            <img
+              src="/apple-touch-icon.png"
+              alt="JS"
+              className="shrink-0"
+              style={{ width: 24, height: 24, borderRadius: 6, boxShadow: '0 0 12px rgba(99,102,241,0.35)' }}
+            />
             <span className="hidden sm:inline text-[13px] font-semibold tracking-[-0.02em] text-[#0a0a14] dark:text-[#e2e2f0] group-hover:text-[#6366f1] dark:group-hover:text-[#818cf8] transition-colors">
               Toolbox
             </span>

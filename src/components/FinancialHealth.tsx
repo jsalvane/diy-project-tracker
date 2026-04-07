@@ -15,7 +15,7 @@ function fmtCurrency(n: number): string {
   }).format(n);
 }
 
-export function FinancialHealth() {
+export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
   const { state, loading, addQuarter, updateQuarter, deleteQuarter, setActiveQuarter, replaceAllQuarters } = useFinancial();
   const [showNewQuarterModal, setShowNewQuarterModal] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
@@ -89,14 +89,16 @@ export function FinancialHealth() {
     );
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+  const inner = (
+    <>
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-8">
         <div>
-          <h1 className="text-[22px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.035em]">
-            Financial Health
-          </h1>
+          {!embedded && (
+            <h1 className="text-[22px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.035em]">
+              Financial Health
+            </h1>
+          )}
           <p className="text-[12px] font-medium text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] mt-0.5 tracking-[0.01em]">
             {state.quarters.length === 0
               ? 'No months tracked yet'
@@ -246,6 +248,14 @@ export function FinancialHealth() {
           onCancel={() => setShowNewQuarterModal(false)}
         />
       )}
+    </>
+  );
+
+  if (embedded) return inner;
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+      {inner}
     </div>
   );
 }
