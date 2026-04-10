@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useBudget } from '../hooks/useBudget';
 import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useSimpleFin } from '../hooks/useSimpleFin';
@@ -23,6 +23,24 @@ export function Budget({ embedded }: { embedded?: boolean } = {}) {
   const sf = useSimpleFin();
 
   const loading = budget.loading || subs.loading;
+
+  // Auto-sync SimpleFin on load if connected, has mappings, and last sync > 1hr ago
+  const autoSyncRan = useRef(false);
+  useEffect(() => {
+    if (autoSyncRan.current) return;
+    if (budget.loading || sf.loading || sf.syncing) return;
+    if (!sf.connected || Object.keys(sf.mappings).length === 0) return;
+
+    const staleMs = 60 * 60 * 1000; // 1 hour
+    const sinceSync = sf.lastSynced
+      ? Date.now() - new Date(sf.lastSynced).getTime()
+      : Infinity;
+
+    if (sinceSync > staleMs) {
+      autoSyncRan.current = true;
+      sf.sync(budget.creditCards, budget.updateCreditCard);
+    }
+  }, [budget.loading, sf.loading, sf.syncing, sf.connected, sf.mappings, sf.lastSynced, budget.creditCards, budget.updateCreditCard, sf.sync]);
 
   const content = (
     <>
