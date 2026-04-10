@@ -140,6 +140,24 @@ export interface Gift {
   updatedAt: string;
 }
 
+// ── Price Alerts ─────────────────────────────────────────────────────────
+
+export interface PriceAlert {
+  id: string;
+  giftId: string;
+  url: string;
+  label: string;
+  targetPrice: number;
+  currentPrice: number | null;
+  lowestPrice: number | null;
+  lastChecked: string | null;
+  lastAlerted: string | null;
+  consecutiveFailures: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ── Subscriptions ────────────────────────────────────────────────────────
 
 export type SubscriptionFrequency = 'monthly' | 'annual';

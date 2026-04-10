@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useGifts } from '../hooks/useGifts';
-import type { Gift, GiftRecipient, GiftStatus, GiftPriority } from '../lib/types';
+import { usePriceAlerts } from '../hooks/usePriceAlerts';
+import type { Gift, GiftRecipient, GiftStatus, GiftPriority, PriceAlert } from '../lib/types';
 import { formatCurrency } from '../lib/utils';
 
 // ─── Color palette ─────────────────────────────────────────────────────────────
@@ -331,12 +332,160 @@ function ConfirmDelete({ type, onConfirm, onCancel }: {
   );
 }
 
+// ─── Price Alert Modal ────────────────────────────────────────────────────────
+function PriceAlertModal({ gift, alerts, onAdd, onUpdate, onDelete, onClose }: {
+  gift: Gift;
+  alerts: PriceAlert[];
+  onAdd: (data: { giftId: string; url: string; label: string; targetPrice: number }) => void;
+  onUpdate: (alert: PriceAlert) => void;
+  onDelete: (id: string) => void;
+  onClose: () => void;
+}) {
+  const giftAlerts = alerts.filter(a => a.giftId === gift.id);
+  const [adding, setAdding] = useState(giftAlerts.length === 0);
+  const [url, setUrl] = useState(gift.link || '');
+  const [targetPrice, setTargetPrice] = useState(gift.cost > 0 ? String(Math.floor(gift.cost * 0.85)) : '');
+  const [label, setLabel] = useState('');
+
+  function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    if (!url.trim() || !targetPrice) return;
+    onAdd({ giftId: gift.id, url: url.trim(), label: label.trim(), targetPrice: parseFloat(targetPrice) });
+    setUrl('');
+    setTargetPrice('');
+    setLabel('');
+    setAdding(false);
+  }
+
+  function formatRelativeTime(dateStr: string | null) {
+    if (!dateStr) return 'Never';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+  }
+
+  function isFresh(alert: PriceAlert) {
+    if (!alert.lastChecked) return true; // never checked yet, not stale
+    return alert.consecutiveFailures < 3;
+  }
+
+  return (
+    <ModalShell title={`Price Alerts — ${gift.idea}`} onClose={onClose}>
+      <div className="space-y-4">
+        {/* Existing alerts */}
+        {giftAlerts.map(alert => (
+          <div key={alert.id} className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4 space-y-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${isFresh(alert) ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                  <span className="text-[12px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
+                    {alert.label || new URL(alert.url).hostname}
+                  </span>
+                </div>
+                <a href={alert.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] hover:text-[#E31937] truncate block">
+                  {alert.url}
+                </a>
+              </div>
+              {!alert.isActive && (
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/30 text-red-500 dark:text-red-400 shrink-0">Inactive</span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-0.5">Target</div>
+                <div className="text-[13px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tabular-nums">{formatCurrency(alert.targetPrice)}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-0.5">Current</div>
+                <div className={`text-[13px] font-semibold tabular-nums ${alert.currentPrice != null ? (alert.currentPrice <= alert.targetPrice ? 'text-emerald-500' : 'text-[#0a0a14] dark:text-[#e2e2f0]') : 'text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'}`}>
+                  {alert.currentPrice != null ? formatCurrency(alert.currentPrice) : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-0.5">Lowest</div>
+                <div className="text-[13px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tabular-nums">
+                  {alert.lowestPrice != null ? formatCurrency(alert.lowestPrice) : '—'}
+                </div>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)]">
+              Checked: {formatRelativeTime(alert.lastChecked)}
+              {!isFresh(alert) && <span className="text-red-400 ml-2">({alert.consecutiveFailures} failures)</span>}
+            </div>
+
+            <div className="flex gap-2">
+              {!alert.isActive && (
+                <button
+                  onClick={() => onUpdate({ ...alert, isActive: true, consecutiveFailures: 0 })}
+                  className="text-[11px] font-medium px-2.5 py-1 rounded-[7px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                >
+                  Reactivate
+                </button>
+              )}
+              <button
+                onClick={() => onDelete(alert.id)}
+                className="text-[11px] font-medium px-2.5 py-1 rounded-[7px] text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* Add form */}
+        {adding ? (
+          <form onSubmit={handleAdd} className="space-y-3 pt-2">
+            <div>
+              <FieldLabel>Product URL</FieldLabel>
+              <input className="field" type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." autoFocus required />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <FieldLabel>Target Price ($)</FieldLabel>
+                <input type="number" min="0" step="0.01" className="field" value={targetPrice} onChange={e => setTargetPrice(e.target.value)} placeholder="0.00" required />
+              </div>
+              <div>
+                <FieldLabel>Label (optional)</FieldLabel>
+                <input className="field" value={label} onChange={e => setLabel(e.target.value)} placeholder="e.g. Amazon" />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-1">
+              {giftAlerts.length > 0 && (
+                <button type="button" onClick={() => setAdding(false)} className="btn-ghost flex-1 justify-center">Cancel</button>
+              )}
+              <button type="submit" disabled={!url.trim() || !targetPrice} className="btn-primary flex-1 justify-center disabled:opacity-40 disabled:cursor-not-allowed">
+                Add Alert
+              </button>
+            </div>
+          </form>
+        ) : (
+          <button
+            onClick={() => { setUrl(gift.link || ''); setTargetPrice(gift.cost > 0 ? String(Math.floor(gift.cost * 0.85)) : ''); setLabel(''); setAdding(true); }}
+            className="w-full text-[12px] font-medium py-2.5 rounded-xl border border-dashed border-[rgba(0,0,20,0.12)] dark:border-[rgba(255,255,255,0.08)] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.38)] hover:border-[#E31937] hover:text-[#E31937] dark:hover:border-[#FF4D5C] dark:hover:text-[#FF4D5C] transition-colors"
+          >
+            + Add Price Alert
+          </button>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
 // ─── Main Component ────────────────────────────────────────────────────────────
 export function Gifts() {
   const { recipients, gifts, loading, addRecipient, updateRecipient, deleteRecipient, addGift, updateGift, deleteGift } = useGifts();
+  const { priceAlerts, addPriceAlert, updatePriceAlert, deletePriceAlert } = usePriceAlerts();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [personModal, setPersonModal] = useState<{ open: boolean; editing?: GiftRecipient }>({ open: false });
   const [giftModal, setGiftModal] = useState<{ open: boolean; editing?: Gift }>({ open: false });
+  const [alertModal, setAlertModal] = useState<{ open: boolean; gift?: Gift }>({ open: false });
   const [statusFilter, setStatusFilter] = useState<GiftStatus | 'all'>('all');
   const [confirmDelete, setConfirmDelete] = useState<{ type: 'person' | 'gift'; id: string } | null>(null);
   const [purchasedExpanded, setPurchasedExpanded] = useState(false);
@@ -587,6 +736,27 @@ export function Gifts() {
                   >
                     {STATUS_CONFIG[gift.status].label}
                   </button>
+                  {/* Price alert bell */}
+                  {(() => {
+                    const giftAlerts = priceAlerts.filter(a => a.giftId === gift.id);
+                    const hasActive = giftAlerts.some(a => a.isActive);
+                    const hasStale = giftAlerts.some(a => a.consecutiveFailures >= 3);
+                    return (
+                      <button
+                        onClick={() => setAlertModal({ open: true, gift })}
+                        className="relative text-[rgba(10,10,20,0.25)] dark:text-[rgba(226,226,240,0.2)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors shrink-0"
+                        title={giftAlerts.length > 0 ? `${giftAlerts.length} price alert${giftAlerts.length > 1 ? 's' : ''}` : 'Add price alert'}
+                      >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill={hasActive ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        {hasActive && (
+                          <span className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ${hasStale ? 'bg-red-400' : 'bg-emerald-400'}`} />
+                        )}
+                      </button>
+                    );
+                  })()}
                   {gift.link && (
                     <a
                       href={gift.link}
@@ -677,6 +847,17 @@ export function Gifts() {
             setGiftModal({ open: false });
           }}
           onClose={() => setGiftModal({ open: false })}
+        />
+      )}
+
+      {alertModal.open && alertModal.gift && (
+        <PriceAlertModal
+          gift={alertModal.gift}
+          alerts={priceAlerts}
+          onAdd={data => { addPriceAlert(data); }}
+          onUpdate={alert => { updatePriceAlert(alert); }}
+          onDelete={id => { deletePriceAlert(id); }}
+          onClose={() => setAlertModal({ open: false })}
         />
       )}
 
