@@ -196,7 +196,9 @@ const AppContext = createContext<AppContextValue | null>(null);
 const localChangeIds = new Set<string>();
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const initialDarkMode = localStorage.getItem(DARK_MODE_KEY) === 'true';
+  // Default to dark mode for new users (null key = first visit)
+  const storedDark = localStorage.getItem(DARK_MODE_KEY);
+  const initialDarkMode = storedDark === null ? true : storedDark === 'true';
   const [state, dispatch] = useReducer(reducer, {
     projects: [],
     entries: [],

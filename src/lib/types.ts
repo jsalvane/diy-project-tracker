@@ -140,9 +140,58 @@ export interface Gift {
   updatedAt: string;
 }
 
+// ── Subscriptions ────────────────────────────────────────────────────────
+
+export type SubscriptionFrequency = 'monthly' | 'annual';
+export type SubscriptionStatus = 'active' | 'paused' | 'cancelled';
+export type SubscriptionCategory =
+  | 'streaming' | 'software' | 'fitness' | 'news' | 'gaming'
+  | 'utilities' | 'food' | 'shopping' | 'finance' | 'other';
+
+export interface Subscription {
+  id: string;
+  name: string;
+  amount: number;          // actual charge per billing cycle
+  frequency: SubscriptionFrequency;
+  renewalDay: number;      // 1-30 if monthly (day of month); 1-12 if annual (month number)
+  freeTrial: boolean;
+  trialExpiration: string; // YYYY-MM-DD or ''
+  category: SubscriptionCategory;
+  status: SubscriptionStatus;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ── Scratchpad ───────────────────────────────────────────────────────────
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string; // ISO datetime
+  updatedAt: string; // ISO datetime
+}
+
 // ── Maintenance ─────────────────────────────────────────────────────────
 
 export type MaintenanceGroup = 'home' | 'machines';
+
+export interface Machine {
+  id: string;
+  name: string;
+  manufacturer: string;
+  model: string;
+  year: string;
+  serialNumber: string;
+  purchaseDate: string;
+  manualUrl: string;
+  notes: string;
+  icon: string;
+  category: MaintenanceCategory;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export type MaintenanceCategory =
   | 'hvac' | 'electrical' | 'plumbing' | 'exterior' | 'interior'
@@ -166,6 +215,7 @@ export interface MaintenanceTask {
   name: string;
   group: MaintenanceGroup;
   category: MaintenanceCategory;
+  machineId: string; // '' = not linked to a specific machine
   instructions: string;
   recurrenceType: RecurrenceType;
   recurrenceUnit: RecurrenceUnit | '';

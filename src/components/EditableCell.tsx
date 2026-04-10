@@ -92,7 +92,7 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
   return (
     <td
       ref={cellRef}
-      className={`px-3 py-2 border-b border-r border-gray-100 dark:border-zinc-800 ${column.width} cursor-text`}
+      className={`px-3 py-2 border-b border-r border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)] ${column.width} cursor-text`}
       onClick={() => {
         if (!editing) {
           onFocus();
@@ -105,10 +105,10 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
           type={column.type === 'date' ? 'date' : column.type === 'currency' ? 'number' : 'text'}
           step={column.type === 'currency' ? '0.01' : undefined}
           min={column.type === 'currency' ? '0' : undefined}
-          className={`w-full text-sm px-2 py-1 rounded-md border bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 ${
+          className={`w-full text-[13px] px-2 py-1 rounded-md border bg-white dark:bg-[#1a1a2e] text-[#0a0a14] dark:text-[#e2e2f0] focus:outline-none focus:ring-2 ${
             invalid
-              ? 'border-red-400 focus:ring-red-400'
-              : 'border-gray-300 dark:border-zinc-600 focus:ring-orange-500 focus:border-transparent'
+              ? 'border-red-400 focus:ring-red-400/40'
+              : 'border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.1)] focus:ring-[#E31937]/40 focus:border-[#E31937] dark:focus:border-[#FF4D5C]'
           }`}
           value={draft}
           onChange={(e) => {
@@ -119,8 +119,8 @@ export function EditableCell({ value, column, isFocused, onSave, onNavigate, onF
           onBlur={handleBlur}
         />
       ) : (
-        <span className={`text-sm block truncate ${dimmed ? 'text-amber-700/70 dark:text-amber-400/60 italic' : 'text-gray-800 dark:text-zinc-200'}`}>
-          {displayValue || <span className="text-gray-300 dark:text-zinc-700">—</span>}
+        <span className={`text-[13px] block truncate ${dimmed ? 'text-amber-700/70 dark:text-amber-400/60 italic' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>
+          {displayValue || <span className="text-[rgba(10,10,20,0.2)] dark:text-[rgba(226,226,240,0.18)]">—</span>}
         </span>
       )}
     </td>

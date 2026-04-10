@@ -32,9 +32,9 @@ export function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="max-w-6xl mx-auto px-6 py-12 text-center">
-        <p className="text-sm text-gray-500 dark:text-zinc-500">Project not found.</p>
-        <button onClick={() => navigate('/')} className="text-sm text-orange-500 dark:text-orange-400 hover:underline mt-2">
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 py-12 text-center">
+        <p className="text-[13px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">Project not found.</p>
+        <button onClick={() => navigate('/')} className="text-[13px] font-medium text-[#E31937] dark:text-[#FF4D5C] hover:underline mt-2">
           Back to projects
         </button>
       </div>
@@ -57,28 +57,28 @@ export function ProjectDetail() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-5 py-6 sm:py-10">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-3 mb-1.5">
-            <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">{project.name}</h1>
+            <h1 className="text-[22px] font-bold tracking-[-0.035em] text-[#0a0a14] dark:text-[#e2e2f0]">{project.name}</h1>
             <StatusBadge status={project.status} />
           </div>
           {project.notes && (
-            <p className="text-sm text-gray-500 dark:text-zinc-500 max-w-xl">{project.notes}</p>
+            <p className="text-[13px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] max-w-xl">{project.notes}</p>
           )}
         </div>
         <div className="flex gap-2 shrink-0">
           <button
             onClick={() => setShowEdit(true)}
-            className="text-sm font-medium px-3 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:border-gray-400 dark:hover:border-zinc-600 transition-colors"
+            className="btn-ghost"
           >
             Edit
           </button>
           <button
             onClick={() => setShowDelete(true)}
-            className="text-sm font-medium px-3 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:text-red-500 dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-800 transition-colors"
+            className="text-[13px] font-medium px-3 py-1.5 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] hover:text-red-500 dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-800/60 transition-colors"
           >
             Delete
           </button>
@@ -108,15 +108,15 @@ export function ProjectDetail() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-gray-200 dark:border-zinc-800 mb-5">
+      <div className="flex gap-0 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] mb-5">
         {(['expenses', 'tasks', 'chart'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2.5 text-sm font-medium capitalize border-b-2 -mb-px transition-colors ${
+            className={`px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-colors ${
               activeTab === tab
-                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                : 'border-transparent text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300'
+                ? 'border-[#E31937] dark:border-[#FF4D5C] text-[#E31937] dark:text-[#FF4D5C]'
+                : 'border-transparent text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0]'
             }`}
           >
             {tab === 'expenses' ? 'Expenses'
@@ -125,7 +125,7 @@ export function ProjectDetail() {
                 <span className="flex items-center gap-1.5">
                   Tasks
                   {openTaskCount > 0 && (
-                    <span className="text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400 px-1.5 py-0.5 rounded-full leading-none">
+                    <span className="text-[10px] font-semibold bg-[rgba(227,25,55,0.1)] text-[#E31937] dark:bg-[rgba(255,77,92,0.12)] dark:text-[#FF4D5C] px-1.5 py-0.5 rounded-full leading-none">
                       {openTaskCount}
                     </span>
                   )}
@@ -147,12 +147,12 @@ export function ProjectDetail() {
             uniqueCategories={uniqueCategories}
           />
           {isFiltered && (
-            <div className="text-sm text-gray-600 dark:text-zinc-400 mb-3 flex gap-5">
+            <div className="text-[12px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] mb-3 flex gap-5">
               <span>
-                Filtered: <strong className="text-gray-900 dark:text-white font-semibold">{formatCurrency(filteredTotal)}</strong>
-                <span className="text-gray-400 dark:text-zinc-600 ml-1">({filteredEntries.length} of {projectEntries.length})</span>
+                Filtered: <strong className="text-[#0a0a14] dark:text-[#e2e2f0] font-semibold">{formatCurrency(filteredTotal)}</strong>
+                <span className="text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] ml-1">({filteredEntries.length} of {projectEntries.length})</span>
               </span>
-              <span className="text-gray-400 dark:text-zinc-600">
+              <span className="text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">
                 Total: {formatCurrency(grandTotal)}
               </span>
             </div>
@@ -166,7 +166,7 @@ export function ProjectDetail() {
       )}
 
       {/* Last updated */}
-      <p className="text-xs text-gray-400 dark:text-zinc-600 mt-5">
+      <p className="text-[11px] text-[rgba(10,10,20,0.28)] dark:text-[rgba(226,226,240,0.22)] mt-5">
         Last updated {new Date(project.updatedAt).toLocaleString()}
       </p>
 
@@ -191,10 +191,14 @@ export function ProjectDetail() {
 
 function SummaryCard({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: boolean }) {
   return (
-    <div className={`border rounded-xl px-4 py-3.5 ${accent ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50' : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800'}`}>
-      <div className="text-xs font-medium text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{label}</div>
-      <div className={`text-xl font-bold ${accent ? 'text-amber-700 dark:text-amber-400' : 'text-gray-900 dark:text-white'}`}>{value}</div>
-      {sub && <div className="text-xs text-orange-500 dark:text-orange-400 mt-0.5">{sub}</div>}
+    <div className={`border rounded-xl px-4 py-3.5 ${
+      accent
+        ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200/70 dark:border-amber-800/40'
+        : 'bg-white dark:bg-[#111118] border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]'
+    }`}>
+      <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-1">{label}</div>
+      <div className={`text-[18px] font-bold tracking-[-0.025em] ${accent ? 'text-amber-700 dark:text-amber-400' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>{value}</div>
+      {sub && <div className="text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5">{sub}</div>}
     </div>
   );
 }

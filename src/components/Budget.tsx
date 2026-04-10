@@ -29,14 +29,14 @@ export function Budget({ embedded }: { embedded?: boolean } = {}) {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] mb-5 sm:mb-8 gap-0">
+      <div className="flex border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] mb-5 sm:mb-8 gap-0 overflow-x-auto scrollbar-hide">
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3 sm:px-5 py-2.5 text-[13px] font-medium border-b-2 transition-colors -mb-px ${
+            className={`px-3 sm:px-5 py-2.5 text-[13px] font-medium border-b-2 transition-colors -mb-px whitespace-nowrap shrink-0 ${
               activeTab === tab.id
-                ? 'border-[#6366f1] dark:border-[#818cf8] text-[#6366f1] dark:text-[#818cf8]'
+                ? 'border-[#E31937] dark:border-[#FF4D5C] text-[#E31937] dark:text-[#FF4D5C]'
                 : 'border-transparent text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0]'
             }`}
           >
@@ -48,8 +48,8 @@ export function Budget({ embedded }: { embedded?: boolean } = {}) {
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="relative w-8 h-8">
-            <div className="absolute inset-0 rounded-full border border-[#6366f1]/20" />
-            <div className="absolute inset-0 rounded-full border-t border-[#6366f1] animate-spin" />
+            <div className="absolute inset-0 rounded-full border border-[#E31937]/20" />
+            <div className="absolute inset-0 rounded-full border-t border-[#E31937] animate-spin" />
           </div>
         </div>
       ) : (

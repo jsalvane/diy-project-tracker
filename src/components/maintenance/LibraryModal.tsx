@@ -92,7 +92,7 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search tasks..."
-            className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#6366f1] dark:focus:border-[#818cf8]"
+            className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C]"
           />
         </div>
 
@@ -120,7 +120,7 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
                   {selectableItems.length > 0 && (
                     <button
                       onClick={() => toggleCategory(cat)}
-                      className="ml-auto text-[11px] font-medium text-[#6366f1] dark:text-[#818cf8] hover:underline"
+                      className="ml-auto text-[11px] font-medium text-[#E31937] dark:text-[#FF4D5C] hover:underline"
                     >
                       {allSelected ? 'Deselect all' : 'Select all'}
                     </button>
@@ -138,7 +138,7 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
                         checked={alreadyAdded || selected.has(index)}
                         disabled={alreadyAdded}
                         onChange={() => togglePreset(index)}
-                        className="rounded border-[rgba(0,0,20,0.2)] dark:border-[rgba(255,255,255,0.15)] text-[#6366f1] focus:ring-[#6366f1]"
+                        className="rounded border-[rgba(0,0,20,0.2)] dark:border-[rgba(255,255,255,0.15)] text-[#E31937] focus:ring-[#E31937]"
                       />
                       <span className="text-sm text-[#0a0a14] dark:text-[#e2e2f0]">{preset.name}</span>
                       {alreadyAdded && (
@@ -157,7 +157,7 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
           <button
             onClick={handleImport}
             disabled={selected.size === 0}
-            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#6366f1] text-white hover:bg-[#4f46e5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#E31937] text-white hover:bg-[#C41230] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Add Selected ({selected.size})
           </button>

@@ -11,12 +11,12 @@ interface Props {
 
 export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueStores, uniqueCategories }: Props) {
   const inputCls =
-    'text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent';
+    'text-[13px] px-2.5 py-1.5 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-white dark:bg-[#111118] text-[#0a0a14] dark:text-[#e2e2f0] focus:outline-none focus:ring-2 focus:ring-[#E31937]/40 focus:border-[#E31937] dark:focus:border-[#FF4D5C] transition-colors';
 
   return (
     <div className="flex flex-wrap items-end gap-3 mb-4">
       <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">From</label>
+        <label className="block text-[10px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1">From</label>
         <input
           type="date"
           className={inputCls + ' w-36'}
@@ -25,7 +25,7 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">To</label>
+        <label className="block text-[10px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1">To</label>
         <input
           type="date"
           className={inputCls + ' w-36'}
@@ -34,7 +34,7 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">Store</label>
+        <label className="block text-[10px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1">Store</label>
         <select
           className={inputCls + ' w-36'}
           value={filters.store}
@@ -47,7 +47,7 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">Category</label>
+        <label className="block text-[10px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1">Category</label>
         <select
           className={inputCls + ' w-36'}
           value={filters.category}
@@ -60,7 +60,7 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-zinc-500 mb-1">Search</label>
+        <label className="block text-[10px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1">Search</label>
         <input
           type="text"
           className={inputCls + ' w-44'}
@@ -72,7 +72,7 @@ export function Filters({ filters, setFilter, clearFilters, isFiltered, uniqueSt
       {isFiltered && (
         <button
           onClick={clearFilters}
-          className="text-sm font-medium px-3 py-1.5 text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 rounded-lg transition-colors"
+          className="text-[13px] font-medium px-3 py-1.5 text-[#E31937] dark:text-[#FF4D5C] hover:bg-[rgba(227,25,55,0.08)] dark:hover:bg-[rgba(255,77,92,0.1)] rounded-lg transition-colors"
         >
           Clear
         </button>

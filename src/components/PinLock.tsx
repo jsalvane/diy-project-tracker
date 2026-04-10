@@ -3,6 +3,28 @@ import { useState, useEffect, useRef } from 'react';
 const CORRECT_PIN = '9999';
 const SESSION_KEY = 'pin_unlocked';
 
+// Phone-style sub-labels (skip 1, 0 shows '+')
+const LETTERS: Record<string, string> = {
+  '2': 'ABC', '3': 'DEF', '4': 'GHI', '5': 'JKL',
+  '6': 'MNO', '7': 'PQRS', '8': 'TUV', '9': 'WXYZ',
+};
+
+function BackspaceIcon() {
+  return (
+    <svg width="28" height="22" viewBox="0 0 28 22" fill="none" style={{ display: 'block' }}>
+      <path
+        d="M11 1H25C26.1 1 27 1.9 27 3V19C27 20.1 26.1 21 25 21H11L1 11L11 1Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <line x1="16" y1="8" x2="21" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="21" y1="8" x2="16" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
 export function PinLock({ children }: { children: React.ReactNode }) {
   const [unlocked, setUnlocked] = useState(
     () => sessionStorage.getItem(SESSION_KEY) === '1'
@@ -11,6 +33,9 @@ export function PinLock({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [pressedKey, setPressedKey] = useState<string | null>(null);
+  // Track which dot index was just filled for per-dot animation key
+  const [dotAnimKey, setDotAnimKey] = useState(0);
 
   const pinRef = useRef(pin);
   const unlockingRef = useRef(unlocking);
@@ -25,8 +50,15 @@ export function PinLock({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (unlockingRef.current) return;
-      if (e.key >= '0' && e.key <= '9') pressDigit(e.key);
-      else if (e.key === 'Backspace') pressDelete();
+      if (e.key >= '0' && e.key <= '9') {
+        setPressedKey(e.key);
+        setTimeout(() => setPressedKey(null), 140);
+        pressDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        setPressedKey('del');
+        setTimeout(() => setPressedKey(null), 140);
+        pressDelete();
+      }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -41,6 +73,7 @@ export function PinLock({ children }: { children: React.ReactNode }) {
     setPin(next);
     pinRef.current = next;
     setError(false);
+    setDotAnimKey(k => k + 1);
     if (next.length === 4) {
       if (next === CORRECT_PIN) {
         sessionStorage.setItem(SESSION_KEY, '1');
@@ -53,7 +86,7 @@ export function PinLock({ children }: { children: React.ReactNode }) {
           setPin('');
           pinRef.current = '';
           setError(false);
-        }, 650);
+        }, 720);
       }
     }
   }
@@ -68,207 +101,237 @@ export function PinLock({ children }: { children: React.ReactNode }) {
     setError(false);
   }
 
-  const digits = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  const rows = [
+    ['1', '2', '3'],
+    ['4', '5', '6'],
+    ['7', '8', '9'],
+    ['',  '0', 'del'],
+  ];
 
   return (
     <>
       <style>{`
-        @keyframes pl-grid-drift {
-          from { transform: translate(0, 0); }
-          to   { transform: translate(40px, 40px); }
+        /* ── Entrance ─────────────────────────────────────────────────────── */
+        @keyframes pl-icon-rise {
+          from { opacity: 0; transform: scale(0.8) translateY(16px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
         }
-        @keyframes pl-scan {
-          0%   { top: -2px; opacity: 0; }
-          4%   { opacity: 1; }
-          96%  { opacity: 1; }
-          100% { top: 100%; opacity: 0; }
+        @keyframes pl-rise {
+          from { opacity: 0; transform: translateY(22px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes pl-orb-pulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.6; }
-          50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1;   }
-        }
-        @keyframes pl-logo-glow {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(129,140,248,0), 0 0 30px 6px rgba(99,102,241,0.2); }
-          50%       { box-shadow: 0 0 0 8px rgba(129,140,248,0.07), 0 0 50px 12px rgba(99,102,241,0.35); }
-        }
-        @keyframes pl-enter {
-          from { opacity: 0; transform: translateY(16px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0)    scale(1); }
-        }
+
+        /* ── Dot fill pop ─────────────────────────────────────────────────── */
         @keyframes pl-dot-pop {
-          0%   { transform: scale(0.5); }
-          65%  { transform: scale(1.25); }
+          0%   { transform: scale(0.3); }
+          50%  { transform: scale(1.35); }
+          72%  { transform: scale(0.88); }
+          88%  { transform: scale(1.06); }
           100% { transform: scale(1); }
         }
+
+        /* ── Error shake ──────────────────────────────────────────────────── */
         @keyframes pl-shake {
           0%,100% { transform: translateX(0); }
-          18%     { transform: translateX(-7px); }
-          36%     { transform: translateX(7px); }
-          54%     { transform: translateX(-4px); }
-          72%     { transform: translateX(4px); }
+          12% { transform: translateX(-12px); }
+          25% { transform: translateX(12px); }
+          38% { transform: translateX(-9px); }
+          52% { transform: translateX(9px); }
+          65% { transform: translateX(-5px); }
+          78% { transform: translateX(5px); }
+          90% { transform: translateX(-2px); }
         }
-        @keyframes pl-ring-burst {
-          0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.9; }
-          100% { transform: translate(-50%,-50%) scale(70); opacity: 0; }
+
+        /* ── Unlock exit ──────────────────────────────────────────────────── */
+        @keyframes pl-unlock-out {
+          0%   { opacity: 1; transform: scale(1) translateY(0px); filter: blur(0px); }
+          40%  { opacity: 1; transform: scale(1.03) translateY(-8px); filter: blur(0px); }
+          100% { opacity: 0; transform: scale(1.12) translateY(-30px); filter: blur(28px); }
         }
-        @keyframes pl-screen-open {
-          0%   { opacity: 1; filter: blur(0px)   brightness(1); }
-          40%  { opacity: 1; filter: blur(2px)   brightness(2); }
-          100% { opacity: 0; filter: blur(12px)  brightness(3); }
+
+        /* ── Success flash ────────────────────────────────────────────────── */
+        @keyframes pl-flash {
+          0%   { opacity: 0; }
+          20%  { opacity: 0.22; }
+          100% { opacity: 0; }
         }
-        @keyframes pl-corner-flash {
-          0%, 100% { opacity: 0; }
-          40%, 60% { opacity: 1; }
+
+        /* ── Scan line (ambient loading effect) ──────────────────────────── */
+        @keyframes pl-scan {
+          0%   { transform: translateY(-100%); opacity: 0; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
         }
-        .pl-screen-unlocking {
-          animation: pl-screen-open 0.95s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-          pointer-events: none;
+
+        /* ── Applied classes ─────────────────────────────────────────────── */
+        .pl-icon-rise { animation: pl-icon-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both; }
+        .pl-rise-1    { animation: pl-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both; }
+        .pl-rise-2    { animation: pl-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both; }
+        .pl-rise-3    { animation: pl-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.31s both; }
+        .pl-rise-4    { animation: pl-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.40s both; }
+        .pl-dot-pop   { animation: pl-dot-pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .pl-shake     { animation: pl-shake 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+        .pl-unlock-out { animation: pl-unlock-out 0.95s cubic-bezier(0.4, 0, 1, 1) forwards; }
+        .pl-flash     { animation: pl-flash 0.95s ease-out forwards; }
+
+        /* ── Key button ──────────────────────────────────────────────────── */
+        .pl-key {
+          -webkit-tap-highlight-color: transparent;
+          user-select: none;
+          transition: transform 0.09s ease, background 0.09s ease,
+                      border-color 0.09s ease, box-shadow 0.09s ease;
+          outline: none;
         }
-        .pl-content-enter {
-          animation: pl-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .pl-key:active,
+        .pl-key.pl-pressed {
+          transform: scale(0.91) !important;
+          background: rgba(255,255,255,0.16) !important;
+          border-color: rgba(255,255,255,0.2) !important;
+          box-shadow: inset 0 0 30px rgba(255,255,255,0.04) !important;
         }
-        .pl-dot-pop {
-          animation: pl-dot-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        .pl-key-del:active,
+        .pl-key-del.pl-pressed {
+          transform: scale(0.91) !important;
+          background: rgba(255,255,255,0.07) !important;
         }
-        .pl-shake {
-          animation: pl-shake 0.42s ease-in-out;
+
+        /* ── Responsive sizing ────────────────────────────────────────────── */
+        .pl-wrap {
+          --kw: 98px;
+          --kh: 98px;
+          --kgap: 14px;
+          --kr: 20px;
+          --ds: 18px;
+          --dgap: 30px;
         }
-        /* Responsive: compact on small/short viewports */
-        .pl-wrap { --pl-gap: 28px; --pl-btn: 72px; --pl-logo: 52px; --pl-btn-gap: 10px; }
-        @media (max-height: 620px) {
-          .pl-wrap { --pl-gap: 16px; --pl-btn: 60px; --pl-logo: 42px; --pl-btn-gap: 8px; }
+        @media (max-height: 720px) {
+          .pl-wrap { --kw: 84px; --kh: 84px; --kgap: 12px; --ds: 16px; --dgap: 26px; --kr: 17px; }
         }
-        @media (max-height: 480px) {
-          .pl-wrap { --pl-gap: 10px; --pl-btn: 52px; --pl-logo: 36px; --pl-btn-gap: 6px; }
+        @media (max-height: 600px) {
+          .pl-wrap { --kw: 70px; --kh: 70px; --kgap: 10px; --ds: 13px; --dgap: 21px; --kr: 13px; }
         }
       `}</style>
 
+      {/* White flash on success */}
+      {unlocking && (
+        <div
+          className="pl-flash"
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1002,
+            background: '#ffffff',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
       <div
-        className={`pl-wrap${unlocking ? ' pl-screen-unlocking' : ''}`}
+        className={`pl-wrap${unlocking ? ' pl-unlock-out' : ''}`}
         style={{
-          position: 'fixed', inset: 0, zIndex: 999,
-          background: '#07070f',
-          overflow: 'hidden',
+          position: 'fixed', inset: 0, zIndex: 1001,
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
+          background: 'linear-gradient(160deg, #232325 0%, #2a0a10 55%, #9b1020 100%)',
+          pointerEvents: unlocking ? 'none' : 'auto',
+          overflow: 'hidden',
         }}
       >
-        {/* Scrolling grid */}
+        {/* Subtle horizontal rule at bottom edge */}
         <div style={{
-          position: 'absolute', inset: '-40px',
-          backgroundImage: `
-            linear-gradient(rgba(99,102,241,0.45) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(99,102,241,0.45) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px',
-          opacity: 0.06,
-          animation: 'pl-grid-drift 5s linear infinite',
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 1,
+          background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%)',
         }} />
 
-        {/* Center radial glow */}
         <div style={{
-          position: 'absolute',
-          width: 700, height: 700,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.14) 0%, rgba(99,102,241,0.04) 40%, transparent 70%)',
-          top: '50%', left: '50%',
-          animation: 'pl-orb-pulse 4s ease-in-out infinite',
-          pointerEvents: 'none',
-        }} />
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center',
+          opacity: visible ? 1 : 0,
+          transition: 'opacity 0s',
+        }}>
+          {/* App icon */}
+          <div className={visible ? 'pl-icon-rise' : ''} style={{ marginBottom: 30 }}>
+            <img
+              src="/apple-touch-icon.png"
+              alt="Toolbox"
+              style={{
+                width: 80, height: 80,
+                borderRadius: 22,
+                boxShadow: [
+                  '0 24px 64px rgba(0,0,0,0.85)',
+                  '0 0 0 1px rgba(255,255,255,0.08)',
+                  '0 0 48px rgba(227,25,55,0.10)',
+                ].join(', '),
+                display: 'block',
+              }}
+            />
+          </div>
 
-        {/* Scan line */}
-        <div style={{
-          position: 'absolute', left: 0, right: 0, height: 1,
-          background: 'linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.5) 30%, rgba(129,140,248,0.8) 50%, rgba(99,102,241,0.5) 70%, transparent 100%)',
-          animation: 'pl-scan 7s ease-in-out infinite',
-          pointerEvents: 'none',
-        }} />
+          {/* App name — wide-tracked caps like TESLA */}
+          <div
+            className={visible ? 'pl-rise-1' : ''}
+            style={{
+              fontSize: 14,
+              fontWeight: 300,
+              color: 'rgba(255,255,255,0.88)',
+              letterSpacing: '0.40em',
+              textTransform: 'uppercase',
+              marginBottom: 10,
+            }}
+          >
+            Toolbox
+          </div>
 
-        {/* Corner accents */}
-        {[
-          { top: 16, left: 16, borderTop: '1px solid rgba(129,140,248,0.3)', borderLeft: '1px solid rgba(129,140,248,0.3)' },
-          { top: 16, right: 16, borderTop: '1px solid rgba(129,140,248,0.3)', borderRight: '1px solid rgba(129,140,248,0.3)' },
-          { bottom: 16, left: 16, borderBottom: '1px solid rgba(129,140,248,0.3)', borderLeft: '1px solid rgba(129,140,248,0.3)' },
-          { bottom: 16, right: 16, borderBottom: '1px solid rgba(129,140,248,0.3)', borderRight: '1px solid rgba(129,140,248,0.3)' },
-        ].map((style, i) => (
-          <div key={i} style={{
-            position: 'absolute', width: 20, height: 20,
-            opacity: unlocking ? 1 : 0.5,
-            animation: unlocking ? `pl-corner-flash 0.95s ease forwards` : undefined,
-            transition: 'opacity 0.3s',
-            ...style,
-          }} />
-        ))}
-
-        {/* Unlock ring burst */}
-        {unlocking && (
-          <div style={{
-            position: 'absolute',
-            width: 16, height: 16,
-            borderRadius: '50%',
-            background: 'rgba(129,140,248,0.7)',
-            top: '50%', left: '50%',
-            animation: 'pl-ring-burst 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-            pointerEvents: 'none',
-          }} />
-        )}
-
-        {/* Main content */}
-        <div
-          className={visible ? 'pl-content-enter' : ''}
-          style={{
-            opacity: visible ? undefined : 0,
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', gap: 'var(--pl-gap)',
-            position: 'relative', zIndex: 1,
-          }}
-        >
-          {/* Logo + heading */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <div style={{
-              width: 'var(--pl-logo)', height: 'var(--pl-logo)',
-              borderRadius: 16,
-              background: 'rgba(99,102,241,0.1)',
-              border: '1px solid rgba(129,140,248,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              animation: 'pl-logo-glow 3s ease-in-out infinite',
-            }}>
-              <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="2" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.9"/>
-                <rect x="9" y="2" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.55"/>
-                <rect x="2" y="9" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.55"/>
-                <rect x="9" y="9" width="5" height="5" rx="1.2" fill="#818cf8" opacity="0.9"/>
-              </svg>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#e2e2f0', letterSpacing: '-0.025em', marginBottom: 5 }}>
-                Toolbox
-              </div>
-              <div style={{ fontSize: 11, fontWeight: 500, color: 'rgba(226,226,240,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                Enter PIN to access
-              </div>
-            </div>
+          {/* Subtitle */}
+          <div
+            className={visible ? 'pl-rise-2' : ''}
+            style={{
+              fontSize: 11,
+              fontWeight: 400,
+              color: 'rgba(255,255,255,0.28)',
+              letterSpacing: '0.06em',
+              marginBottom: 56,
+            }}
+          >
+            Enter passcode to continue
           </div>
 
           {/* PIN dots */}
-          <div className={error ? 'pl-shake' : ''} style={{ display: 'flex', gap: 18 }}>
-            {[0,1,2,3].map(i => {
+          <div
+            className={`${error ? 'pl-shake' : ''} ${visible ? 'pl-rise-3' : ''}`}
+            style={{
+              display: 'flex',
+              gap: 'var(--dgap)',
+              marginBottom: 56,
+              alignItems: 'center',
+            }}
+          >
+            {[0, 1, 2, 3].map(i => {
               const filled = i < pin.length;
+              // Use dotAnimKey so re-entering a digit at same position re-triggers animation
+              const animKey = filled ? `${i}-${dotAnimKey}` : `${i}-empty`;
               return (
                 <div
-                  key={i}
+                  key={animKey}
                   className={filled && !error ? 'pl-dot-pop' : ''}
                   style={{
-                    width: 13, height: 13,
+                    width: 'var(--ds)',
+                    height: 'var(--ds)',
                     borderRadius: '50%',
-                    border: `2px solid ${
-                      error    ? 'rgba(248,113,113,0.75)'
-                      : filled ? '#818cf8'
-                               : 'rgba(226,226,240,0.18)'
+                    flexShrink: 0,
+                    background: error
+                      ? '#ef4444'
+                      : filled
+                      ? '#ffffff'
+                      : 'transparent',
+                    border: `1.5px solid ${
+                      error ? '#ef4444' : filled ? '#ffffff' : 'rgba(255,255,255,0.22)'
                     }`,
-                    background: error ? 'rgba(248,113,113,0.45)' : filled ? '#818cf8' : 'transparent',
-                    boxShadow: !error && filled ? '0 0 12px 3px rgba(129,140,248,0.55)' : 'none',
-                    transition: 'border-color 0.12s, background 0.12s, box-shadow 0.12s',
+                    boxShadow: filled && !error
+                      ? '0 0 16px rgba(255,255,255,0.6), 0 0 5px rgba(255,255,255,0.95)'
+                      : error
+                      ? '0 0 14px rgba(239,68,68,0.65)'
+                      : 'none',
+                    transition: 'background 0.1s, border-color 0.1s, box-shadow 0.15s',
                   }}
                 />
               );
@@ -276,67 +339,104 @@ export function PinLock({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Keypad */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--pl-btn-gap)' }}>
-            {digits.map((d, i) => {
-              if (d === '') return <div key={i} />;
-              const isDelete = d === '⌫';
-              return (
-                <button
-                  key={i}
-                  onClick={() => isDelete ? pressDelete() : pressDigit(d)}
-                  style={{
-                    width: 'var(--pl-btn)', height: 'var(--pl-btn)',
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    background: isDelete ? 'transparent' : 'rgba(255,255,255,0.04)',
-                    backdropFilter: 'blur(8px)',
-                    color: isDelete ? 'rgba(226,226,240,0.38)' : '#e2e2f0',
-                    fontSize: isDelete ? 18 : 22,
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'inherit',
-                    transition: 'transform 0.08s, background 0.12s, border-color 0.12s, box-shadow 0.12s',
-                  }}
-                  onPointerDown={e => {
-                    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.9)';
-                    if (!isDelete) {
-                      (e.currentTarget as HTMLButtonElement).style.background = 'rgba(99,102,241,0.2)';
-                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(129,140,248,0.4)';
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px 4px rgba(99,102,241,0.25)';
-                    }
-                  }}
-                  onPointerUp={e => {
-                    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-                    (e.currentTarget as HTMLButtonElement).style.background = isDelete ? 'transparent' : 'rgba(255,255,255,0.04)';
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.06)';
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
-                  }}
-                  onPointerLeave={e => {
-                    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-                    (e.currentTarget as HTMLButtonElement).style.background = isDelete ? 'transparent' : 'rgba(255,255,255,0.04)';
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.06)';
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
-                  }}
-                >
-                  {d}
-                </button>
-              );
-            })}
+          <div
+            className={visible ? 'pl-rise-4' : ''}
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--kgap)' }}
+          >
+            {rows.map((row, ri) => (
+              <div key={ri} style={{ display: 'flex', gap: 'var(--kgap)' }}>
+                {row.map((key, ki) => {
+                  if (key === '') {
+                    return (
+                      <div
+                        key={ki}
+                        style={{ width: 'var(--kw)', height: 'var(--kh)' }}
+                      />
+                    );
+                  }
+
+                  const isDelete = key === 'del';
+                  const isPressed = pressedKey === key;
+
+                  return (
+                    <button
+                      key={ki}
+                      className={`pl-key${isDelete ? ' pl-key-del' : ''}${isPressed ? ' pl-pressed' : ''}`}
+                      onClick={() => isDelete ? pressDelete() : pressDigit(key)}
+                      style={{
+                        width: 'var(--kw)',
+                        height: 'var(--kh)',
+                        borderRadius: isDelete ? 'var(--kr)' : 'var(--kr)',
+                        border: isDelete
+                          ? '1px solid transparent'
+                          : '1px solid rgba(255,255,255,0.09)',
+                        background: isDelete
+                          ? 'transparent'
+                          : 'rgba(255,255,255,0.055)',
+                        color: isDelete
+                          ? 'rgba(255,255,255,0.42)'
+                          : 'rgba(255,255,255,0.92)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 3,
+                        fontFamily: 'inherit',
+                        backdropFilter: isDelete ? 'none' : 'blur(10px)',
+                        WebkitBackdropFilter: isDelete ? 'none' : 'blur(10px)',
+                        boxShadow: isDelete
+                          ? 'none'
+                          : 'inset 0 1px 0 rgba(255,255,255,0.06)',
+                      }}
+                    >
+                      {isDelete ? (
+                        <BackspaceIcon />
+                      ) : (
+                        <>
+                          <span style={{
+                            fontSize: 32,
+                            fontWeight: 200,
+                            lineHeight: 1,
+                            letterSpacing: '-0.02em',
+                            color: 'rgba(255,255,255,0.92)',
+                          }}>
+                            {key}
+                          </span>
+                          {LETTERS[key] && (
+                            <span style={{
+                              fontSize: 8,
+                              fontWeight: 500,
+                              letterSpacing: '0.20em',
+                              color: 'rgba(255,255,255,0.24)',
+                              lineHeight: 1,
+                              marginTop: 1,
+                            }}>
+                              {LETTERS[key]}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
 
-          {/* Error message */}
+          {/* Error label */}
           <div style={{
-            height: 16,
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '0.08em',
+            marginTop: 32,
+            height: 14,
+            fontSize: 10.5,
+            fontWeight: 500,
+            color: '#ef4444',
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: 'rgba(248,113,113,0.75)',
             opacity: error ? 1 : 0,
-            transition: 'opacity 0.15s',
+            transition: 'opacity 0.18s ease',
           }}>
-            Incorrect PIN
+            Incorrect passcode
           </div>
         </div>
       </div>

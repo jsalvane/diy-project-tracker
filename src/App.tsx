@@ -1,7 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { FinancialProvider } from './context/FinancialContext';
 import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
+import { CommandPalette } from './components/CommandPalette';
 import { Toast } from './components/Toast';
 import { ProjectList } from './components/ProjectList';
 import { ProjectDetail } from './components/ProjectDetail';
@@ -15,159 +18,13 @@ import { Dashboard } from './components/Dashboard';
 import { useApp } from './context/AppContext';
 import { PinLock } from './components/PinLock';
 
-function AppShell() {
-  const { loading } = useApp();
+// ── Page transition wrapper ───────────────────────────────────────────────────
 
-  if (loading) {
-    return (
-      <>
-        <style>{`
-          @keyframes ls-grid-drift {
-            from { transform: translate(0, 0); }
-            to   { transform: translate(40px, 40px); }
-          }
-          @keyframes ls-scan {
-            0%   { top: -2px; opacity: 0; }
-            4%   { opacity: 1; }
-            96%  { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-          }
-          @keyframes ls-orb-pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.6; }
-            50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1;   }
-          }
-          @keyframes ls-logo-glow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(129,140,248,0), 0 0 30px 6px rgba(99,102,241,0.2); }
-            50%       { box-shadow: 0 0 0 8px rgba(129,140,248,0.07), 0 0 50px 12px rgba(99,102,241,0.35); }
-          }
-          @keyframes ls-enter {
-            from { opacity: 0; transform: translateY(12px) scale(0.97); }
-            to   { opacity: 1; transform: translateY(0)    scale(1); }
-          }
-          @keyframes ls-ring-spin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-          }
-          @keyframes ls-ring-spin-rev {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(-360deg); }
-          }
-          @keyframes ls-dot-blink {
-            0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-            40%            { opacity: 1;   transform: scale(1); }
-          }
-          .ls-content-enter { animation: ls-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        `}</style>
-        <div
-          style={{
-            position: 'fixed', inset: 0, zIndex: 999,
-            background: '#07070f',
-            overflow: 'hidden',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          {/* Scrolling grid */}
-          <div style={{
-            position: 'absolute', inset: '-40px',
-            backgroundImage: `
-              linear-gradient(rgba(99,102,241,0.45) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(99,102,241,0.45) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px',
-            opacity: 0.06,
-            animation: 'ls-grid-drift 5s linear infinite',
-          }} />
-
-          {/* Center radial glow */}
-          <div style={{
-            position: 'absolute',
-            width: 700, height: 700,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(99,102,241,0.14) 0%, rgba(99,102,241,0.04) 40%, transparent 70%)',
-            top: '50%', left: '50%',
-            animation: 'ls-orb-pulse 4s ease-in-out infinite',
-            pointerEvents: 'none',
-          }} />
-
-          {/* Scan line */}
-          <div style={{
-            position: 'absolute', left: 0, right: 0, height: 1,
-            background: 'linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.5) 30%, rgba(129,140,248,0.8) 50%, rgba(99,102,241,0.5) 70%, transparent 100%)',
-            animation: 'ls-scan 7s ease-in-out infinite',
-            pointerEvents: 'none',
-          }} />
-
-          {/* Corner accents */}
-          {[
-            { top: 16, left: 16, borderTop: '1px solid rgba(129,140,248,0.3)', borderLeft: '1px solid rgba(129,140,248,0.3)' },
-            { top: 16, right: 16, borderTop: '1px solid rgba(129,140,248,0.3)', borderRight: '1px solid rgba(129,140,248,0.3)' },
-            { bottom: 16, left: 16, borderBottom: '1px solid rgba(129,140,248,0.3)', borderLeft: '1px solid rgba(129,140,248,0.3)' },
-            { bottom: 16, right: 16, borderBottom: '1px solid rgba(129,140,248,0.3)', borderRight: '1px solid rgba(129,140,248,0.3)' },
-          ].map((style, i) => (
-            <div key={i} style={{ position: 'absolute', width: 20, height: 20, opacity: 0.5, ...style }} />
-          ))}
-
-          {/* Main content */}
-          <div className="ls-content-enter" style={{
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', gap: 28,
-            position: 'relative', zIndex: 1,
-          }}>
-            {/* Logo + spinner stack */}
-            <div style={{ position: 'relative', width: 72, height: 72, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {/* Outer ring */}
-              <svg style={{ position: 'absolute', inset: 0, animation: 'ls-ring-spin 2.4s linear infinite' }} width="72" height="72" viewBox="0 0 72 72" fill="none">
-                <circle cx="36" cy="36" r="34" stroke="rgba(99,102,241,0.15)" strokeWidth="1.5" />
-                <path d="M36 2 A34 34 0 0 1 70 36" stroke="rgba(129,140,248,0.9)" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              {/* Inner ring reverse */}
-              <svg style={{ position: 'absolute', inset: 8, animation: 'ls-ring-spin-rev 3.6s linear infinite' }} width="56" height="56" viewBox="0 0 56 56" fill="none">
-                <circle cx="28" cy="28" r="26" stroke="rgba(99,102,241,0.08)" strokeWidth="1" />
-                <path d="M28 2 A26 26 0 0 0 2 28" stroke="rgba(129,140,248,0.5)" strokeWidth="1" strokeLinecap="round" />
-              </svg>
-              {/* Logo icon */}
-              <img
-                src="/apple-touch-icon.png"
-                alt="JS"
-                style={{
-                  width: 40, height: 40,
-                  borderRadius: 10,
-                  animation: 'ls-logo-glow 3s ease-in-out infinite',
-                }}
-              />
-            </div>
-
-            {/* Label + dots */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#e2e2f0', letterSpacing: '-0.025em' }}>
-                Toolbox
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(226,226,240,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Loading
-                </span>
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {[0, 1, 2].map(i => (
-                    <div key={i} style={{
-                      width: 4, height: 4, borderRadius: '50%',
-                      background: 'rgba(129,140,248,0.8)',
-                      animation: `ls-dot-blink 1.2s ease-in-out ${i * 0.2}s infinite`,
-                    }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
+function AnimatedRoutes() {
+  const location = useLocation();
   return (
-    <div className="min-h-screen bg-[#f6f6fb] dark:bg-[#07070f] text-[#0a0a14] dark:text-[#e2e2f0]">
-      <Header />
-      <Routes>
+    <div key={location.pathname} className="animate-page-in">
+      <Routes location={location}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/projects" element={<ProjectList />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
@@ -178,6 +35,204 @@ function AppShell() {
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/scratchpad" element={<Scratchpad />} />
       </Routes>
+    </div>
+  );
+}
+
+// ── Loading screen ────────────────────────────────────────────────────────────
+
+function LoadingScreen({ exiting }: { exiting: boolean }) {
+  return (
+    <>
+      <style>{`
+        @keyframes ls-icon-rise {
+          from { opacity: 0; transform: scale(0.78) translateY(18px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes ls-rise {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ls-bar-fill {
+          0%   { width: 0%; }
+          55%  { width: 68%; }
+          80%  { width: 84%; }
+          100% { width: 94%; }
+        }
+        @keyframes ls-bar-shimmer {
+          0%   { left: -40%; }
+          100% { left: 110%; }
+        }
+        @keyframes ls-exit {
+          0%   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+          100% { opacity: 0; transform: scale(1.08) translateY(-18px); filter: blur(20px); }
+        }
+        @keyframes ls-bar-exit {
+          0%   { opacity: 1; width: 94%; }
+          60%  { opacity: 1; width: 100%; }
+          100% { opacity: 0; width: 100%; }
+        }
+
+        .ls-icon-rise { animation: ls-icon-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
+        .ls-rise-1    { animation: ls-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both; }
+        .ls-rise-2    { animation: ls-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both; }
+        .ls-exit      { animation: ls-exit 0.8s cubic-bezier(0.4, 0, 1, 1) forwards; }
+        .ls-bar-fill  { animation: ls-bar-fill 5s cubic-bezier(0.12, 0, 0.39, 0) 0.4s both; }
+        .ls-bar-exit  { animation: ls-bar-exit 0.8s ease-out forwards; }
+        .ls-shimmer   {
+          position: absolute; top: 0; height: 100%; width: 40%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+          animation: ls-bar-shimmer 1.8s ease-in-out 0.8s infinite;
+        }
+      `}</style>
+
+      <div
+        className={exiting ? 'ls-exit' : ''}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 999,
+          background: 'linear-gradient(160deg, #232325 0%, #2a0a10 55%, #9b1020 100%)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Center content */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {/* App icon */}
+          <div className="ls-icon-rise" style={{ marginBottom: 32 }}>
+            <img
+              src="/apple-touch-icon.png"
+              alt="Toolbox"
+              style={{
+                width: 84, height: 84,
+                borderRadius: 22,
+                boxShadow: [
+                  '0 28px 72px rgba(0,0,0,0.88)',
+                  '0 0 0 1px rgba(255,255,255,0.08)',
+                  '0 0 56px rgba(227,25,55,0.12)',
+                ].join(', '),
+                display: 'block',
+              }}
+            />
+          </div>
+
+          {/* App name — Tesla-style wide tracked caps */}
+          <div
+            className="ls-rise-1"
+            style={{
+              fontSize: 14,
+              fontWeight: 300,
+              color: 'rgba(255,255,255,0.88)',
+              letterSpacing: '0.42em',
+              textTransform: 'uppercase',
+              marginBottom: 12,
+            }}
+          >
+            Toolbox
+          </div>
+
+          {/* Tagline */}
+          <div
+            className="ls-rise-2"
+            style={{
+              fontSize: 11,
+              fontWeight: 400,
+              color: 'rgba(255,255,255,0.26)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            Loading
+          </div>
+        </div>
+
+        {/* Bottom progress bar — pinned to screen bottom */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0, left: 0, right: 0,
+          height: 2,
+          background: 'rgba(255,255,255,0.06)',
+          overflow: 'hidden',
+        }}>
+          <div
+            className={exiting ? 'ls-bar-exit' : 'ls-bar-fill'}
+            style={{
+              position: 'relative',
+              height: '100%',
+              background: 'rgba(255,255,255,0.55)',
+              overflow: 'hidden',
+            }}
+          >
+            {!exiting && <div className="ls-shimmer" />}
+          </div>
+        </div>
+
+        {/* Subtle bottom line decoration */}
+        <div style={{
+          position: 'absolute',
+          bottom: 2, left: 0, right: 0, height: 1,
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)',
+        }} />
+      </div>
+    </>
+  );
+}
+
+// ── App shell ─────────────────────────────────────────────────────────────────
+
+function AppShell() {
+  const { loading } = useApp();
+  const [showLoader, setShowLoader] = useState(() => loading);
+  const [loaderExiting, setLoaderExiting] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
+
+  const openCmd = useCallback(() => setCmdOpen(true), []);
+  const closeCmd = useCallback(() => setCmdOpen(false), []);
+
+  // Trigger loader exit animation when data finishes loading.
+  // Only depends on `loading` — omitting showLoader/loaderExiting intentionally so that
+  // setLoaderExiting(true) doesn't re-run the effect and cancel its own timeout.
+  useEffect(() => {
+    if (!loading) {
+      setLoaderExiting(true);
+      const t = setTimeout(() => setShowLoader(false), 820);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  // Global Cmd+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCmdOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  if (showLoader) {
+    return <LoadingScreen exiting={loaderExiting} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f5f5fa] dark:bg-[#08080f] text-[#0a0a14] dark:text-[#e2e2f0]">
+      {/* Sidebar (desktop fixed + mobile bottom nav) */}
+      <Sidebar onCmdK={openCmd} />
+
+      {/* Main content — offset by sidebar on desktop, padded for bottom nav on mobile */}
+      <div className="lg:pl-[220px] pb-[64px] lg:pb-0">
+        {/* Simplified header (mobile-only for back button + branding) */}
+        <Header onCmdK={openCmd} />
+
+        {/* Routed pages with enter animation */}
+        <AnimatedRoutes />
+      </div>
+
+      {/* Command palette overlay */}
+      <CommandPalette open={cmdOpen} onClose={closeCmd} />
+
       <Toast />
     </div>
   );

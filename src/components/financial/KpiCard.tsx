@@ -27,7 +27,7 @@ const highlightBorder: Record<string, string> = {
   positive: 'border-l-[3px] border-l-[#16a34a] dark:border-l-[#22c55e]',
   negative: 'border-l-[3px] border-l-red-500 dark:border-l-red-400',
   warning:  'border-l-[3px] border-l-amber-500 dark:border-l-amber-400',
-  neutral:  'border-l-[3px] border-l-[#6366f1] dark:border-l-[#818cf8]',
+  neutral:  'border-l-[3px] border-l-[#E31937] dark:border-l-[#FF4D5C]',
 };
 
 export function KpiCard({

@@ -18,7 +18,7 @@ const COLORS = [
 function getColor(key: string) { return COLORS.find(c => c.key === key) ?? COLORS[0]; }
 
 const STATUS_CONFIG: Record<GiftStatus, { label: string; cls: string }> = {
-  want:      { label: 'Want',      cls: 'text-[#6366f1] dark:text-[#818cf8] bg-[rgba(99,102,241,0.1)] dark:bg-[rgba(129,140,248,0.1)]' },
+  want:      { label: 'Want',      cls: 'text-[#E31937] dark:text-[#FF4D5C] bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)]' },
   purchased: { label: 'Purchased', cls: 'text-[#16a34a] dark:text-[#22c55e] bg-[rgba(22,163,74,0.1)] dark:bg-[rgba(34,197,94,0.1)]' },
   cancelled: { label: 'Cancelled', cls: 'text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.05)]' },
 };
@@ -74,7 +74,7 @@ function PersonTile({
       onClick={onSelect}
       className={`w-full text-left rounded-xl border p-4 transition-all duration-150 ${
         isSelected
-          ? 'border-[rgba(99,102,241,0.3)] dark:border-[rgba(129,140,248,0.25)] bg-[rgba(99,102,241,0.05)] dark:bg-[rgba(129,140,248,0.06)] shadow-[0_0_0_3px_rgba(99,102,241,0.12)]'
+          ? 'border-[rgba(227,25,55,0.3)] dark:border-[rgba(255,77,92,0.25)] bg-[rgba(227,25,55,0.05)] dark:bg-[rgba(255,77,92,0.06)] shadow-[0_0_0_3px_rgba(227,25,55,0.12)]'
           : 'border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] bg-[#ffffff] dark:bg-[#0f0f1a] hover:border-[rgba(0,0,20,0.13)] dark:hover:border-[rgba(255,255,255,0.1)]'
       }`}
     >
@@ -101,7 +101,7 @@ function PersonTile({
 
       <div className="flex flex-wrap gap-1 mb-3">
         {want.length > 0 && (
-          <span className="text-[11px] px-1.5 py-0.5 rounded-md font-medium text-[#6366f1] dark:text-[#818cf8] bg-[rgba(99,102,241,0.1)] dark:bg-[rgba(129,140,248,0.1)]">
+          <span className="text-[11px] px-1.5 py-0.5 rounded-md font-medium text-[#E31937] dark:text-[#FF4D5C] bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)]">
             {want.length} want
           </span>
         )}
@@ -200,7 +200,7 @@ function PersonModal({ recipient, defaultColorKey, onSave, onClose }: {
             {COLORS.map(c => (
               <button
                 key={c.key} type="button" onClick={() => setColor(c.key)}
-                className={`w-6 h-6 rounded-full ${c.bar} transition-transform ${color === c.key ? 'ring-2 ring-offset-2 ring-[#6366f1] dark:ring-[#818cf8] dark:ring-offset-[#0f0f1a] scale-110' : 'hover:scale-105 opacity-70 hover:opacity-100'}`}
+                className={`w-6 h-6 rounded-full ${c.bar} transition-transform ${color === c.key ? 'ring-2 ring-offset-2 ring-[#E31937] dark:ring-[#FF4D5C] dark:ring-offset-[#0f0f1a] scale-110' : 'hover:scale-105 opacity-70 hover:opacity-100'}`}
                 title={c.key}
               />
             ))}
@@ -414,8 +414,8 @@ export function Gifts() {
       {loading && (
         <div className="flex justify-center py-20">
           <div className="relative w-8 h-8">
-            <div className="absolute inset-0 rounded-full border border-[#6366f1]/20" />
-            <div className="absolute inset-0 rounded-full border-t border-[#6366f1] animate-spin" />
+            <div className="absolute inset-0 rounded-full border border-[#E31937]/20" />
+            <div className="absolute inset-0 rounded-full border-t border-[#E31937] animate-spin" />
           </div>
         </div>
       )}
@@ -423,8 +423,8 @@ export function Gifts() {
       {/* Empty state */}
       {!loading && recipients.length === 0 && (
         <div className="text-center py-20">
-          <div className="w-12 h-12 rounded-2xl bg-[rgba(99,102,241,0.1)] dark:bg-[rgba(129,140,248,0.1)] flex items-center justify-center mx-auto mb-4">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#6366f1] dark:text-[#818cf8]">
+          <div className="w-12 h-12 rounded-2xl bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)] flex items-center justify-center mx-auto mb-4">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#E31937] dark:text-[#FF4D5C]">
               <polyline points="20 12 20 22 4 22 4 12"/>
               <rect x="2" y="7" width="20" height="5" rx="1"/>
               <line x1="12" y1="22" x2="12" y2="7"/>
@@ -490,7 +490,7 @@ export function Gifts() {
                   <span className="tabular-nums">{formatCurrency(personSpent)} spent</span>
                 )}
                 {personWant > 0 && (
-                  <span className="tabular-nums text-[#6366f1] dark:text-[#818cf8]">{formatCurrency(personWant)} in wishlist</span>
+                  <span className="tabular-nums text-[#E31937] dark:text-[#FF4D5C]">{formatCurrency(personWant)} in wishlist</span>
                 )}
               </div>
             </div>
@@ -541,7 +541,7 @@ export function Gifts() {
                   onClick={() => setStatusFilter(s)}
                   className={`text-[11.5px] font-medium px-3 py-1 rounded-[7px] transition-colors ${
                     statusFilter === s
-                      ? 'bg-[rgba(99,102,241,0.1)] dark:bg-[rgba(129,140,248,0.1)] text-[#6366f1] dark:text-[#818cf8]'
+                      ? 'bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)] text-[#E31937] dark:text-[#FF4D5C]'
                       : 'text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.38)] hover:bg-[rgba(0,0,20,0.04)] dark:hover:bg-[rgba(255,255,255,0.05)]'
                   }`}
                 >
@@ -593,7 +593,7 @@ export function Gifts() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
-                      className="text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors shrink-0"
+                      className="text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors shrink-0"
                       title="Open link"
                     >
                       <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -606,7 +606,7 @@ export function Gifts() {
                   <div className="flex gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => setGiftModal({ open: true, editing: gift })}
-                      className="text-[11.5px] font-medium px-2 py-0.5 rounded-md text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] hover:text-[#6366f1] dark:hover:text-[#818cf8] hover:bg-[rgba(99,102,241,0.08)] transition-colors"
+                      className="text-[11.5px] font-medium px-2 py-0.5 rounded-md text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] hover:bg-[rgba(227,25,55,0.08)] transition-colors"
                     >
                       Edit
                     </button>

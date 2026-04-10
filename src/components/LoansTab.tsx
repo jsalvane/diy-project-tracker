@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { Loan, LoanPayment } from '../lib/types';
 import { formatCurrency, formatDate, todayStr } from '../lib/utils';
 
@@ -72,7 +72,7 @@ function PencilIcon() {
   );
 }
 
-const inputCls = 'w-full rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-[#ffffff] dark:bg-[#161626] px-3 py-2 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none focus:border-[#6366f1] transition-colors';
+const inputCls = 'w-full rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-[#ffffff] dark:bg-[#161626] px-3 py-2 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none focus:border-[#E31937] transition-colors';
 const labelCls = 'block text-xs font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-1';
 
 function LoanModal({
@@ -126,7 +126,7 @@ function LoanModal({
             <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
               Cancel
             </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] text-white transition-colors">
+            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
               {initial ? 'Save Changes' : 'Add Loan'}
             </button>
           </div>
@@ -185,7 +185,7 @@ function PaymentModal({
             <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
               Cancel
             </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] text-white transition-colors">
+            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
               Log Payment
             </button>
           </div>
@@ -195,9 +195,18 @@ function PaymentModal({
   );
 }
 
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-90' : ''}`}>
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
+
 export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan, addLoanPayment, deleteLoanPayment }: Props) {
   const [loanModal, setLoanModal] = useState<null | 'add' | Loan>(null);
   const [paymentModal, setPaymentModal] = useState(false);
+  const [expandedLoans, setExpandedLoans] = useState<Set<string>>(new Set());
 
   const today = todayStr();
   const totalBalance = loans.reduce((s, l) =>
@@ -247,6 +256,15 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
     setPaymentModal(false);
   }
 
+  function toggleExpand(loanId: string) {
+    setExpandedLoans(prev => {
+      const next = new Set(prev);
+      if (next.has(loanId)) next.delete(loanId);
+      else next.add(loanId);
+      return next;
+    });
+  }
+
   const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]';
   const tdCls = 'px-4 py-3 text-sm text-gray-800 dark:text-gray-200';
 
@@ -276,19 +294,29 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
       {/* Loans table header */}
       <div className="flex items-center justify-between mb-2 sm:mb-3">
         <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0]">Loans</h2>
-        <button
-          onClick={() => setLoanModal('add')}
-          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] text-white transition-colors"
-        >
-          <span className="text-base leading-none">+</span> Add Loan
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setPaymentModal(true)}
+            disabled={loans.length === 0}
+            className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg border border-[#E31937] dark:border-[#FF4D5C] text-[#E31937] dark:text-[#FF4D5C] hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <span className="text-base leading-none">+</span> Log Payment
+          </button>
+          <button
+            onClick={() => setLoanModal('add')}
+            className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors"
+          >
+            <span className="text-base leading-none">+</span> Add Loan
+          </button>
+        </div>
       </div>
 
       {/* Loans table */}
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto mb-5 sm:mb-8">
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto">
         <table className="w-full text-sm min-w-[520px]">
           <thead>
             <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
+              <th className={thCls} style={{ width: '2rem' }} />
               <th className={thCls}>Loan</th>
               <th className={thCls}>Owner</th>
               <th className={`${thCls} text-right`}>Balance</th>
@@ -301,7 +329,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
           <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
             {loans.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                <td colSpan={8} className="px-4 py-8 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
                   No loans yet
                 </td>
               </tr>
@@ -311,115 +339,92 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
               const avg = avgRecentPayment(loan.id);
               const months = monthsToPayoff(currentBalance, loan.interestRate, avg);
               const payoffLabel = months !== null ? addMonthsLabel(months) : avg > 0 ? 'Interest > payment' : '—';
-              const paymentCount = loanPayments.filter(p => p.loanId === loan.id).length;
+              const payments = loanPayments.filter(p => p.loanId === loan.id);
+              const isExpanded = expandedLoans.has(loan.id);
 
               return (
-                <tr key={loan.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
-                  <td className={`${tdCls} font-medium`}>{loan.name}</td>
-                  <td className={tdCls}>{loan.owner || '—'}</td>
-                  <td className={`${tdCls} text-right font-semibold`}>{formatCurrency(currentBalance)}</td>
-                  <td className={`${tdCls} text-right`}>{Math.round(loan.interestRate)}%</td>
-                  <td className={`${tdCls} text-right`}>
-                    {avg > 0 ? (
-                      <span title={`Based on last ${Math.min(paymentCount, 3)} payment${paymentCount !== 1 ? 's' : ''}`}>
-                        {formatCurrency(avg)}
+                <React.Fragment key={loan.id}>
+                  <tr className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
+                    <td className="px-2 py-3 text-center">
+                      {payments.length > 0 && (
+                        <button
+                          onClick={() => toggleExpand(loan.id)}
+                          className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
+                        >
+                          <ChevronIcon open={isExpanded} />
+                        </button>
+                      )}
+                    </td>
+                    <td className={`${tdCls} font-medium`}>
+                      {loan.name}
+                      {payments.length > 0 && (
+                        <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full bg-[rgba(227,25,55,0.1)] text-[#E31937] dark:text-[#FF4D5C] font-medium">
+                          {payments.length}
+                        </span>
+                      )}
+                    </td>
+                    <td className={tdCls}>{loan.owner || '—'}</td>
+                    <td className={`${tdCls} text-right font-semibold`}>{formatCurrency(currentBalance)}</td>
+                    <td className={`${tdCls} text-right`}>{Math.round(loan.interestRate)}%</td>
+                    <td className={`${tdCls} text-right`}>
+                      {avg > 0 ? (
+                        <span title={`Based on last ${Math.min(payments.length, 3)} payment${payments.length !== 1 ? 's' : ''}`}>
+                          {formatCurrency(avg)}
+                        </span>
+                      ) : (
+                        <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] text-xs">No history</span>
+                      )}
+                    </td>
+                    <td className={`${tdCls} text-right`}>
+                      <span className={months !== null ? 'text-green-600 dark:text-green-400 font-medium' : 'text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]'}>
+                        {payoffLabel}
                       </span>
-                    ) : (
-                      <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] text-xs">No history</span>
-                    )}
-                  </td>
-                  <td className={`${tdCls} text-right`}>
-                    <span className={months !== null ? 'text-green-600 dark:text-green-400 font-medium' : 'text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]'}>
-                      {payoffLabel}
-                    </span>
-                  </td>
-                  <td className="px-2 py-3">
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => setLoanModal(loan)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors">
-                        <PencilIcon />
-                      </button>
-                      <button onClick={() => deleteLoan(loan.id)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors">
-                        <TrashIcon />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Payment History */}
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
-        <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0]">Payment History</h2>
-        <button
-          onClick={() => setPaymentModal(true)}
-          disabled={loans.length === 0}
-          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg border border-[#6366f1] dark:border-[#818cf8] text-[#6366f1] dark:text-[#818cf8] hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <span className="text-base leading-none">+</span> Log Payment
-        </button>
-      </div>
-
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto">
-        <table className="w-full text-sm min-w-[320px]">
-          <thead>
-            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
-              <th className={thCls}>Date</th>
-              <th className={thCls}>Loan</th>
-              <th className={`${thCls} text-right`}>Amount</th>
-              <th className="w-8 px-2 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
-            {loanPayments.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
-                  No payments logged yet
-                </td>
-              </tr>
-            )}
-            {loanPayments.map(payment => {
-              const loan = loans.find(l => l.id === payment.loanId);
-              return (
-                <tr key={payment.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
-                  <td className={tdCls}>{formatDate(payment.paymentDate)}</td>
-                  <td className={tdCls}>
-                    {loan ? (
-                      <span>
-                        {loan.name}
-                        {loan.owner && <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] ml-1">({loan.owner})</span>}
-                      </span>
-                    ) : (
-                      <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">Unknown</span>
-                    )}
-                  </td>
-                  <td className={`${tdCls} text-right font-semibold text-green-600 dark:text-green-400`}>
-                    {formatCurrency(payment.amount)}
-                  </td>
-                  <td className="px-2 py-3 text-center">
-                    <button
-                      onClick={() => deleteLoanPayment(payment.id)}
-                      className="opacity-0 group-hover:opacity-100 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-all"
-                    >
-                      <TrashIcon />
-                    </button>
-                  </td>
-                </tr>
+                    </td>
+                    <td className="px-2 py-3">
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => setLoanModal(loan)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors">
+                          <PencilIcon />
+                        </button>
+                        <button onClick={() => deleteLoan(loan.id)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors">
+                          <TrashIcon />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {isExpanded && payments.map(payment => (
+                    <tr key={payment.id} className="group bg-[rgba(227,25,55,0.03)] dark:bg-[rgba(227,25,55,0.05)] hover:bg-[rgba(227,25,55,0.06)] dark:hover:bg-[rgba(227,25,55,0.08)]">
+                      <td className="px-2 py-2" />
+                      <td colSpan={2} className="px-4 py-2 text-xs text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] pl-6">
+                        <span className="inline-block w-3 h-px bg-[rgba(227,25,55,0.3)] mr-2 align-middle" />
+                        {formatDate(payment.paymentDate)}
+                      </td>
+                      <td colSpan={4} className="px-4 py-2 text-right text-xs font-semibold text-green-600 dark:text-green-400">
+                        {formatCurrency(payment.amount)}
+                      </td>
+                      <td className="px-2 py-2 text-center">
+                        <button
+                          onClick={() => deleteLoanPayment(payment.id)}
+                          className="opacity-0 group-hover:opacity-100 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-all"
+                        >
+                          <TrashIcon />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
               );
             })}
           </tbody>
           {loanPayments.length > 0 && (
             <tfoot>
               <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] font-semibold text-sm">
-                <td colSpan={2} className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+                <td colSpan={3} className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
                   Total ({loanPayments.length} payment{loanPayments.length !== 1 ? 's' : ''})
                 </td>
                 <td className="px-4 py-3 text-right text-green-600 dark:text-green-400">
                   {formatCurrency(loanPayments.reduce((s, p) => s + p.amount, 0))}
                 </td>
-                <td />
+                <td colSpan={4} />
               </tr>
             </tfoot>
           )}

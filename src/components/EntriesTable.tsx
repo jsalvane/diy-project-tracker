@@ -140,24 +140,21 @@ export function EntriesTable({ entries, projectId }: Props) {
 
   return (
     <div>
-      <div className="overflow-x-auto border border-gray-200 dark:border-zinc-800 rounded-xl">
+      <div className="overflow-x-auto border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl">
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="bg-gray-50 dark:bg-zinc-900 sticky top-0 z-10">
+            <tr className="bg-[rgba(0,0,20,0.025)] dark:bg-[rgba(255,255,255,0.025)] sticky top-0 z-10">
               {cols.map((col) => (
                 <th
                   key={col.key}
-                  className={`text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest px-3 py-3 border-b border-r border-gray-200 dark:border-zinc-800 ${col.width}`}
+                  className={`text-[10px] font-semibold text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] uppercase tracking-[0.07em] px-3 py-3 border-b border-r border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)] ${col.width}`}
                 >
                   {col.label}
                 </th>
               ))}
-                {/* Pending column */}
-              <th className="w-10 px-2 py-3 border-b border-r border-gray-200 dark:border-zinc-800 text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest" title="Pending charge" />
-              {/* Receipt column */}
-              <th className="w-8 px-2 py-3 border-b border-r border-gray-200 dark:border-zinc-800" title="Receipt" />
-              {/* Delete column */}
-              <th className="w-8 px-2 py-3 border-b border-gray-200 dark:border-zinc-800" />
+              <th className="w-10 px-2 py-3 border-b border-r border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)] text-[10px] font-semibold text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] uppercase tracking-[0.07em]" title="Pending charge" />
+              <th className="w-8 px-2 py-3 border-b border-r border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]" title="Receipt" />
+              <th className="w-8 px-2 py-3 border-b border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]" />
             </tr>
           </thead>
           <tbody>
@@ -169,8 +166,8 @@ export function EntriesTable({ entries, projectId }: Props) {
                   key={entry.id}
                   className={`transition-colors ${
                     isPending
-                      ? 'bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30'
-                      : 'hover:bg-orange-50/40 dark:hover:bg-orange-950/10'
+                      ? 'bg-amber-50/50 dark:bg-amber-950/15 hover:bg-amber-50 dark:hover:bg-amber-950/25'
+                      : 'hover:bg-[rgba(227,25,55,0.03)] dark:hover:bg-[rgba(255,77,92,0.04)]'
                   }`}
                 >
                   {cols.map((col, colIdx) => (
@@ -186,42 +183,48 @@ export function EntriesTable({ entries, projectId }: Props) {
                     />
                   ))}
                   {/* Pending toggle */}
-                  <td className="px-1 py-2 border-b border-gray-100 dark:border-zinc-800 text-center">
-                    <button
-                      onClick={() => handleTogglePending(entry)}
-                      className={`p-0.5 transition-colors rounded ${
-                        isPending
-                          ? 'text-amber-500 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300'
-                          : 'text-gray-200 dark:text-zinc-700 hover:text-amber-400 dark:hover:text-amber-600'
-                      }`}
-                      title={isPending ? 'Mark as purchased' : 'Mark as pending (future charge)'}
-                    >
-                      <ClockIcon className="w-4 h-4" />
-                    </button>
+                  <td className="px-1 py-2 border-b border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)] text-center">
+                    <div className={isPending ? '' : 'table-row-actions'}>
+                      <button
+                        onClick={() => handleTogglePending(entry)}
+                        className={`p-0.5 transition-colors rounded ${
+                          isPending
+                            ? 'text-amber-500 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300'
+                            : 'text-[rgba(10,10,20,0.25)] dark:text-[rgba(226,226,240,0.2)] hover:text-amber-400 dark:hover:text-amber-500'
+                        }`}
+                        title={isPending ? 'Mark as purchased' : 'Mark as pending (future charge)'}
+                      >
+                        <ClockIcon className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                   {/* Receipt button */}
-                  <td className="px-1 py-2 border-b border-gray-100 dark:border-zinc-800 text-center">
-                    <button
-                      onClick={() => setReceiptEntryId(entry.id)}
-                      className={`p-0.5 transition-colors ${
-                        hasReceipt
-                          ? 'text-orange-400 dark:text-orange-500 hover:text-orange-600 dark:hover:text-orange-300'
-                          : 'text-gray-200 dark:text-zinc-700 hover:text-gray-400 dark:hover:text-zinc-500'
-                      }`}
-                      title={hasReceipt ? 'View receipt' : 'Add receipt'}
-                    >
-                      <CameraIcon className="w-4 h-4" />
-                    </button>
+                  <td className="px-1 py-2 border-b border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)] text-center">
+                    <div className={hasReceipt ? '' : 'table-row-actions'}>
+                      <button
+                        onClick={() => setReceiptEntryId(entry.id)}
+                        className={`p-0.5 transition-colors ${
+                          hasReceipt
+                            ? 'text-[#E31937] dark:text-[#FF4D5C] hover:text-[#C41230] dark:hover:text-[#a5b4fc]'
+                            : 'text-[rgba(10,10,20,0.25)] dark:text-[rgba(226,226,240,0.2)] hover:text-[rgba(10,10,20,0.5)] dark:hover:text-[rgba(226,226,240,0.5)]'
+                        }`}
+                        title={hasReceipt ? 'View receipt' : 'Add receipt'}
+                      >
+                        <CameraIcon className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                   {/* Delete button */}
-                  <td className="px-1 py-2 border-b border-gray-100 dark:border-zinc-800 text-center">
-                    <button
-                      onClick={() => handleDeleteEntry(entry.id)}
-                      className="text-sm text-gray-300 dark:text-zinc-700 hover:text-red-500 dark:hover:text-red-400 p-0.5 transition-colors"
-                      title="Delete entry"
-                    >
-                      ✕
-                    </button>
+                  <td className="px-1 py-2 border-b border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)] text-center">
+                    <div className="table-row-actions">
+                      <button
+                        onClick={() => handleDeleteEntry(entry.id)}
+                        className="text-sm text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.2)] hover:text-red-500 dark:hover:text-red-400 p-0.5 transition-colors"
+                        title="Delete entry"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
@@ -230,10 +233,10 @@ export function EntriesTable({ entries, projectId }: Props) {
               <tr>
                 <td
                   colSpan={cols.length + 3}
-                  className="text-center text-sm text-gray-400 dark:text-zinc-600 py-10"
+                  className="text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] py-10"
                 >
                   No entries yet. Add one below or press{' '}
-                  <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 rounded text-xs font-mono">N</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.07)] rounded text-xs font-mono">N</kbd>
                 </td>
               </tr>
             )}
@@ -243,19 +246,19 @@ export function EntriesTable({ entries, projectId }: Props) {
       <div className="mt-3 flex items-center gap-3 flex-wrap">
         <button
           onClick={() => handleAddRow(false)}
-          className="text-sm font-medium px-3 py-1.5 rounded-lg border border-dashed border-gray-300 dark:border-zinc-700 text-gray-500 dark:text-zinc-500 hover:border-orange-400 hover:text-orange-500 dark:hover:border-orange-700 dark:hover:text-orange-400 transition-colors"
+          className="text-[13px] font-medium px-3 py-1.5 rounded-lg border border-dashed border-[rgba(0,0,20,0.12)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:border-[#E31937] hover:text-[#E31937] dark:hover:border-[#FF4D5C] dark:hover:text-[#FF4D5C] transition-colors"
         >
           + Add Entry
         </button>
         <button
           onClick={() => handleAddRow(true)}
-          className="text-sm font-medium px-3 py-1.5 rounded-lg border border-dashed border-amber-300 dark:border-amber-800 text-amber-600 dark:text-amber-500 hover:border-amber-400 hover:text-amber-700 dark:hover:border-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1.5"
+          className="text-[13px] font-medium px-3 py-1.5 rounded-lg border border-dashed border-amber-300 dark:border-amber-800 text-amber-600 dark:text-amber-500 hover:border-amber-400 hover:text-amber-700 dark:hover:border-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1.5"
         >
           <ClockIcon className="w-3.5 h-3.5" />
           Add Pending
         </button>
-        <span className="text-xs text-gray-400 dark:text-zinc-600">
-          Press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 rounded font-mono">N</kbd> to add a row
+        <span className="text-[11px] text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">
+          Press <kbd className="px-1.5 py-0.5 bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.07)] rounded font-mono">N</kbd> to add a row
         </span>
       </div>
 

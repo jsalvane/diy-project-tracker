@@ -35,7 +35,7 @@ export function TaskList({ projectId }: Props) {
   return (
     <div>
       {totalCount > 0 && (
-        <p className="text-xs text-gray-400 dark:text-zinc-600 mb-3">
+        <p className="text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-3">
           {openCount === 0
             ? `All ${totalCount} tasks complete`
             : `${openCount} of ${totalCount} remaining`}
@@ -43,30 +43,30 @@ export function TaskList({ projectId }: Props) {
       )}
 
       {tasks.length > 0 && (
-        <ul className="border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden divide-y divide-gray-100 dark:divide-zinc-800/80 mb-3">
+        <ul className="border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl overflow-hidden divide-y divide-[rgba(0,0,20,0.04)] dark:divide-[rgba(255,255,255,0.04)] mb-3">
           {tasks.map((task) => (
             <li
               key={task.id}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50/40 dark:hover:bg-orange-950/10 transition-colors group"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-[rgba(227,25,55,0.03)] dark:hover:bg-[rgba(255,77,92,0.04)] transition-colors group"
             >
               <input
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => toggleTask(task)}
-                className="accent-orange-500 w-4 h-4 shrink-0 cursor-pointer rounded"
+                className="accent-[#E31937] w-4 h-4 shrink-0 cursor-pointer rounded"
               />
               <span
-                className={`flex-1 text-sm leading-snug ${
+                className={`flex-1 text-[13px] leading-snug ${
                   task.completed
-                    ? 'line-through text-gray-400 dark:text-zinc-600'
-                    : 'text-gray-800 dark:text-zinc-200'
+                    ? 'line-through text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'
+                    : 'text-[#0a0a14] dark:text-[#e2e2f0]'
                 }`}
               >
                 {task.text}
               </span>
               <button
                 onClick={() => deleteTask(task.id)}
-                className="text-sm text-gray-200 dark:text-zinc-800 group-hover:text-gray-400 dark:group-hover:text-zinc-600 hover:!text-red-500 dark:hover:!text-red-400 p-0.5 transition-colors"
+                className="text-sm text-[rgba(10,10,20,0.15)] dark:text-[rgba(226,226,240,0.12)] group-hover:text-[rgba(10,10,20,0.3)] dark:group-hover:text-[rgba(226,226,240,0.25)] hover:!text-red-500 dark:hover:!text-red-400 p-0.5 transition-colors"
                 title="Delete task"
               >
                 ✕
@@ -77,7 +77,7 @@ export function TaskList({ projectId }: Props) {
       )}
 
       {tasks.length === 0 && (
-        <div className="border border-gray-200 dark:border-zinc-800 rounded-xl text-center text-sm text-gray-400 dark:text-zinc-600 py-10 mb-3">
+        <div className="border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] py-10 mb-3">
           No tasks yet. Add one below.
         </div>
       )}
@@ -90,7 +90,7 @@ export function TaskList({ projectId }: Props) {
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Add a task and press Enter…"
-          className="flex-1 text-sm px-3 py-2 rounded-lg border border-dashed border-gray-300 dark:border-zinc-700 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none focus:border-orange-400 dark:focus:border-orange-600 transition-colors"
+          className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-dashed border-[rgba(0,0,20,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-transparent text-[#0a0a14] dark:text-[#e2e2f0] placeholder-[rgba(10,10,20,0.3)] dark:placeholder-[rgba(226,226,240,0.25)] focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C] transition-colors"
         />
       </div>
     </div>

@@ -12,14 +12,14 @@ export const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
 
 // dot color + text color pairs used by StatusBadge
 export const STATUS_COLORS: Record<ProjectStatus, string> = {
-  planned:  'text-[#6366f1] dark:text-[#818cf8]',
+  planned:  'text-[#E31937] dark:text-[#FF4D5C]',
   active:   'text-[#16a34a] dark:text-[#22c55e]',
   complete: 'text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]',
   on_hold:  'text-[#d97706] dark:text-[#f59e0b]',
 };
 
 export const STATUS_DOT: Record<ProjectStatus, string> = {
-  planned:  'bg-[#6366f1] dark:bg-[#818cf8]',
+  planned:  'bg-[#E31937] dark:bg-[#FF4D5C]',
   active:   'bg-[#16a34a] dark:bg-[#22c55e]',
   complete: 'bg-[rgba(10,10,20,0.25)] dark:bg-[rgba(226,226,240,0.2)]',
   on_hold:  'bg-[#d97706] dark:bg-[#f59e0b]',

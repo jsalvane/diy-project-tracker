@@ -42,7 +42,7 @@ export function CompletionModal({ task, onSave, onClose }: Props) {
                 value={usageStr}
                 onChange={e => setUsageStr(e.target.value)}
                 placeholder={`e.g. ${task.currentUsage + task.recurrenceValue}`}
-                className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#6366f1] dark:focus:border-[#818cf8]"
+                className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C]"
               />
             </div>
           )}
@@ -56,7 +56,7 @@ export function CompletionModal({ task, onSave, onClose }: Props) {
               onChange={e => setNotes(e.target.value)}
               rows={3}
               placeholder="Any notes about this completion..."
-              className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm resize-none focus:outline-none focus:border-[#6366f1] dark:focus:border-[#818cf8]"
+              className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm resize-none focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C]"
             />
           </div>
 
@@ -69,7 +69,7 @@ export function CompletionModal({ task, onSave, onClose }: Props) {
               value={costStr}
               onChange={e => setCostStr(e.target.value)}
               placeholder="0.00"
-              className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#6366f1] dark:focus:border-[#818cf8]"
+              className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C]"
             />
           </div>
         </div>

@@ -5,6 +5,18 @@ interface Props {
   entries: Entry[];
 }
 
+// Palette: minimal, single-family color ramp
+const COLORS = [
+  '#FF4D5C', // indigo-400
+  '#a78bfa', // violet-400
+  '#60a5fa', // blue-400
+  '#34d399', // emerald-400
+  '#fb923c', // orange-400
+  '#f472b6', // pink-400
+  '#4ade80', // green-400
+  '#facc15', // yellow-400
+];
+
 export function CategoryChart({ entries }: Props) {
   const map = new Map<string, number>();
   for (const e of entries) {
@@ -20,63 +32,63 @@ export function CategoryChart({ entries }: Props) {
 
   if (items.length === 0) {
     return (
-      <div className="border border-gray-200 dark:border-zinc-800 rounded-xl text-center text-sm text-gray-400 dark:text-zinc-600 py-10">
-        No expense data to chart.
+      <div className="rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] py-12 bg-white dark:bg-[#111118]">
+        No expense data yet.
       </div>
     );
   }
 
-  // Color palette cycling through orange shades + warm neutrals
-  const colors = [
-    'bg-orange-500',
-    'bg-orange-400',
-    'bg-amber-500',
-    'bg-orange-300',
-    'bg-amber-400',
-    'bg-yellow-500',
-    'bg-orange-200',
-    'bg-amber-300',
-  ];
-
   return (
-    <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-      <div className="space-y-4">
+    <div
+      className="rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-white dark:bg-[#111118] overflow-hidden"
+      style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}
+    >
+      {/* Header */}
+      <div className="px-5 pt-5 pb-4 flex items-center justify-between">
+        <span className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)]">
+          By Category
+        </span>
+        <span className="text-[13px] font-bold tracking-[-0.02em] text-[#0a0a14] dark:text-[#e2e2f0]">
+          {formatCurrency(grandTotal)}
+        </span>
+      </div>
+
+      {/* Bars */}
+      <div className="px-5 pb-5 space-y-3.5">
         {items.map(({ cat, total }, i) => {
           const pct = grandTotal > 0 ? (total / grandTotal) * 100 : 0;
-          const color = colors[i % colors.length];
+          const color = COLORS[i % COLORS.length];
           return (
             <div key={cat}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm text-gray-700 dark:text-zinc-300 font-medium truncate pr-4">
-                  {cat}
-                </span>
-                <div className="shrink-0 text-right">
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                  <span className="text-[13px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
+                    {cat}
+                  </span>
+                </div>
+                <div className="shrink-0 flex items-baseline gap-1.5 ml-3">
+                  <span className="text-[13px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">
                     {formatCurrency(total)}
                   </span>
-                  <span className="text-xs text-gray-400 dark:text-zinc-600 ml-1.5">
+                  <span className="text-[10px] font-medium text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
                     {pct.toFixed(0)}%
                   </span>
                 </div>
               </div>
-              <div className="h-2.5 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+              {/* Bar track */}
+              <div className="h-[6px] rounded-full bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.06)] overflow-hidden">
                 <div
-                  className={`h-full ${color} rounded-full transition-all duration-500`}
-                  style={{ width: `${pct}%` }}
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: `${pct}%`,
+                    background: `linear-gradient(90deg, ${color}cc 0%, ${color} 100%)`,
+                  }}
                 />
               </div>
             </div>
           );
         })}
-      </div>
-
-      <div className="mt-5 pt-4 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between">
-        <span className="text-xs font-medium text-gray-400 dark:text-zinc-500 uppercase tracking-widest">
-          Total
-        </span>
-        <span className="text-base font-bold text-gray-900 dark:text-white">
-          {formatCurrency(grandTotal)}
-        </span>
       </div>
     </div>
   );

@@ -96,7 +96,7 @@ export function ProjectList() {
         <EmptyState message="No projects yet. Create one to get started.">
           <button
             onClick={() => setShowForm(true)}
-            className="text-[13px] font-medium text-[#6366f1] dark:text-[#818cf8] hover:underline"
+            className="text-[13px] font-medium text-[#E31937] dark:text-[#FF4D5C] hover:underline"
           >
             Create your first project
           </button>

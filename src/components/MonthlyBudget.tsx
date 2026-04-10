@@ -43,7 +43,7 @@ const STATUS_CYCLE: BudgetItem['status'][] = ['auto', 'manual'];
 
 const STATUS_STYLES: Record<BudgetItem['status'], string> = {
   auto: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-  manual: 'bg-[rgba(99,102,241,0.1)] text-[#6366f1] dark:bg-[rgba(129,140,248,0.1)] dark:text-[#818cf8]',
+  manual: 'bg-[rgba(227,25,55,0.1)] text-[#E31937] dark:bg-[rgba(255,77,92,0.1)] dark:text-[#FF4D5C]',
 };
 
 function TrashIcon() {
@@ -88,11 +88,11 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
             onFocus={e => e.target.select()}
             onBlur={commit}
             onKeyDown={e => e.key === 'Enter' && commit()}
-            className="w-full bg-[#ffffff] dark:bg-[#161626] border border-[#6366f1] dark:border-[#818cf8] rounded px-2 py-0.5 text-lg font-bold text-[#0a0a14] dark:text-[#e2e2f0] outline-none"
+            className="w-full bg-[#ffffff] dark:bg-[#161626] border border-[#E31937] dark:border-[#FF4D5C] rounded px-2 py-0.5 text-lg font-bold text-[#0a0a14] dark:text-[#e2e2f0] outline-none"
           />
         ) : (
           <div
-            className="text-xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] cursor-pointer hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
+            className="text-xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] cursor-pointer hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
             onClick={startEdit}
             title="Click to edit income"
           >
@@ -182,7 +182,7 @@ function Section({
   }
 
   const inputCls =
-    'bg-[#ffffff] dark:bg-[#161626] border border-[#6366f1] dark:border-[#818cf8] rounded px-2 py-0.5 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none';
+    'bg-[#ffffff] dark:bg-[#161626] border border-[#E31937] dark:border-[#FF4D5C] rounded px-2 py-0.5 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none';
 
   return (
     <div>
@@ -225,7 +225,7 @@ function Section({
                     />
                   ) : (
                     <span
-                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
+                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
                       onClick={() => startEdit(item, 'name')}
                     >
                       {item.name}
@@ -250,7 +250,7 @@ function Section({
                     />
                   ) : (
                     <span
-                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
+                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
                       onClick={() => startEdit(item, 'payment')}
                     >
                       {formatCurrency(item.payment)}
@@ -304,7 +304,7 @@ function Section({
                         />
                       ) : (
                         <span
-                          className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
+                          className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
                           onClick={() => startCcEdit(card)}
                         >
                           {formatCurrency(card.balance)}
@@ -333,7 +333,7 @@ function Section({
               <td className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">Total</td>
               <td className="px-4 py-3 text-right text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(totalBill)}</td>
               <td colSpan={2} className="px-4 py-3 text-right">
-                <span className={remaining > 0.005 ? 'text-[#6366f1] dark:text-[#818cf8]' : 'text-green-500'}>
+                <span className={remaining > 0.005 ? 'text-[#E31937] dark:text-[#FF4D5C]' : 'text-green-500'}>
                   {remaining > 0.005 ? `${formatCurrency(remaining)} left` : 'Fully paid'}
                 </span>
               </td>
@@ -344,7 +344,7 @@ function Section({
 
       <button
         onClick={onAdd}
-        className="mt-3 flex items-center gap-1.5 text-sm font-medium text-[#6366f1] dark:text-[#818cf8] hover:text-[#4f46e5] transition-colors"
+        className="mt-3 flex items-center gap-1.5 text-sm font-medium text-[#E31937] dark:text-[#FF4D5C] hover:text-[#C41230] transition-colors"
       >
         <span className="text-lg leading-none">+</span> Add bill
       </button>

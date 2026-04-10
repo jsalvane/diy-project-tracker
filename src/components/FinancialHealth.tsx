@@ -78,8 +78,8 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
       <div className="flex items-center justify-center py-24">
         <div className="flex flex-col items-center gap-4">
           <div className="relative w-8 h-8">
-            <div className="absolute inset-0 rounded-full border border-[#6366f1]/20" />
-            <div className="absolute inset-0 rounded-full border-t border-[#6366f1] animate-spin" />
+            <div className="absolute inset-0 rounded-full border border-[#E31937]/20" />
+            <div className="absolute inset-0 rounded-full border-t border-[#E31937] animate-spin" />
           </div>
           <span className="text-[12px] font-medium tracking-[0.06em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)]">
             Loading
@@ -158,13 +158,13 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
                     onClick={() => { setActiveQuarter(q.id); setMode('view'); }}
                     className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-[rgba(99,102,241,0.08)] dark:bg-[rgba(129,140,248,0.08)] border border-[rgba(99,102,241,0.2)] dark:border-[rgba(129,140,248,0.15)]'
+                        ? 'bg-[rgba(227,25,55,0.08)] dark:bg-[rgba(255,77,92,0.08)] border border-[rgba(227,25,55,0.2)] dark:border-[rgba(255,77,92,0.15)]'
                         : 'hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.04)] border border-transparent'
                     }`}
                   >
                     <p className={`text-[13px] font-semibold leading-tight tracking-[-0.01em] ${
                       isActive
-                        ? 'text-[#6366f1] dark:text-[#818cf8]'
+                        ? 'text-[#E31937] dark:text-[#FF4D5C]'
                         : 'text-[#0a0a14] dark:text-[#e2e2f0]'
                     }`}>
                       {q.quarterLabel}
@@ -183,8 +183,8 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
         <main className="flex-1 min-w-0">
           {!activeQuarter ? (
             <div className="text-center py-20 border border-dashed border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] rounded-2xl">
-              <div className="w-12 h-12 rounded-2xl bg-[rgba(99,102,241,0.1)] dark:bg-[rgba(129,140,248,0.1)] flex items-center justify-center mx-auto mb-4">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#6366f1] dark:text-[#818cf8]">
+              <div className="w-12 h-12 rounded-2xl bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)] flex items-center justify-center mx-auto mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#E31937] dark:text-[#FF4D5C]">
                   <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
                 </svg>
               </div>

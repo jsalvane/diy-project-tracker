@@ -1,12 +1,12 @@
 export const ASSET_COLORS = [
   '#f97316', // Cash – orange
   '#3b82f6', // 401k – blue
-  '#8b5cf6', // Roth IRAs – purple
+  '#EF4444', // Roth IRAs – purple
   '#06b6d4', // HSA – cyan
   '#10b981', // K1 Savings – emerald
   '#14b8a6', // K1 529 – teal
-  '#6366f1', // Home Value – indigo
-  '#a855f7', // Vehicles – violet
+  '#E31937', // Home Value – indigo
+  '#F87171', // Vehicles – violet
   '#64748b', // Other – slate
 ];
 

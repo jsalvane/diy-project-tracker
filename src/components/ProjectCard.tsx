@@ -20,7 +20,7 @@ export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
   return (
     <div
       onClick={() => navigate(`/project/${project.id}`)}
-      className="group relative bg-[#ffffff] dark:bg-[#0f0f1a] border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:border-[rgba(99,102,241,0.25)] dark:hover:border-[rgba(129,140,248,0.2)] hover:shadow-[0_4px_24px_rgba(99,102,241,0.08)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] hover:-translate-y-px"
+      className="group relative bg-[#ffffff] dark:bg-[#0f0f1a] border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:border-[rgba(227,25,55,0.25)] dark:hover:border-[rgba(255,77,92,0.2)] hover:shadow-[0_4px_24px_rgba(227,25,55,0.08)] dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] hover:-translate-y-px"
     >
       {/* Top row */}
       <div className="flex items-start justify-between gap-3 mb-4">
@@ -49,7 +49,7 @@ export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
               <span className="text-[rgba(10,10,20,0.65)] dark:text-[rgba(226,226,240,0.6)]">
                 {duration !== null ? duration : '—'}
                 {isInProgress && duration !== null && (
-                  <span className="ml-1.5 text-[#6366f1] dark:text-[#818cf8] font-medium">running</span>
+                  <span className="ml-1.5 text-[#E31937] dark:text-[#FF4D5C] font-medium">running</span>
                 )}
               </span>
             </div>
@@ -69,7 +69,7 @@ export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(); }}
-            className="text-[11.5px] font-medium px-2.5 py-1 rounded-md text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.38)] hover:text-[#6366f1] dark:hover:text-[#818cf8] hover:bg-[rgba(99,102,241,0.08)] dark:hover:bg-[rgba(129,140,248,0.1)] transition-colors"
+            className="text-[11.5px] font-medium px-2.5 py-1 rounded-md text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.38)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] hover:bg-[rgba(227,25,55,0.08)] dark:hover:bg-[rgba(255,77,92,0.1)] transition-colors"
           >
             Edit
           </button>
@@ -84,7 +84,7 @@ export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
 
       {/* Active accent line */}
       {project.status === 'active' && (
-        <div className="absolute top-0 left-5 right-5 h-[2px] bg-gradient-to-r from-[#6366f1]/0 via-[#6366f1] to-[#6366f1]/0 rounded-full" />
+        <div className="absolute top-0 left-5 right-5 h-[2px] bg-gradient-to-r from-[#E31937]/0 via-[#E31937] to-[#E31937]/0 rounded-full" />
       )}
     </div>
   );

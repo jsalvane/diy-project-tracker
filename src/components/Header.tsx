@@ -1,17 +1,9 @@
 import { useApp } from '../context/AppContext';
 import { Link, useLocation } from 'react-router-dom';
 
-const TABS = [
-  { path: '/money',       label: 'Money'       },
-  { path: '/projects',    label: 'Projects'    },
-  { path: '/maintenance', label: 'Maintenance' },
-  { path: '/gifts',       label: 'Gifts'       },
-  { path: '/scratchpad',  label: 'Scratchpad'  },
-];
-
 function SunIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="4"/>
       <line x1="12" y1="2" x2="12" y2="4"/>
       <line x1="12" y1="20" x2="12" y2="22"/>
@@ -27,7 +19,7 @@ function SunIcon() {
 
 function MoonIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
     </svg>
   );
@@ -35,86 +27,89 @@ function MoonIcon() {
 
 function ChevronLeft() {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15 18 9 12 15 6"/>
     </svg>
   );
 }
 
-export function Header() {
+function SearchIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  );
+}
+
+interface Props {
+  onCmdK: () => void;
+}
+
+export function Header({ onCmdK }: Props) {
   const { state, toggleDarkMode } = useApp();
   const location = useLocation();
 
   const isProjectDetail = location.pathname.startsWith('/project/');
-  const rawTab = isProjectDetail ? '/projects' : location.pathname;
-  // Legacy routes redirect visually to Money
-  const activeTab = (rawTab === '/budget' || rawTab === '/financial-health') ? '/money' : rawTab;
+
+  // On desktop: only show the header when on a project detail page (back button)
+  // On mobile: always show (branding + controls)
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] glass">
-      <div className="max-w-6xl mx-auto px-4 sm:px-5 h-[52px] flex items-center justify-between gap-2 sm:gap-4">
+    <header
+      className={`sticky top-0 z-20 glass border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] ${
+        // On desktop, hide the header unless we're on project detail (sidebar handles nav)
+        isProjectDetail ? 'flex' : 'flex lg:hidden'
+      }`}
+    >
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-5 h-[52px] flex items-center justify-between gap-3">
 
-        {/* Left — Brand */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <Link
-            to="/"
-            className="flex items-center gap-2 group"
-          >
-            {/* Logo mark */}
-            <img
-              src="/apple-touch-icon.png"
-              alt="JS"
-              className="shrink-0"
-              style={{ width: 24, height: 24, borderRadius: 6, boxShadow: '0 0 12px rgba(99,102,241,0.35)' }}
-            />
-            <span className="hidden sm:inline text-[13px] font-semibold tracking-[-0.02em] text-[#0a0a14] dark:text-[#e2e2f0] group-hover:text-[#6366f1] dark:group-hover:text-[#818cf8] transition-colors">
-              Toolbox
-            </span>
-          </Link>
-
-          {/* Divider */}
-          <span className="w-px h-4 bg-[rgba(0,0,20,0.1)] dark:bg-[rgba(255,255,255,0.08)]" />
-
-          {/* Back link or nav */}
+        {/* Left */}
+        <div className="flex items-center gap-2 min-w-0">
           {isProjectDetail ? (
+            /* Back button — shown on all screen sizes for project detail */
             <Link
               to="/projects"
-              className="flex items-center gap-1 text-[12px] font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#6366f1] dark:hover:text-[#818cf8] transition-colors"
+              className="flex items-center gap-1.5 text-[12.5px] font-medium text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
             >
               <ChevronLeft />
               All Projects
             </Link>
           ) : (
-            <nav className="flex items-center gap-0.5">
-              {TABS.map(tab => {
-                const isActive = activeTab === tab.path;
-                return (
-                  <Link
-                    key={tab.path}
-                    to={tab.path}
-                    className={`text-[12px] sm:text-[12.5px] font-medium px-2 sm:px-3 py-1.5 rounded-[7px] transition-all duration-150 ${
-                      isActive
-                        ? 'bg-[rgba(99,102,241,0.1)] dark:bg-[rgba(129,140,248,0.12)] text-[#6366f1] dark:text-[#818cf8]'
-                        : 'text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] hover:bg-[rgba(0,0,20,0.04)] dark:hover:bg-[rgba(255,255,255,0.05)]'
-                    }`}
-                  >
-                    {tab.label}
-                  </Link>
-                );
-              })}
-            </nav>
+            /* Mobile-only brand (desktop has sidebar with logo) */
+            <Link to="/" className="flex items-center gap-2 group">
+              <img
+                src="/apple-touch-icon.png"
+                alt="Toolbox"
+                style={{ width: 24, height: 24, borderRadius: 6, boxShadow: '0 0 10px rgba(227,25,55,0.35)' }}
+              />
+              <span className="text-[13.5px] font-bold tracking-[-0.03em] text-[#0a0a14] dark:text-[#e2e2f0] group-hover:text-[#E31937] dark:group-hover:text-[#FF4D5C] transition-colors">
+                Toolbox
+              </span>
+            </Link>
           )}
         </div>
 
-        {/* Right — Controls */}
-        <button
-          onClick={toggleDarkMode}
-          className="w-7 h-7 flex items-center justify-center rounded-[7px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] hover:bg-[rgba(0,0,20,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
-          title={state.darkMode ? 'Light mode' : 'Dark mode'}
-        >
-          {state.darkMode ? <SunIcon /> : <MoonIcon />}
-        </button>
+        {/* Right — controls */}
+        <div className="flex items-center gap-1">
+          {/* Search button (mobile) */}
+          <button
+            onClick={onCmdK}
+            className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.38)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] hover:bg-[rgba(0,0,20,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+            title="Search (⌘K)"
+          >
+            <SearchIcon />
+          </button>
 
+          {/* Dark mode toggle */}
+          <button
+            onClick={toggleDarkMode}
+            className="w-8 h-8 flex items-center justify-center rounded-[8px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.38)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] hover:bg-[rgba(0,0,20,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+            title={state.darkMode ? 'Light mode' : 'Dark mode'}
+          >
+            {state.darkMode ? <SunIcon /> : <MoonIcon />}
+          </button>
+        </div>
       </div>
     </header>
   );
