@@ -303,9 +303,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         <!-- Header -->
         <tr>
-          <td style="background:linear-gradient(135deg,#0a0a14 0%,#1a1a2e 100%);padding:28px 32px;text-align:center;">
-            <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">Weekly Budget Summary</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">${dateStr}</div>
+          <td style="background:#f8f8fc;padding:28px 32px;text-align:center;border-bottom:2px solid #e8e8f0;">
+            <div style="font-size:22px;font-weight:700;color:#0a0a14;letter-spacing:-0.5px;">Weekly Budget Summary</div>
+            <div style="font-size:12px;color:#999;margin-top:4px;">${dateStr}</div>
           </td>
         </tr>
 
