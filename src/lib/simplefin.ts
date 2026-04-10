@@ -1,13 +1,23 @@
 // SimpleFin Bridge API client
 // Docs: https://www.simplefin.org/protocol.html
 
+export interface SimpleFinOrg {
+  domain?: string;
+  name?: string;
+  url?: string;
+  'sfin-url'?: string;
+}
+
 export interface SimpleFinAccount {
   id: string;
   name: string;
   currency: string;
   balance: string; // decimal string, e.g. "1234.56"
+  'available-balance'?: string;
   'balance-date': number; // Unix timestamp
   transactions: SimpleFinTransaction[];
+  org?: SimpleFinOrg;
+  extra?: Record<string, unknown>;
 }
 
 export interface SimpleFinTransaction {

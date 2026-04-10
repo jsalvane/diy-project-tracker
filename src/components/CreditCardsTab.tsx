@@ -452,37 +452,66 @@ function MapAccountsModal({
             </div>
           ) : (
             <div className="space-y-3">
-              {sfAccounts.map(acct => (
-                <div key={acct.id} className="flex items-center gap-3 p-3 rounded-lg bg-[rgba(0,0,20,0.02)] dark:bg-[rgba(255,255,255,0.03)]">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">{acct.name}</div>
-                    <div className="text-xs text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
-                      Balance: {acct.currency} {parseFloat(acct.balance).toFixed(2)}
+              {sfAccounts.map(acct => {
+                const orgName = acct.org?.name || '';
+                const balanceDate = acct['balance-date']
+                  ? new Date(acct['balance-date'] * 1000).toLocaleDateString()
+                  : '';
+                const bal = parseFloat(acct.balance);
+                const displayBal = isNaN(bal) ? acct.balance : formatCurrency(Math.abs(bal));
+
+                return (
+                  <div key={acct.id} className="flex items-center gap-3 p-3 rounded-lg bg-[rgba(0,0,20,0.02)] dark:bg-[rgba(255,255,255,0.03)]">
+                    {/* Account info — left side */}
+                    <div className="flex-1 min-w-0">
+                      {orgName && (
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-0.5">
+                          {orgName}
+                        </div>
+                      )}
+                      <div className="text-sm font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
+                        {acct.name}
+                      </div>
+                      <div className="flex items-center gap-3 mt-0.5 text-xs text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
+                        <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{displayBal}</span>
+                        {balanceDate && <span>as of {balanceDate}</span>}
+                        {acct.id && (
+                          <span className="font-mono text-[10px] text-[rgba(10,10,20,0.25)] dark:text-[rgba(226,226,240,0.2)]">
+                            {acct.id.length > 12 ? '…' + acct.id.slice(-8) : acct.id}
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Arrow */}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-[rgba(10,10,20,0.2)] dark:text-[rgba(226,226,240,0.2)] flex-shrink-0">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+
+                    {/* Card selector — right side */}
+                    <select
+                      className={inputCls + ' w-48 flex-shrink-0'}
+                      value={draft[acct.id] ?? ''}
+                      onChange={e => setDraft(prev => {
+                        const next = { ...prev };
+                        if (e.target.value) {
+                          next[acct.id] = e.target.value;
+                        } else {
+                          delete next[acct.id];
+                        }
+                        return next;
+                      })}
+                    >
+                      <option value="">— not linked —</option>
+                      {activeCards.map(card => (
+                        <option key={card.id} value={card.id}>
+                          {card.servicer ? `${card.servicer} — ` : ''}{card.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-[rgba(10,10,20,0.2)] dark:text-[rgba(226,226,240,0.2)] flex-shrink-0">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                  <select
-                    className={inputCls + ' w-44 flex-shrink-0'}
-                    value={draft[acct.id] ?? ''}
-                    onChange={e => setDraft(prev => {
-                      const next = { ...prev };
-                      if (e.target.value) {
-                        next[acct.id] = e.target.value;
-                      } else {
-                        delete next[acct.id];
-                      }
-                      return next;
-                    })}
-                  >
-                    <option value="">— not linked —</option>
-                    {activeCards.map(card => (
-                      <option key={card.id} value={card.id}>{card.name}</option>
-                    ))}
-                  </select>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
