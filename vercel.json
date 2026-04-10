@@ -6,10 +6,6 @@
     {
       "path": "/api/weekly-summary",
       "schedule": "0 13 * * 1"
-    },
-    {
-      "path": "/api/check-prices",
-      "schedule": "0 10 * * *"
     }
   ]
 }
