@@ -451,7 +451,7 @@ function MapAccountsModal({
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {sfAccounts.map(acct => {
                 const orgName = acct.org?.name || '';
                 const balanceDate = acct['balance-date']
@@ -459,56 +459,100 @@ function MapAccountsModal({
                   : '';
                 const bal = parseFloat(acct.balance);
                 const displayBal = isNaN(bal) ? acct.balance : formatCurrency(Math.abs(bal));
+                const availBal = acct['available-balance'] ? parseFloat(acct['available-balance']) : null;
+                const impliedLimit = availBal !== null && !isNaN(bal) && !isNaN(availBal)
+                  ? Math.abs(bal) + Math.abs(availBal)
+                  : null;
+                const recentTxns = (acct.transactions ?? []).slice(0, 3);
 
                 return (
-                  <div key={acct.id} className="flex items-center gap-3 p-3 rounded-lg bg-[rgba(0,0,20,0.02)] dark:bg-[rgba(255,255,255,0.03)]">
-                    {/* Account info — left side */}
-                    <div className="flex-1 min-w-0">
-                      {orgName && (
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-0.5">
-                          {orgName}
+                  <div key={acct.id} className="rounded-lg border border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.06)] overflow-hidden">
+                    {/* Account header */}
+                    <div className="p-3 bg-[rgba(0,0,20,0.02)] dark:bg-[rgba(255,255,255,0.03)]">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          {orgName && (
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-0.5">
+                              {orgName}
+                            </div>
+                          )}
+                          <div className="text-sm font-medium text-[#0a0a14] dark:text-[#e2e2f0]">
+                            {acct.name !== orgName ? acct.name : 'Account'}
+                          </div>
                         </div>
-                      )}
-                      <div className="text-sm font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
-                        {acct.name}
+                        {/* Card selector */}
+                        <select
+                          className={inputCls + ' w-48 flex-shrink-0 text-xs'}
+                          value={draft[acct.id] ?? ''}
+                          onChange={e => setDraft(prev => {
+                            const next = { ...prev };
+                            if (e.target.value) {
+                              next[acct.id] = e.target.value;
+                            } else {
+                              delete next[acct.id];
+                            }
+                            return next;
+                          })}
+                        >
+                          <option value="">— not linked —</option>
+                          {activeCards.map(card => (
+                            <option key={card.id} value={card.id}>
+                              {card.servicer ? `${card.servicer} — ` : ''}{card.name}
+                              {card.creditLimit > 0 ? ` (${formatCurrency(card.creditLimit)})` : ''}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-                      <div className="flex items-center gap-3 mt-0.5 text-xs text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
-                        <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{displayBal}</span>
-                        {balanceDate && <span>as of {balanceDate}</span>}
-                        {acct.id && (
-                          <span className="font-mono text-[10px] text-[rgba(10,10,20,0.25)] dark:text-[rgba(226,226,240,0.2)]">
-                            {acct.id.length > 12 ? '…' + acct.id.slice(-8) : acct.id}
+
+                      {/* Balance details */}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs">
+                        <span>
+                          <span className="text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">Balance: </span>
+                          <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{displayBal}</span>
+                        </span>
+                        {availBal !== null && (
+                          <span>
+                            <span className="text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">Available: </span>
+                            <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(Math.abs(availBal))}</span>
+                          </span>
+                        )}
+                        {impliedLimit !== null && impliedLimit > 0 && (
+                          <span>
+                            <span className="text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">Limit: </span>
+                            <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">~{formatCurrency(impliedLimit)}</span>
+                          </span>
+                        )}
+                        {balanceDate && (
+                          <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                            as of {balanceDate}
                           </span>
                         )}
                       </div>
+
+                      {/* Full account ID */}
+                      <div className="mt-1.5 font-mono text-[10px] text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.2)] break-all select-all">
+                        ID: {acct.id}
+                      </div>
                     </div>
 
-                    {/* Arrow */}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-[rgba(10,10,20,0.2)] dark:text-[rgba(226,226,240,0.2)] flex-shrink-0">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-
-                    {/* Card selector — right side */}
-                    <select
-                      className={inputCls + ' w-48 flex-shrink-0'}
-                      value={draft[acct.id] ?? ''}
-                      onChange={e => setDraft(prev => {
-                        const next = { ...prev };
-                        if (e.target.value) {
-                          next[acct.id] = e.target.value;
-                        } else {
-                          delete next[acct.id];
-                        }
-                        return next;
-                      })}
-                    >
-                      <option value="">— not linked —</option>
-                      {activeCards.map(card => (
-                        <option key={card.id} value={card.id}>
-                          {card.servicer ? `${card.servicer} — ` : ''}{card.name}
-                        </option>
-                      ))}
-                    </select>
+                    {/* Recent transactions to help identify the account */}
+                    {recentTxns.length > 0 && (
+                      <div className="px-3 py-2 border-t border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)]">
+                        <div className="text-[10px] font-semibold uppercase tracking-wider text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.2)] mb-1">
+                          Recent transactions
+                        </div>
+                        {recentTxns.map((txn, i) => (
+                          <div key={txn.id || i} className="flex items-center justify-between text-[11px] py-0.5">
+                            <span className="text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.5)] truncate mr-2">
+                              {txn.description}
+                            </span>
+                            <span className="font-medium text-[#0a0a14] dark:text-[#e2e2f0] flex-shrink-0">
+                              {formatCurrency(Math.abs(parseFloat(txn.amount)))}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
