@@ -18,28 +18,35 @@ function billDueGroup(billDueDate: string | null): '15' | '30' | '' {
 // ── Main handler ─────────────────────────────��───────────────────────────
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Protect endpoint: only allow Vercel Cron (sends CRON_SECRET) or manual trigger with auth
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers['authorization'];
-    if (auth !== `Bearer ${secret}`) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-  }
-
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const resendKey = process.env.RESEND_API_KEY;
-  const emailTo = process.env.EMAIL_TO;
-
-  if (!supabaseUrl || !supabaseKey || !resendKey || !emailTo) {
-    return res.status(500).json({ error: 'Missing environment variables' });
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
-  const resend = new Resend(resendKey);
-
   try {
+    // Protect endpoint: only allow Vercel Cron (sends CRON_SECRET) or manual trigger with auth
+    const secret = process.env.CRON_SECRET;
+    if (secret) {
+      const auth = req.headers['authorization'];
+      if (auth !== `Bearer ${secret}`) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const resendKey = process.env.RESEND_API_KEY;
+    const emailTo = process.env.EMAIL_TO;
+
+    const missing = [
+      !supabaseUrl && 'SUPABASE_URL',
+      !supabaseKey && 'SUPABASE_SERVICE_ROLE_KEY',
+      !resendKey && 'RESEND_API_KEY',
+      !emailTo && 'EMAIL_TO',
+    ].filter(Boolean);
+
+    if (missing.length > 0) {
+      return res.status(500).json({ error: 'Missing environment variables', missing });
+    }
+
+    const supabase = createClient(supabaseUrl!, supabaseKey!);
+    const resend = new Resend(resendKey);
+
     // Fetch all data in parallel
     const [
       { data: settings },
@@ -235,7 +242,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Send email
     const { error: emailError } = await resend.emails.send({
       from: 'Budget Tracker <onboarding@resend.dev>',
-      to: emailTo,
+      to: emailTo!,
       subject: `Weekly Budget Summary - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
       html,
     });
