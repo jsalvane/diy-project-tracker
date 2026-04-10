@@ -1,15 +1,31 @@
 import { useState } from 'react';
 import type { CreditCard } from '../lib/types';
 import { formatCurrency, formatDate, todayStr } from '../lib/utils';
-import { useSimpleFin, type AccountMapping } from '../hooks/useSimpleFin';
+import type { AccountMapping } from '../hooks/useSimpleFin';
 import type { SimpleFinAccount } from '../lib/simplefin';
 // formatDate used in closed cards table
+
+export type SimpleFinState = {
+  connected: boolean;
+  loading: boolean;
+  syncing: boolean;
+  error: string | null;
+  accounts: SimpleFinAccount[];
+  mappings: AccountMapping;
+  lastSynced: string | null;
+  connect: (token: string) => Promise<boolean>;
+  disconnect: () => Promise<void>;
+  saveMapping: (m: AccountMapping) => Promise<void>;
+  sync: (cards: CreditCard[], update: (card: CreditCard) => void) => Promise<{ synced: number; fetched: number; error?: string }>;
+  fetchAccounts: () => Promise<boolean>;
+};
 
 type Props = {
   creditCards: CreditCard[];
   addCreditCard: (data: Omit<CreditCard, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateCreditCard: (card: CreditCard) => void;
   deleteCreditCard: (id: string) => void;
+  simpleFin: SimpleFinState;
 };
 
 interface CardForm {
@@ -577,13 +593,11 @@ function MapAccountsModal({
 
 // ── Main tab ──────────────────────────────────────────────────────────────
 
-export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, deleteCreditCard }: Props) {
+export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, deleteCreditCard, simpleFin: sf }: Props) {
   const [modal, setModal] = useState<null | 'add' | CreditCard>(null);
   const [closedOpen, setClosedOpen] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
-
-  const sf = useSimpleFin();
 
   async function handleSync() {
     setSyncResult(null);

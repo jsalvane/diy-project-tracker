@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useBudget } from '../hooks/useBudget';
 import { useSubscriptions } from '../hooks/useSubscriptions';
+import { useSimpleFin } from '../hooks/useSimpleFin';
 import { MonthlyBudget } from './MonthlyBudget';
 import { CreditCardsTab } from './CreditCardsTab';
 import { LoansTab } from './LoansTab';
@@ -19,6 +20,7 @@ export function Budget({ embedded }: { embedded?: boolean } = {}) {
   const [activeTab, setActiveTab] = useState<Tab>('monthly');
   const budget = useBudget();
   const subs = useSubscriptions();
+  const sf = useSimpleFin();
 
   const loading = budget.loading || subs.loading;
 
@@ -54,8 +56,8 @@ export function Budget({ embedded }: { embedded?: boolean } = {}) {
         </div>
       ) : (
         <>
-          {activeTab === 'monthly'       && <MonthlyBudget {...budget} />}
-          {activeTab === 'cards'         && <CreditCardsTab {...budget} />}
+          {activeTab === 'monthly'       && <MonthlyBudget {...budget} simpleFin={sf} />}
+          {activeTab === 'cards'         && <CreditCardsTab {...budget} simpleFin={sf} />}
           {activeTab === 'loans'         && <LoansTab {...budget} />}
           {activeTab === 'subscriptions' && (
             <SubscriptionsTab

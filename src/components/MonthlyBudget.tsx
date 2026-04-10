@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { BudgetItem, CreditCard } from '../lib/types';
 import { formatCurrency } from '../lib/utils';
 import { supabase } from '../lib/supabase';
+import type { SimpleFinState } from './CreditCardsTab';
 
 type BudgetProps = {
   budgetItems: BudgetItem[];
@@ -10,6 +11,7 @@ type BudgetProps = {
   deleteBudgetItem: (id: string) => void;
   creditCards: CreditCard[];
   updateCreditCard: (card: CreditCard) => void;
+  simpleFin: SimpleFinState;
 };
 
 function useIncome(key: string) {
@@ -116,6 +118,12 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
 
 const CC_STATUS_CYCLE: CreditCard['billStatus'][] = ['auto', 'manual'];
 
+function getFreshness(lastSynced: string | null): 'fresh' | 'stale' | 'unknown' {
+  if (!lastSynced) return 'unknown';
+  const diffHrs = (Date.now() - new Date(lastSynced).getTime()) / 3600000;
+  return diffHrs < 24 ? 'fresh' : 'stale';
+}
+
 function Section({
   title,
   items,
@@ -126,6 +134,7 @@ function Section({
   onDelete,
   onAdd,
   onCcUpdate,
+  simpleFin,
 }: {
   title: string;
   items: BudgetItem[];
@@ -136,6 +145,7 @@ function Section({
   onDelete: (id: string) => void;
   onAdd: () => void;
   onCcUpdate: (card: CreditCard) => void;
+  simpleFin: SimpleFinState;
 }) {
   const [editing, setEditing] = useState<EditCell>(null);
   const [editValue, setEditValue] = useState('');
@@ -286,45 +296,77 @@ function Section({
                     <span className="text-xs font-bold uppercase tracking-widest text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">Credit Cards</span>
                   </td>
                 </tr>
-                {ccBills.map(card => (
-                  <tr key={card.id} className="hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
-                    <td className="px-4 py-2.5 pl-7 text-gray-800 dark:text-gray-200">{card.name}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      {editingCcId === card.id ? (
-                        <input
-                          autoFocus
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={editCcValue}
-                          onChange={e => setEditCcValue(e.target.value)}
-                          onBlur={() => commitCcEdit(card)}
-                          onKeyDown={e => e.key === 'Enter' && commitCcEdit(card)}
-                          className={`w-28 text-right ${inputCls}`}
-                        />
-                      ) : (
-                        <span
-                          className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
-                          onClick={() => startCcEdit(card)}
+                {ccBills.map(card => {
+                  const isLinked = simpleFin.connected && Object.values(simpleFin.mappings).includes(card.id);
+                  const freshness = isLinked ? getFreshness(simpleFin.lastSynced) : null;
+
+                  return (
+                    <tr key={card.id} className="hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
+                      <td className="px-4 py-2.5 pl-7">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-800 dark:text-gray-200">{card.name}</span>
+                          {isLinked && (
+                            <span
+                              className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                                freshness === 'fresh'
+                                  ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
+                                  : freshness === 'stale'
+                                    ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
+                                    : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
+                              }`}
+                              title={
+                                freshness === 'fresh'
+                                  ? `Synced ${new Date(simpleFin.lastSynced!).toLocaleString()}`
+                                  : freshness === 'stale'
+                                    ? `Last synced ${new Date(simpleFin.lastSynced!).toLocaleString()} — data may be outdated`
+                                    : 'SimpleFin linked but never synced'
+                              }
+                            >
+                              <span className={`inline-block w-1.5 h-1.5 rounded-full ${
+                                freshness === 'fresh' ? 'bg-green-500' : freshness === 'stale' ? 'bg-amber-500' : 'bg-zinc-400'
+                              }`} />
+                              auto
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        {editingCcId === card.id ? (
+                          <input
+                            autoFocus
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={editCcValue}
+                            onChange={e => setEditCcValue(e.target.value)}
+                            onBlur={() => commitCcEdit(card)}
+                            onKeyDown={e => e.key === 'Enter' && commitCcEdit(card)}
+                            className={`w-28 text-right ${inputCls}`}
+                          />
+                        ) : (
+                          <span
+                            className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
+                            onClick={() => startCcEdit(card)}
+                          >
+                            {formatCurrency(card.balance)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5 text-center">
+                        <button
+                          onClick={() => {
+                            const idx = CC_STATUS_CYCLE.indexOf(card.billStatus);
+                            onCcUpdate({ ...card, billStatus: CC_STATUS_CYCLE[(idx + 1) % CC_STATUS_CYCLE.length] });
+                          }}
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize cursor-pointer transition-opacity hover:opacity-80 ${STATUS_STYLES[card.billStatus]}`}
                         >
-                          {formatCurrency(card.balance)}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2.5 text-center">
-                      <button
-                        onClick={() => {
-                          const idx = CC_STATUS_CYCLE.indexOf(card.billStatus);
-                          onCcUpdate({ ...card, billStatus: CC_STATUS_CYCLE[(idx + 1) % CC_STATUS_CYCLE.length] });
-                        }}
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize cursor-pointer transition-opacity hover:opacity-80 ${STATUS_STYLES[card.billStatus]}`}
-                      >
-                        {card.billStatus}
-                      </button>
-                    </td>
-                    <td />
-                  </tr>
-                ))}
+                          {card.billStatus}
+                        </button>
+                      </td>
+                      <td />
+                    </tr>
+                  );
+                })}
               </>
             )}
           </tbody>
@@ -352,7 +394,7 @@ function Section({
   );
 }
 
-export function MonthlyBudget({ budgetItems, addBudgetItem, updateBudgetItem, deleteBudgetItem, creditCards, updateCreditCard }: BudgetProps) {
+export function MonthlyBudget({ budgetItems, addBudgetItem, updateBudgetItem, deleteBudgetItem, creditCards, updateCreditCard, simpleFin }: BudgetProps) {
   const due15 = budgetItems.filter(i => i.dueGroup === '15').sort((a, b) => a.sortOrder - b.sortOrder);
   const due30 = budgetItems.filter(i => i.dueGroup === '30').sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -387,6 +429,7 @@ export function MonthlyBudget({ budgetItems, addBudgetItem, updateBudgetItem, de
         onDelete={deleteBudgetItem}
         onAdd={() => handleAdd('15')}
         onCcUpdate={updateCreditCard}
+        simpleFin={simpleFin}
       />
       <Section
         title="30"
@@ -398,6 +441,7 @@ export function MonthlyBudget({ budgetItems, addBudgetItem, updateBudgetItem, de
         onDelete={deleteBudgetItem}
         onAdd={() => handleAdd('30')}
         onCcUpdate={updateCreditCard}
+        simpleFin={simpleFin}
       />
     </div>
   );
