@@ -145,23 +145,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const maxAmount = Math.max(...allItems.map(i => i.amount), 1);
 
       return allItems.map(item => {
-        const barPct = pct(item.amount, income > 0 ? income : maxAmount);
-        const barColor = item.isCC ? '#8b5cf6' : '#3b82f6';
         return `
           <tr>
-            <td style="padding:4px 0;">
+            <td style="padding:5px 0;border-bottom:1px solid #f5f5fa;">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 <tr>
-                  <td style="font-size:13px;color:#555;padding-bottom:2px;padding-right:16px;">
+                  <td style="font-size:13px;color:#555;padding-right:16px;">
                     ${item.isCC ? '<span style="color:#8b5cf6;font-size:10px;font-weight:600;letter-spacing:0.5px;">CC</span> ' : ''}${item.name}
                   </td>
-                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;padding-bottom:2px;white-space:nowrap;padding-left:16px;">
+                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;white-space:nowrap;padding-left:16px;">
                     ${fmt(item.amount)}
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2" style="padding-bottom:6px;">
-                    ${bar(barPct, barColor, 6)}
                   </td>
                 </tr>
               </table>
@@ -203,7 +196,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f8f8fc;border-radius:8px;">
                       <tr><td style="padding:10px 14px;">
                         <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:2px;">Income</div>
-                        <div style="font-size:20px;font-weight:700;color:#0a0a14;">${fmt(income)}</div>
+                        <div style="font-size:18px;font-weight:700;color:#0a0a14;">${fmt(income)}</div>
                       </td></tr>
                     </table>
                   </td>
@@ -211,7 +204,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f8f8fc;border-radius:8px;">
                       <tr><td style="padding:10px 14px;">
                         <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:2px;">Surplus</div>
-                        <div style="font-size:20px;font-weight:700;color:${sColor};">${fmt(surplus)}</div>
+                        <div style="font-size:18px;font-weight:700;color:${sColor};">${fmt(surplus)}</div>
                       </td></tr>
                     </table>
                   </td>
@@ -243,22 +236,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let loanBlock = '';
     if ((loansData ?? []).length > 0) {
       const loans = (loansData ?? []) as { name: string; balance: number }[];
-      const maxLoan = Math.max(...loans.map(l => l.balance ?? 0), 1);
       let loanRows = '';
       for (const l of loans) {
         const bal = Math.round(l.balance ?? 0);
         loanRows += `
           <tr>
-            <td style="padding:4px 0;">
+            <td style="padding:5px 0;border-bottom:1px solid #f5f5fa;">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 <tr>
-                  <td style="font-size:13px;color:#555;padding-bottom:2px;padding-right:16px;">${l.name}</td>
-                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;padding-bottom:2px;white-space:nowrap;padding-left:16px;">${fmt(bal)}</td>
-                </tr>
-                <tr>
-                  <td colspan="2" style="padding-bottom:6px;">
-                    ${bar(pct(bal, maxLoan), '#f59e0b', 6)}
-                  </td>
+                  <td style="font-size:13px;color:#555;padding-right:16px;">${l.name}</td>
+                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;white-space:nowrap;padding-left:16px;">${fmt(bal)}</td>
                 </tr>
               </table>
             </td>
@@ -292,39 +279,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const subsPctOfIncome = pct(monthlySubCost, totalIncome);
     const surplusPctOfIncome = Math.max(0, 100 - billsPctOfIncome - subsPctOfIncome);
 
+    const P = '16px'; // side padding — mobile friendly
+
     const html = `
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    @media only screen and (max-width: 480px) {
+      .wrapper { padding: 12px 4px !important; }
+      .card { border-radius: 8px !important; }
+      .inner { padding-left: 14px !important; padding-right: 14px !important; }
+      .big-num { font-size: 20px !important; }
+    }
+  </style>
+</head>
 <body style="margin:0;padding:0;background:#f4f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f8;">
-    <tr><td align="center" style="padding:32px 16px;">
-      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <tr><td align="center" class="wrapper" style="padding:24px 12px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);" class="card">
 
         <!-- Header -->
         <tr>
-          <td style="background:#f8f8fc;padding:28px 32px;text-align:center;border-bottom:2px solid #e8e8f0;">
-            <div style="font-size:22px;font-weight:700;color:#0a0a14;letter-spacing:-0.5px;">Weekly Budget Summary</div>
+          <td class="inner" style="background:#f8f8fc;padding:24px ${P};text-align:center;border-bottom:2px solid #e8e8f0;">
+            <div style="font-size:20px;font-weight:700;color:#0a0a14;letter-spacing:-0.5px;">Weekly Budget Summary</div>
             <div style="font-size:12px;color:#999;margin-top:4px;">${dateStr}</div>
           </td>
         </tr>
 
         <!-- Big numbers -->
         <tr>
-          <td style="padding:24px 32px 0;">
+          <td class="inner" style="padding:20px ${P} 0;">
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
               <tr>
-                <td width="33%" style="text-align:center;padding:12px 4px;">
+                <td width="33%" style="text-align:center;padding:10px 2px;">
                   <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:4px;">Income</div>
-                  <div style="font-size:26px;font-weight:800;color:#0a0a14;">${fmt(totalIncome)}</div>
+                  <div class="big-num" style="font-size:22px;font-weight:800;color:#0a0a14;">${fmt(totalIncome)}</div>
                 </td>
-                <td width="33%" style="text-align:center;padding:12px 4px;">
+                <td width="33%" style="text-align:center;padding:10px 2px;">
                   <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:4px;">Bills</div>
-                  <div style="font-size:26px;font-weight:800;color:#0a0a14;">${fmt(totalBills)}</div>
+                  <div class="big-num" style="font-size:22px;font-weight:800;color:#0a0a14;">${fmt(totalBills)}</div>
                 </td>
-                <td width="33%" style="text-align:center;padding:12px 4px;">
+                <td width="33%" style="text-align:center;padding:10px 2px;">
                   <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:4px;">Surplus</div>
-                  <div style="font-size:26px;font-weight:800;color:${surplusColor};">${fmt(totalSurplus)}</div>
+                  <div class="big-num" style="font-size:22px;font-weight:800;color:${surplusColor};">${fmt(totalSurplus)}</div>
                 </td>
               </tr>
             </table>
@@ -333,13 +333,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         <!-- Allocation bar -->
         <tr>
-          <td style="padding:16px 32px 8px;">
+          <td class="inner" style="padding:14px ${P} 8px;">
             <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:6px;">Where your money goes</div>
             ${stackedBar([
               { pct: billsPctOfIncome, color: '#3b82f6' },
               { pct: subsPctOfIncome, color: '#8b5cf6' },
               { pct: surplusPctOfIncome, color: '#22c55e' },
-            ], 14)}
+            ], 12)}
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:6px;">
               <tr>
                 <td style="font-size:10px;color:#3b82f6;">Bills ${billsPctOfIncome}%</td>
@@ -351,55 +351,55 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         </tr>
 
         <!-- Divider -->
-        <tr><td style="padding:12px 32px;"><div style="border-top:1px solid #f0f0f5;"></div></td></tr>
+        <tr><td class="inner" style="padding:10px ${P};"><div style="border-top:1px solid #f0f0f5;"></div></td></tr>
 
         <!-- Due 15th -->
         <tr>
-          <td style="padding:0 32px;">
+          <td class="inner" style="padding:0 ${P};">
             ${sectionBlock('15', income15, bills15, cc15, billTotal15, surplus15)}
           </td>
         </tr>
 
         <!-- Due 30th -->
         <tr>
-          <td style="padding:0 32px;">
+          <td class="inner" style="padding:0 ${P};">
             ${sectionBlock('30', income30, bills30, cc30, billTotal30, surplus30)}
           </td>
         </tr>
 
         <!-- Loans -->
-        ${loanBlock ? `<tr><td style="padding:0 32px;">${loanBlock}</td></tr>` : ''}
+        ${loanBlock ? `<tr><td class="inner" style="padding:0 ${P};">${loanBlock}</td></tr>` : ''}
 
         <!-- Bottom stats -->
         <tr>
-          <td style="padding:0 32px 24px;">
+          <td class="inner" style="padding:0 ${P} 20px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f8f8fc;border-radius:8px;">
               <tr>
-                <td style="padding:12px 16px;border-bottom:1px solid #eeeef5;">
+                <td style="padding:10px 14px;border-bottom:1px solid #eeeef5;">
                   <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="font-size:13px;color:#666;text-align:left;padding-right:16px;">Total Debt</td>
-                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;padding-left:16px;">${fmt(totalDebt)}</td>
+                      <td style="font-size:13px;color:#666;text-align:left;padding-right:12px;">Total Debt</td>
+                      <td style="font-size:14px;font-weight:700;color:#0a0a14;text-align:right;padding-left:12px;">${fmt(totalDebt)}</td>
                     </tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td style="padding:12px 16px;border-bottom:1px solid #eeeef5;">
+                <td style="padding:10px 14px;border-bottom:1px solid #eeeef5;">
                   <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="font-size:13px;color:#666;text-align:left;padding-right:16px;">Subscriptions</td>
-                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;padding-left:16px;">${fmt(monthlySubCost)}<span style="font-size:11px;font-weight:400;color:#999;">/mo</span></td>
+                      <td style="font-size:13px;color:#666;text-align:left;padding-right:12px;">Subscriptions</td>
+                      <td style="font-size:14px;font-weight:700;color:#0a0a14;text-align:right;padding-left:12px;">${fmt(monthlySubCost)}<span style="font-size:11px;font-weight:400;color:#999;">/mo</span></td>
                     </tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td style="padding:12px 16px;">
+                <td style="padding:10px 14px;">
                   <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="font-size:13px;color:#666;text-align:left;padding-right:16px;">CC Balances</td>
-                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;padding-left:16px;">${fmt(totalCcBalance)}</td>
+                      <td style="font-size:13px;color:#666;text-align:left;padding-right:12px;">CC Balances</td>
+                      <td style="font-size:14px;font-weight:700;color:#0a0a14;text-align:right;padding-left:12px;">${fmt(totalCcBalance)}</td>
                     </tr>
                   </table>
                 </td>
@@ -410,9 +410,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       </table>
 
-      <table width="560" cellpadding="0" cellspacing="0">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
         <tr>
-          <td style="text-align:center;padding:16px 0;font-size:11px;color:#bbb;">
+          <td style="text-align:center;padding:14px 0;font-size:11px;color:#bbb;">
             Sent from your Budget Tracker
           </td>
         </tr>
