@@ -152,10 +152,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <td style="padding:4px 0;">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 <tr>
-                  <td style="font-size:13px;color:#555;padding-bottom:2px;">
+                  <td style="font-size:13px;color:#555;padding-bottom:2px;padding-right:16px;">
                     ${item.isCC ? '<span style="color:#8b5cf6;font-size:10px;font-weight:600;letter-spacing:0.5px;">CC</span> ' : ''}${item.name}
                   </td>
-                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;padding-bottom:2px;white-space:nowrap;">
+                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;padding-bottom:2px;white-space:nowrap;padding-left:16px;">
                     ${fmt(item.amount)}
                   </td>
                 </tr>
@@ -230,7 +230,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <td style="padding-top:8px;">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f8f8fc;border-radius:6px;">
                 <tr>
-                  <td style="padding:8px 14px;font-size:13px;font-weight:700;color:#555;">Total Bills</td>
+                  <td style="padding:8px 14px;font-size:13px;font-weight:700;color:#555;text-align:left;">Total Bills</td>
                   <td style="padding:8px 14px;font-size:13px;font-weight:700;color:#0a0a14;text-align:right;">${fmt(total)}</td>
                 </tr>
               </table>
@@ -252,8 +252,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <td style="padding:4px 0;">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 <tr>
-                  <td style="font-size:13px;color:#555;padding-bottom:2px;">${l.name}</td>
-                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;padding-bottom:2px;white-space:nowrap;">${fmt(bal)}</td>
+                  <td style="font-size:13px;color:#555;padding-bottom:2px;padding-right:16px;">${l.name}</td>
+                  <td style="font-size:13px;font-weight:600;color:#0a0a14;text-align:right;padding-bottom:2px;white-space:nowrap;padding-left:16px;">${fmt(bal)}</td>
                 </tr>
                 <tr>
                   <td colspan="2" style="padding-bottom:6px;">
@@ -278,7 +278,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <td style="padding-top:8px;">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f8f8fc;border-radius:6px;">
                 <tr>
-                  <td style="padding:8px 14px;font-size:13px;font-weight:700;color:#555;">Total Debt</td>
+                  <td style="padding:8px 14px;font-size:13px;font-weight:700;color:#555;text-align:left;">Total Debt</td>
                   <td style="padding:8px 14px;font-size:13px;font-weight:700;color:#0a0a14;text-align:right;">${fmt(totalLoanDebt)}</td>
                 </tr>
               </table>
@@ -378,8 +378,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 <td style="padding:12px 16px;border-bottom:1px solid #eeeef5;">
                   <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="font-size:13px;color:#666;">Total Debt</td>
-                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;">${fmt(totalDebt)}</td>
+                      <td style="font-size:13px;color:#666;text-align:left;padding-right:16px;">Total Debt</td>
+                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;padding-left:16px;">${fmt(totalDebt)}</td>
                     </tr>
                   </table>
                 </td>
@@ -388,8 +388,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 <td style="padding:12px 16px;border-bottom:1px solid #eeeef5;">
                   <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="font-size:13px;color:#666;">Subscriptions</td>
-                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;">${fmt(monthlySubCost)}<span style="font-size:11px;font-weight:400;color:#999;">/mo</span></td>
+                      <td style="font-size:13px;color:#666;text-align:left;padding-right:16px;">Subscriptions</td>
+                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;padding-left:16px;">${fmt(monthlySubCost)}<span style="font-size:11px;font-weight:400;color:#999;">/mo</span></td>
                     </tr>
                   </table>
                 </td>
@@ -398,8 +398,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 <td style="padding:12px 16px;">
                   <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="font-size:13px;color:#666;">CC Balances</td>
-                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;">${fmt(totalCcBalance)}</td>
+                      <td style="font-size:13px;color:#666;text-align:left;padding-right:16px;">CC Balances</td>
+                      <td style="font-size:15px;font-weight:700;color:#0a0a14;text-align:right;padding-left:16px;">${fmt(totalCcBalance)}</td>
                     </tr>
                   </table>
                 </td>
