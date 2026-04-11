@@ -340,6 +340,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateProject = useCallback((project: Project) => {
+    const oldProject = state.projects.find((p) => p.id === project.id);
     const updated = { ...project, updatedAt: now() };
     localChangeIds.add(updated.id);
     dispatch({ type: 'UPDATE_PROJECT', payload: updated });
@@ -348,7 +349,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (error) console.error('updateProject error:', error);
         setTimeout(() => localChangeIds.delete(updated.id), 3000);
       });
-  }, []);
+    if (oldProject && oldProject.status !== 'complete' && project.status === 'complete') {
+      fetch('/api/project-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: project.id }),
+      }).catch((err) => console.error('Failed to send completion email:', err));
+    }
+  }, [state.projects]);
 
   const deleteProject = useCallback((id: string) => {
     const project = state.projects.find((p) => p.id === id);
