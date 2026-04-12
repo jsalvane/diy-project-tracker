@@ -86,7 +86,7 @@ export function ProjectDetail() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-7">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 mb-7">
         <SummaryCard label="Total Spent" value={formatCurrency(grandTotal)} />
         <SummaryCard
           label="Pending"
@@ -108,12 +108,12 @@ export function ProjectDetail() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-0 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] mb-5">
+      <div className="flex gap-0 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] mb-5 overflow-x-auto scrollbar-hide">
         {(['expenses', 'tasks', 'chart'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-colors ${
+            className={`px-3 sm:px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap shrink-0 ${
               activeTab === tab
                 ? 'border-[#E31937] dark:border-[#FF4D5C] text-[#E31937] dark:text-[#FF4D5C]'
                 : 'border-transparent text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0]'
@@ -191,14 +191,14 @@ export function ProjectDetail() {
 
 function SummaryCard({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: boolean }) {
   return (
-    <div className={`border rounded-xl px-4 py-3.5 ${
+    <div className={`border rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 ${
       accent
         ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200/70 dark:border-amber-800/40'
         : 'bg-white dark:bg-[#111118] border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]'
     }`}>
-      <div className="text-[10px] font-semibold tracking-[0.07em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-1">{label}</div>
-      <div className={`text-[18px] font-bold tracking-[-0.025em] ${accent ? 'text-amber-700 dark:text-amber-400' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>{value}</div>
-      {sub && <div className="text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5">{sub}</div>}
+      <div className="text-[9px] sm:text-[10px] font-semibold tracking-[0.07em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-0.5 sm:mb-1">{label}</div>
+      <div className={`text-[15px] sm:text-[18px] font-bold tracking-[-0.025em] ${accent ? 'text-amber-700 dark:text-amber-400' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>{value}</div>
+      {sub && <div className="text-[10px] sm:text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5 truncate">{sub}</div>}
     </div>
   );
 }
