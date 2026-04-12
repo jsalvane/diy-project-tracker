@@ -230,6 +230,26 @@ export interface MaintenanceTask {
   updatedAt: string;
 }
 
+// ── HSA ────────────────────────────────────────────────────────────────
+
+export type HSAPerson = 'Joe' | 'Krysten' | 'Jack' | 'Daughter';
+export type HSACategory = 'medical' | 'dental' | 'vision' | 'prescription' | 'mental-health' | 'other';
+
+export interface HSAExpense {
+  id: string;
+  person: HSAPerson;
+  provider: string;
+  date: string;          // YYYY-MM-DD
+  category: HSACategory;
+  description: string;
+  amount: number;
+  reimbursed: boolean;
+  receiptUrl: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface MaintenanceCompletion {
   id: string;
   taskId: string;

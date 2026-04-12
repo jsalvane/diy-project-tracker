@@ -8,7 +8,7 @@ type MoneyTab = 'budget' | 'financial-health' | 'hsa';
 const TABS: { id: MoneyTab; label: string; badge?: string }[] = [
   { id: 'budget',           label: 'Budget'          },
   { id: 'financial-health', label: 'Financial Health' },
-  { id: 'hsa',              label: 'HSA', badge: 'Soon' },
+  { id: 'hsa',              label: 'HSA' },
 ];
 
 export function Money() {
