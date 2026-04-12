@@ -222,7 +222,7 @@ function AppShell() {
       <Sidebar onCmdK={openCmd} />
 
       {/* Main content — offset by sidebar on desktop, padded for bottom nav on mobile */}
-      <div className="lg:pl-[220px] pb-[64px] lg:pb-0">
+      <div className="lg:pl-[220px] pb-[80px] lg:pb-0">
         {/* Simplified header (mobile-only for back button + branding) */}
         <Header onCmdK={openCmd} />
 

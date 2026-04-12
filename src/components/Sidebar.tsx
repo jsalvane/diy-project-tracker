@@ -210,8 +210,8 @@ export function Sidebar({ onCmdK }: { onCmdK: () => void }) {
         style={{
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-          paddingBottom: 'env(safe-area-inset-bottom, 6px)',
-          paddingTop: 6,
+          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)',
+          paddingTop: 8,
         }}
       >
         {NAV_ITEMS.slice(0, 5).map((item) => {
@@ -221,14 +221,14 @@ export function Sidebar({ onCmdK }: { onCmdK: () => void }) {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center gap-[3px] px-3 py-1.5 rounded-xl transition-all duration-150 min-w-0 ${
+              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all duration-150 min-w-0 flex-1 ${
                 active
                   ? 'text-[#E31937] dark:text-[#FF4D5C]'
                   : 'text-[rgba(10,10,20,0.3)] dark:text-[rgba(255,255,255,0.28)]'
               }`}
             >
-              <Icon size={22} />
-              <span className="text-[10px] font-semibold tracking-tight truncate">
+              <Icon size={21} />
+              <span className="text-[10px] font-semibold tracking-tight truncate max-w-full">
                 {item.label}
               </span>
             </Link>
