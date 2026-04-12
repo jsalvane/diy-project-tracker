@@ -325,8 +325,8 @@ export function HSA() {
       description: form.description.trim(),
       amount: parseFloat(form.amount) || 0,
       reimbursed: form.reimbursed,
-      receiptUrl: typeof modal === 'object' ? modal.receiptUrl : '',
-      sortOrder: typeof modal === 'object' ? modal.sortOrder : expenses.length,
+      receiptUrl: modal && typeof modal === 'object' ? modal.receiptUrl : '',
+      sortOrder: modal && typeof modal === 'object' ? modal.sortOrder : expenses.length,
     };
     if (modal && typeof modal === 'object') {
       updateExpense({ ...modal, ...data });
