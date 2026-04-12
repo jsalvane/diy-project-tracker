@@ -292,7 +292,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
       </div>
 
       {/* Loans table header */}
-      <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3 flex-wrap">
         <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0]">Loans</h2>
         <div className="flex items-center gap-2">
           <button
@@ -312,7 +312,7 @@ export function LoansTab({ loans, loanPayments, addLoan, updateLoan, deleteLoan,
       </div>
 
       {/* Loans table */}
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto">
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
         <table className="w-full text-sm min-w-[520px]">
           <thead>
             <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">

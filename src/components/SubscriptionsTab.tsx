@@ -419,8 +419,8 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
       )}
 
       {/* ── Table Header Row ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-        <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 mb-3">
+        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-hide">
           {statusFilters.map(f => (
             <button
               key={f.id}
@@ -457,8 +457,8 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
       </div>
 
       {/* ── Table ── */}
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto">
-        <table className="w-full text-sm min-w-[640px]">
+      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
+        <table className="w-full text-sm min-w-[540px]">
           <thead>
             <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
               <th className={thCls}>Subscription</th>

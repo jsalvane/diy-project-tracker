@@ -758,8 +758,8 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
         );
 
         return (
-          <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto mb-5 sm:mb-8">
-            <table className="w-full text-sm min-w-[560px]">
+          <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0 mb-5 sm:mb-8">
+            <table className="w-full text-sm min-w-[520px]">
               <thead>
                 <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
                   <th className={thCls}>Card</th>
@@ -875,7 +875,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
       </button>
 
       {closedOpen && (
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto">
+        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
           <table className="w-full text-sm min-w-[420px]">
             <thead>
               <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">

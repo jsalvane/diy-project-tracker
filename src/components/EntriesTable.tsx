@@ -140,7 +140,7 @@ export function EntriesTable({ entries, projectId }: Props) {
 
   return (
     <div>
-      <div className="overflow-x-auto border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl">
+      <div className="overflow-x-auto scrollbar-hide border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl -mx-4 sm:mx-0">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-[rgba(0,0,20,0.025)] dark:bg-[rgba(255,255,255,0.025)] sticky top-0 z-10">

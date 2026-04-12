@@ -233,3 +233,13 @@ body {
 tr:hover .table-row-actions {
   opacity: 1;
 }
+/* Touch devices: no hover, so always show actions */
+@media (hover: none) {
+  .table-row-actions {
+    opacity: 1;
+  }
+  /* Also show group-hover actions on touch */
+  .group .opacity-0 {
+    opacity: 1 !important;
+  }
+}

@@ -59,10 +59,10 @@ export function ProjectDetail() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-5 py-6 sm:py-10">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-6">
-        <div>
-          <div className="flex items-center gap-3 mb-1.5">
-            <h1 className="text-[22px] font-bold tracking-[-0.035em] text-[#0a0a14] dark:text-[#e2e2f0]">{project.name}</h1>
+      <div className="flex items-start justify-between gap-3 mb-6 flex-wrap">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-3 mb-1.5 flex-wrap">
+            <h1 className="text-[20px] sm:text-[22px] font-bold tracking-[-0.035em] text-[#0a0a14] dark:text-[#e2e2f0] break-words">{project.name}</h1>
             <StatusBadge status={project.status} />
           </div>
           {project.notes && (

@@ -46,8 +46,8 @@ export function HistoryView({ quarters }: HistoryViewProps) {
             Quarter-over-Quarter Summary
           </p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto scrollbar-hide">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="bg-gray-50 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-wider">
