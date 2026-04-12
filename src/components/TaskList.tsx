@@ -1,24 +1,77 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import type { Task } from '../lib/types';
 
 interface Props {
   projectId: string;
 }
 
 export function TaskList({ projectId }: Props) {
-  const { state, addTask, toggleTask, deleteTask } = useApp();
+  const { state, addTask, updateTask, toggleTask, deleteTask } = useApp();
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const editInputRef = useRef<HTMLInputElement>(null);
+  const [taskOrder, setTaskOrder] = useState<string[]>([]);
 
-  const tasks = state.tasks
-    .filter((t) => t.projectId === projectId)
-    .sort((a, b) => {
-      if (a.completed !== b.completed) return a.completed ? 1 : -1;
-      return a.createdAt.localeCompare(b.createdAt);
-    });
+  const storageKey = `taskOrder_${projectId}`;
+  const projectTasks = state.tasks.filter((t) => t.projectId === projectId);
 
-  const openCount = tasks.filter((t) => !t.completed).length;
+  // Sync taskOrder when tasks are added/removed
+  useEffect(() => {
+    const saved: string[] = (() => {
+      try { return JSON.parse(localStorage.getItem(storageKey) ?? '[]'); }
+      catch { return []; }
+    })();
+    const currentIds = projectTasks.map((t) => t.id);
+    const synced = [
+      ...saved.filter((id) => currentIds.includes(id)),
+      ...currentIds.filter((id) => !saved.includes(id)),
+    ];
+    setTaskOrder(synced);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectTasks.length, storageKey]);
+
+  // Persist order to localStorage
+  useEffect(() => {
+    if (taskOrder.length > 0) {
+      localStorage.setItem(storageKey, JSON.stringify(taskOrder));
+    }
+  }, [taskOrder, storageKey]);
+
+  // Focus edit input when editing starts
+  useEffect(() => {
+    if (editingId) editInputRef.current?.focus();
+  }, [editingId]);
+
+  const tasks = [...projectTasks].sort((a, b) => {
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    const ai = taskOrder.indexOf(a.id);
+    const bi = taskOrder.indexOf(b.id);
+    if (ai === -1 && bi === -1) return a.createdAt.localeCompare(b.createdAt);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+
+  const incompleteIds = tasks.filter((t) => !t.completed).map((t) => t.id);
+  const openCount = incompleteIds.length;
   const totalCount = tasks.length;
+
+  const moveTask = (id: string, direction: 'up' | 'down') => {
+    const idx = incompleteIds.indexOf(id);
+    if (direction === 'up' && idx <= 0) return;
+    if (direction === 'down' && idx >= incompleteIds.length - 1) return;
+    const swapId = direction === 'up' ? incompleteIds[idx - 1] : incompleteIds[idx + 1];
+    setTaskOrder((prev) => {
+      const newOrder = [...prev];
+      const ai = newOrder.indexOf(id);
+      const bi = newOrder.indexOf(swapId);
+      if (ai !== -1 && bi !== -1) [newOrder[ai], newOrder[bi]] = [newOrder[bi], newOrder[ai]];
+      return newOrder;
+    });
+  };
 
   const handleAdd = () => {
     const text = inputValue.trim();
@@ -28,8 +81,15 @@ export function TaskList({ projectId }: Props) {
     inputRef.current?.focus();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleAdd();
+  const startEdit = (task: Task) => {
+    setEditingId(task.id);
+    setEditText(task.text);
+  };
+
+  const saveEdit = (task: Task) => {
+    const text = editText.trim();
+    if (text && text !== task.text) updateTask({ ...task, text });
+    setEditingId(null);
   };
 
   return (
@@ -44,35 +104,81 @@ export function TaskList({ projectId }: Props) {
 
       {tasks.length > 0 && (
         <ul className="border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl overflow-hidden divide-y divide-[rgba(0,0,20,0.04)] dark:divide-[rgba(255,255,255,0.04)] mb-3">
-          {tasks.map((task) => (
-            <li
-              key={task.id}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-[rgba(227,25,55,0.03)] dark:hover:bg-[rgba(255,77,92,0.04)] transition-colors group"
-            >
-              <input
-                type="checkbox"
-                checked={task.completed}
-                onChange={() => toggleTask(task)}
-                className="accent-[#E31937] w-4 h-4 shrink-0 cursor-pointer rounded"
-              />
-              <span
-                className={`flex-1 text-[13px] leading-snug ${
-                  task.completed
-                    ? 'line-through text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'
-                    : 'text-[#0a0a14] dark:text-[#e2e2f0]'
-                }`}
+          {tasks.map((task) => {
+            const idxInIncomplete = incompleteIds.indexOf(task.id);
+            const canMoveUp = !task.completed && idxInIncomplete > 0;
+            const canMoveDown = !task.completed && idxInIncomplete < incompleteIds.length - 1;
+            const isEditing = editingId === task.id;
+
+            return (
+              <li
+                key={task.id}
+                className="flex items-center gap-2 px-4 py-3 hover:bg-[rgba(227,25,55,0.03)] dark:hover:bg-[rgba(255,77,92,0.04)] transition-colors group"
               >
-                {task.text}
-              </span>
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="text-sm text-[rgba(10,10,20,0.15)] dark:text-[rgba(226,226,240,0.12)] group-hover:text-[rgba(10,10,20,0.3)] dark:group-hover:text-[rgba(226,226,240,0.25)] hover:!text-red-500 dark:hover:!text-red-400 p-0.5 transition-colors"
-                title="Delete task"
-              >
-                ✕
-              </button>
-            </li>
-          ))}
+                <input
+                  type="checkbox"
+                  checked={task.completed}
+                  onChange={() => toggleTask(task)}
+                  className="accent-[#E31937] w-4 h-4 shrink-0 cursor-pointer rounded"
+                />
+
+                {isEditing ? (
+                  <input
+                    ref={editInputRef}
+                    type="text"
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') saveEdit(task);
+                      if (e.key === 'Escape') setEditingId(null);
+                    }}
+                    onBlur={() => saveEdit(task)}
+                    className="flex-1 text-[13px] leading-snug bg-transparent border-b border-[#E31937] dark:border-[#FF4D5C] text-[#0a0a14] dark:text-[#e2e2f0] focus:outline-none py-0.5"
+                  />
+                ) : (
+                  <span
+                    onClick={() => !task.completed && startEdit(task)}
+                    className={`flex-1 text-[13px] leading-snug ${
+                      task.completed
+                        ? 'line-through text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'
+                        : 'text-[#0a0a14] dark:text-[#e2e2f0] cursor-text'
+                    }`}
+                  >
+                    {task.text}
+                  </span>
+                )}
+
+                {!task.completed && (
+                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                    <button
+                      onClick={() => moveTask(task.id, 'up')}
+                      disabled={!canMoveUp}
+                      className="text-xs text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] disabled:opacity-25 disabled:cursor-not-allowed p-0.5 transition-colors leading-none"
+                      title="Move up"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => moveTask(task.id, 'down')}
+                      disabled={!canMoveDown}
+                      className="text-xs text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] disabled:opacity-25 disabled:cursor-not-allowed p-0.5 transition-colors leading-none"
+                      title="Move down"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => deleteTask(task.id)}
+                  className="text-sm text-[rgba(10,10,20,0.15)] dark:text-[rgba(226,226,240,0.12)] opacity-0 group-hover:opacity-100 hover:!text-red-500 dark:hover:!text-red-400 p-0.5 transition-colors shrink-0"
+                  title="Delete task"
+                >
+                  ✕
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -88,7 +194,7 @@ export function TaskList({ projectId }: Props) {
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
           placeholder="Add a task and press Enter…"
           className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-dashed border-[rgba(0,0,20,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-transparent text-[#0a0a14] dark:text-[#e2e2f0] placeholder-[rgba(10,10,20,0.3)] dark:placeholder-[rgba(226,226,240,0.25)] focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C] transition-colors"
         />

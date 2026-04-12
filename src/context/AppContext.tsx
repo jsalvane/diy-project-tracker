@@ -183,6 +183,7 @@ interface AppContextValue {
   updateEntry: (entry: Entry) => void;
   deleteEntry: (id: string) => void;
   addTask: (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Task;
+  updateTask: (task: Task) => void;
   toggleTask: (task: Task) => void;
   deleteTask: (id: string) => void;
   toggleDarkMode: () => void;
@@ -431,6 +432,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return task;
   }, []);
 
+  const updateTask = useCallback((task: Task) => {
+    const updated = { ...task, updatedAt: now() };
+    localChangeIds.add(updated.id);
+    dispatch({ type: 'UPDATE_TASK', payload: updated });
+    supabase.from('tasks').update(taskToRow(updated)).eq('id', updated.id)
+      .then(({ error }) => {
+        if (error) console.error('updateTask error:', error);
+        setTimeout(() => localChangeIds.delete(updated.id), 3000);
+      });
+  }, []);
+
   const toggleTask = useCallback((task: Task) => {
     const updated = { ...task, completed: !task.completed, updatedAt: now() };
     localChangeIds.add(updated.id);
@@ -475,6 +487,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateEntry,
         deleteEntry,
         addTask,
+        updateTask,
         toggleTask,
         deleteTask,
         toggleDarkMode,
