@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useFilters } from '../hooks/useFilters';
-import { StatusBadge } from './StatusBadge';
 import { ProjectForm } from './ProjectForm';
 import { ConfirmDialog } from './ConfirmDialog';
 import { Filters } from './Filters';
@@ -11,6 +10,65 @@ import { TaskList } from './TaskList';
 import { CategoryChart } from './CategoryChart';
 import { formatCurrency, formatDate, calcDuration, todayStr } from '../lib/utils';
 import type { Project } from '../lib/types';
+
+const STATUS_META: Record<string, { label: string; color: string; bg: string; dotAnim?: boolean }> = {
+  active:   { label: 'Active',   color: '#10b981', bg: 'rgba(16,185,129,0.1)',  dotAnim: true },
+  planned:  { label: 'Planned',  color: '#E31937', bg: 'rgba(227,25,55,0.1)'  },
+  on_hold:  { label: 'On Hold',  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  complete: { label: 'Complete', color: '#64748b', bg: 'rgba(100,116,139,0.1)' },
+};
+
+function DollarIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23"/>
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+  );
+}
+
+function ListIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="8" y1="6" x2="21" y2="6"/>
+      <line x1="8" y1="12" x2="21" y2="12"/>
+      <line x1="8" y1="18" x2="21" y2="18"/>
+      <line x1="3" y1="6" x2="3.01" y2="6"/>
+      <line x1="3" y1="12" x2="3.01" y2="12"/>
+      <line x1="3" y1="18" x2="3.01" y2="18"/>
+    </svg>
+  );
+}
+
+function PendingIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  );
+}
 
 export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +90,7 @@ export function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-5 py-12 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 text-center">
         <p className="text-[13px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">Project not found.</p>
         <button onClick={() => navigate('/')} className="text-[13px] font-medium text-[#E31937] dark:text-[#FF4D5C] hover:underline mt-2">
           Back to projects
@@ -45,6 +103,7 @@ export function ProjectDetail() {
   const duration = calcDuration(project.startDate, endDate);
   const isInProgress = project.status === 'active' && !project.finishDate;
   const openTaskCount = state.tasks.filter((t) => t.projectId === id && !t.completed).length;
+  const meta = STATUS_META[project.status] || STATUS_META.planned;
 
   const handleSave = (data: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
     updateProject({ ...project, ...data });
@@ -57,16 +116,29 @@ export function ProjectDetail() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-5 py-6 sm:py-10">
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-6 flex-wrap">
+      <div className="flex items-start justify-between gap-4 mb-7 flex-wrap">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-            <h1 className="text-[20px] sm:text-[22px] font-bold tracking-[-0.035em] text-[#0a0a14] dark:text-[#e2e2f0] break-words">{project.name}</h1>
-            <StatusBadge status={project.status} />
+            <h1 className="text-[28px] sm:text-[34px] font-extrabold tracking-[-0.05em] text-[#0a0a14] dark:text-[#f0f0fa] break-words">
+              {project.name}
+            </h1>
+            <span
+              className="inline-flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-full text-[11px] font-semibold"
+              style={{ background: meta.bg, color: meta.color }}
+            >
+              <span
+                className={`w-[5px] h-[5px] rounded-full shrink-0 ${meta.dotAnim ? 'animate-pulse-dot' : ''}`}
+                style={{ background: meta.color }}
+              />
+              {meta.label}
+            </span>
           </div>
           {project.notes && (
-            <p className="text-[13px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] max-w-xl">{project.notes}</p>
+            <p className="mt-1 text-[13px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] max-w-xl">
+              {project.notes}
+            </p>
           )}
         </div>
         <div className="flex gap-2 shrink-0">
@@ -85,22 +157,39 @@ export function ProjectDetail() {
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 mb-7">
-        <SummaryCard label="Total Spent" value={formatCurrency(grandTotal)} />
+      {/* Summary cards - Dashboard style */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-7">
         <SummaryCard
+          icon={<DollarIcon />}
+          iconColor="#10b981"
+          label="Total Spent"
+          value={formatCurrency(grandTotal)}
+          large
+        />
+        <SummaryCard
+          icon={<PendingIcon />}
+          iconColor="#f59e0b"
           label="Pending"
           value={formatCurrency(pendingTotal)}
           sub={pendingTotal > 0 ? `projected: ${formatCurrency(grandTotal + pendingTotal)}` : undefined}
           accent={pendingTotal > 0}
         />
-        <SummaryCard label="Entries" value={String(projectEntries.length)} />
         <SummaryCard
+          icon={<ListIcon />}
+          iconColor="#3b82f6"
+          label="Entries"
+          value={String(projectEntries.length)}
+        />
+        <SummaryCard
+          icon={<ClockIcon />}
+          iconColor="#8b5cf6"
           label="Duration"
-          value={duration !== null ? `${duration} day${duration !== 1 ? 's' : ''}` : '—'}
+          value={duration !== null ? `${duration}d` : '—'}
           sub={isInProgress ? 'in progress' : undefined}
         />
         <SummaryCard
+          icon={<CalendarIcon />}
+          iconColor="#ec4899"
           label="Dates"
           value={formatDate(project.startDate)}
           sub={project.finishDate ? `to ${formatDate(project.finishDate)}` : 'no end date'}
@@ -185,20 +274,52 @@ export function ProjectDetail() {
           onCancel={() => setShowDelete(false)}
         />
       )}
-    </div>
+    </main>
   );
 }
 
-function SummaryCard({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: boolean }) {
+function SummaryCard({ icon, iconColor, label, value, sub, accent, large }: {
+  icon: React.ReactNode;
+  iconColor: string;
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: boolean;
+  large?: boolean;
+}) {
   return (
-    <div className={`border rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 ${
+    <div className={`relative flex flex-col gap-3 rounded-2xl border p-4 sm:p-5 overflow-hidden ${
       accent
         ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200/70 dark:border-amber-800/40'
         : 'bg-white dark:bg-[#111118] border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]'
-    }`}>
-      <div className="text-[9px] sm:text-[10px] font-semibold tracking-[0.07em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-0.5 sm:mb-1">{label}</div>
-      <div className={`text-[15px] sm:text-[18px] font-bold tracking-[-0.025em] ${accent ? 'text-amber-700 dark:text-amber-400' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>{value}</div>
-      {sub && <div className="text-[10px] sm:text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5 truncate">{sub}</div>}
+    }`} style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}>
+      <div className="flex items-center gap-2">
+        <div
+          className="w-6 h-6 rounded-[7px] flex items-center justify-center shrink-0"
+          style={{ background: `${iconColor}18`, color: iconColor }}
+        >
+          {icon}
+        </div>
+        <span className="text-[11px] font-semibold tracking-[0.04em] uppercase text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)]">
+          {label}
+        </span>
+      </div>
+      <div>
+        <div className={`font-bold tracking-[-0.03em] ${
+          large
+            ? 'text-[24px] sm:text-[28px] text-[#10b981]'
+            : accent
+              ? 'text-[18px] sm:text-[22px] text-amber-700 dark:text-amber-400'
+              : 'text-[18px] sm:text-[22px] text-[#0a0a14] dark:text-[#e2e2f0]'
+        }`}>
+          {value}
+        </div>
+        {sub && (
+          <div className="text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5 truncate">
+            {sub}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
