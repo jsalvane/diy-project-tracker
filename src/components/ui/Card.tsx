@@ -11,7 +11,7 @@ export function Card({
   return (
     <Link
       to={to}
-      className="group relative flex flex-col gap-5 rounded-2xl border border-[rgba(0,0,20,0.09)] dark:border-[rgba(255,255,255,0.07)] bg-white dark:bg-[#111118] p-6 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,20,0.10)] dark:hover:shadow-[0_8px_28px_rgba(0,0,0,0.5)]"
+      className="group relative flex flex-col gap-5 rounded-2xl border border-[rgba(0,0,20,0.09)] dark:border-[rgba(255,255,255,0.07)] bg-white dark:bg-[#111118] p-6 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,20,0.10)] dark:hover:shadow-[0_8px_28px_rgba(0,0,0,0.5)] h-full"
       style={{ boxShadow: '0 1px 4px rgba(0,0,20,0.06)' }}
     >
       <div

@@ -463,31 +463,30 @@ function ScratchpadCard() {
     <Card to="/scratchpad" accent={color}>
       <CardLabel color={color} icon={<NoteIcon />} title="Notes" />
       {loading ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex gap-6">
           <Skeleton w="w-16" h="h-11" />
-          <Skeleton w="w-28" h="h-3" />
+          <div className="flex flex-col gap-2 flex-1"><Skeleton w="w-full" h="h-4" /><Skeleton w="w-3/4" h="h-4" /></div>
         </div>
       ) : notes.length === 0 ? (
-        <div className="flex flex-col gap-2">
-          <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none" style={{ color }}>
-            0
-          </div>
-          <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
-            no notes yet
-          </div>
+        <div className="flex items-center gap-4">
+          <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none" style={{ color }}>0</div>
+          <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">no notes yet</div>
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
-          <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none" style={{ color }}>
-            {notes.length}
-          </div>
-          <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
-            note{notes.length !== 1 ? 's' : ''}
+        <div className="flex items-start gap-8">
+          {/* Metric */}
+          <div className="flex flex-col gap-0.5 shrink-0">
+            <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none" style={{ color }}>
+              {notes.length}
+            </div>
+            <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
+              note{notes.length !== 1 ? 's' : ''}
+            </div>
           </div>
 
-          {/* Recent notes */}
-          <div className="flex flex-col gap-1 mt-1 pt-2.5 border-t border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]">
-            {sorted.slice(0, 3).map(n => (
+          {/* Notes list — horizontal, fills remaining width */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-1 pt-1 border-t border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]">
+            {sorted.slice(0, 6).map(n => (
               <div key={n.id} className="flex items-center justify-between py-0.5">
                 <span className="text-[12px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
                   {n.title || 'Untitled'}
@@ -546,13 +545,14 @@ export function Dashboard() {
 
       {/* Main cards — 3x3 grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-grid">
-        <div style={{ '--i': 0 } as React.CSSProperties}><BudgetCard budgetItems={budgetItems} creditCards={creditCards} loading={budgetLoading} /></div>
-        <div style={{ '--i': 1 } as React.CSSProperties}><FinancialCard /></div>
-        <div style={{ '--i': 2 } as React.CSSProperties}><ProjectsCard /></div>
-        <div style={{ '--i': 3 } as React.CSSProperties}><MaintenanceCard tasks={tasks} loading={maintenanceLoading} /></div>
-        <div style={{ '--i': 4 } as React.CSSProperties}><GiftsCard /></div>
-        <div style={{ '--i': 5 } as React.CSSProperties}><SubscriptionsCard /></div>
-        <div style={{ '--i': 6 } as React.CSSProperties}><ScratchpadCard /></div>
+        <div className="flex flex-col" style={{ '--i': 0 } as React.CSSProperties}><BudgetCard budgetItems={budgetItems} creditCards={creditCards} loading={budgetLoading} /></div>
+        <div className="flex flex-col" style={{ '--i': 1 } as React.CSSProperties}><FinancialCard /></div>
+        <div className="flex flex-col" style={{ '--i': 2 } as React.CSSProperties}><ProjectsCard /></div>
+        <div className="flex flex-col" style={{ '--i': 3 } as React.CSSProperties}><MaintenanceCard tasks={tasks} loading={maintenanceLoading} /></div>
+        <div className="flex flex-col" style={{ '--i': 4 } as React.CSSProperties}><GiftsCard /></div>
+        <div className="flex flex-col" style={{ '--i': 5 } as React.CSSProperties}><SubscriptionsCard /></div>
+        {/* Notes always full-width — fills the orphaned last row at every breakpoint */}
+        <div className="flex flex-col col-span-full" style={{ '--i': 6 } as React.CSSProperties}><ScratchpadCard /></div>
       </div>
     </main>
   );
