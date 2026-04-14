@@ -2,21 +2,17 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useFilters } from '../hooks/useFilters';
+import { STATUS_META } from '../lib/constants';
 import { ProjectForm } from './ProjectForm';
 import { ConfirmDialog } from './ConfirmDialog';
 import { Filters } from './Filters';
 import { EntriesTable } from './EntriesTable';
 import { TaskList } from './TaskList';
 import { CategoryChart } from './CategoryChart';
+import { SummaryCard } from './ui/SummaryCard';
+import { Skeleton } from './ui/Skeleton';
 import { formatCurrency, formatDate, calcDuration, todayStr } from '../lib/utils';
 import type { Project } from '../lib/types';
-
-const STATUS_META: Record<string, { label: string; color: string; bg: string; dotAnim?: boolean }> = {
-  active:   { label: 'Active',   color: '#10b981', bg: 'rgba(16,185,129,0.1)',  dotAnim: true },
-  planned:  { label: 'Planned',  color: '#E31937', bg: 'rgba(227,25,55,0.1)'  },
-  on_hold:  { label: 'On Hold',  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  complete: { label: 'Complete', color: '#64748b', bg: 'rgba(100,116,139,0.1)' },
-};
 
 function DollarIcon() {
   return (
@@ -70,10 +66,33 @@ function PendingIcon() {
   );
 }
 
+function DetailSkeleton() {
+  return (
+    <div className="space-y-7 animate-fade-in">
+      <div className="flex items-center gap-3">
+        <Skeleton w="w-56" h="h-9" />
+        <Skeleton w="w-16" h="h-6" className="rounded-full" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        {[0, 1, 2, 3, 4].map(i => (
+          <div key={i} className="rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] bg-white dark:bg-[#111118] p-4 sm:p-5 flex flex-col gap-3" style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}>
+            <div className="flex items-center gap-2">
+              <Skeleton w="w-6" h="h-6" className="rounded-[7px]" />
+              <Skeleton w="w-16" h="h-3" />
+            </div>
+            <Skeleton w="w-20" h="h-6" />
+          </div>
+        ))}
+      </div>
+      <Skeleton w="w-full" h="h-10" />
+    </div>
+  );
+}
+
 export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { state, updateProject, deleteProject } = useApp();
+  const { state, loading, updateProject, deleteProject } = useApp();
 
   const project = state.projects.find((p) => p.id === id);
   const projectEntries = state.entries.filter((e) => e.projectId === id);
@@ -87,6 +106,14 @@ export function ProjectDetail() {
   const [activeTab, setActiveTab] = useState<'expenses' | 'tasks' | 'chart'>('expenses');
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+
+  if (loading) {
+    return (
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <DetailSkeleton />
+      </main>
+    );
+  }
 
   if (!project) {
     return (
@@ -157,43 +184,23 @@ export function ProjectDetail() {
         </div>
       </div>
 
-      {/* Summary cards - Dashboard style */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-7">
-        <SummaryCard
-          icon={<DollarIcon />}
-          iconColor="#10b981"
-          label="Total Spent"
-          value={formatCurrency(grandTotal)}
-          large
-        />
-        <SummaryCard
-          icon={<PendingIcon />}
-          iconColor="#f59e0b"
-          label="Pending"
-          value={formatCurrency(pendingTotal)}
-          sub={pendingTotal > 0 ? `projected: ${formatCurrency(grandTotal + pendingTotal)}` : undefined}
-          accent={pendingTotal > 0}
-        />
-        <SummaryCard
-          icon={<ListIcon />}
-          iconColor="#3b82f6"
-          label="Entries"
-          value={String(projectEntries.length)}
-        />
-        <SummaryCard
-          icon={<ClockIcon />}
-          iconColor="#8b5cf6"
-          label="Duration"
-          value={duration !== null ? `${duration}d` : '—'}
-          sub={isInProgress ? 'in progress' : undefined}
-        />
-        <SummaryCard
-          icon={<CalendarIcon />}
-          iconColor="#ec4899"
-          label="Dates"
-          value={formatDate(project.startDate)}
-          sub={project.finishDate ? `to ${formatDate(project.finishDate)}` : 'no end date'}
-        />
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-7 stagger-grid">
+        <div style={{ '--i': 0 } as React.CSSProperties}>
+          <SummaryCard icon={<DollarIcon />} iconColor="#10b981" label="Total Spent" value={formatCurrency(grandTotal)} large />
+        </div>
+        <div style={{ '--i': 1 } as React.CSSProperties}>
+          <SummaryCard icon={<PendingIcon />} iconColor="#f59e0b" label="Pending" value={formatCurrency(pendingTotal)} sub={pendingTotal > 0 ? `projected: ${formatCurrency(grandTotal + pendingTotal)}` : undefined} accent={pendingTotal > 0} />
+        </div>
+        <div style={{ '--i': 2 } as React.CSSProperties}>
+          <SummaryCard icon={<ListIcon />} iconColor="#3b82f6" label="Entries" value={String(projectEntries.length)} />
+        </div>
+        <div style={{ '--i': 3 } as React.CSSProperties}>
+          <SummaryCard icon={<ClockIcon />} iconColor="#8b5cf6" label="Duration" value={duration !== null ? `${duration}d` : '—'} sub={isInProgress ? 'in progress' : undefined} />
+        </div>
+        <div style={{ '--i': 4 } as React.CSSProperties}>
+          <SummaryCard icon={<CalendarIcon />} iconColor="#ec4899" label="Dates" value={formatDate(project.startDate)} sub={project.finishDate ? `to ${formatDate(project.finishDate)}` : 'no end date'} />
+        </div>
       </div>
 
       {/* Tab bar */}
@@ -275,51 +282,5 @@ export function ProjectDetail() {
         />
       )}
     </main>
-  );
-}
-
-function SummaryCard({ icon, iconColor, label, value, sub, accent, large }: {
-  icon: React.ReactNode;
-  iconColor: string;
-  label: string;
-  value: string;
-  sub?: string;
-  accent?: boolean;
-  large?: boolean;
-}) {
-  return (
-    <div className={`relative flex flex-col gap-3 rounded-2xl border p-4 sm:p-5 overflow-hidden ${
-      accent
-        ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200/70 dark:border-amber-800/40'
-        : 'bg-white dark:bg-[#111118] border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]'
-    }`} style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}>
-      <div className="flex items-center gap-2">
-        <div
-          className="w-6 h-6 rounded-[7px] flex items-center justify-center shrink-0"
-          style={{ background: `${iconColor}18`, color: iconColor }}
-        >
-          {icon}
-        </div>
-        <span className="text-[11px] font-semibold tracking-[0.04em] uppercase text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)]">
-          {label}
-        </span>
-      </div>
-      <div>
-        <div className={`font-bold tracking-[-0.03em] ${
-          large
-            ? 'text-[24px] sm:text-[28px] text-[#10b981]'
-            : accent
-              ? 'text-[18px] sm:text-[22px] text-amber-700 dark:text-amber-400'
-              : 'text-[18px] sm:text-[22px] text-[#0a0a14] dark:text-[#e2e2f0]'
-        }`}>
-          {value}
-        </div>
-        {sub && (
-          <div className="text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5 truncate">
-            {sub}
-          </div>
-        )}
-      </div>
-    </div>
   );
 }

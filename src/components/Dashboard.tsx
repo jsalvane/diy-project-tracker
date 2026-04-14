@@ -1,61 +1,47 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useFinancial } from '../context/FinancialContext';
 import { useBudget } from '../hooks/useBudget';
 import { useGifts } from '../hooks/useGifts';
 import { useMaintenance } from '../hooks/useMaintenance';
+import { useSubscriptions } from '../hooks/useSubscriptions';
+import { useScratchpad } from '../hooks/useScratchpad';
 import { supabase } from '../lib/supabase';
+import { STATUS_META } from '../lib/constants';
+import { formatCurrency } from '../lib/utils';
+import { Card, CardLabel } from './ui/Card';
+import { StatStrip } from './ui/StatStrip';
+import { Skeleton } from './ui/Skeleton';
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 }
 
-// ── Skeleton block ────────────────────────────────────────────────────────────
-
-function Skeleton({ w = 'w-32', h = 'h-12' }: { w?: string; h?: string }) {
-  return <div className={`skeleton ${w} ${h}`} />;
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
 }
 
-// ── Card shell ────────────────────────────────────────────────────────────────
-
-function Card({
-  to, children, accent,
-}: {
-  to: string;
-  children: React.ReactNode;
-  accent: string;
-}) {
-  return (
-    <Link
-      to={to}
-      className="group relative flex flex-col gap-5 rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-white dark:bg-[#111118] p-6 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,20,0.10)] dark:hover:shadow-[0_8px_28px_rgba(0,0,0,0.5)]"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.05)' }}
-    >
-      {/* Subtle colored top border on hover */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        style={{ background: accent }}
-      />
-      {children}
-    </Link>
-  );
+function formatToday(): string {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
-function CardLabel({ color, icon, title }: { color: string; icon: React.ReactNode; title: string }) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <div
-        className="w-7 h-7 rounded-[8px] flex items-center justify-center shrink-0"
-        style={{ background: `${color}18`, color }}
-      >
-        {icon}
-      </div>
-      <span className="text-[12px] font-semibold tracking-[-0.01em] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] uppercase tracking-[0.04em]">
-        {title}
-      </span>
-    </div>
-  );
+function daysUntil(dateStr: string): number {
+  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
+}
+
+function formatRelative(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
 }
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -109,6 +95,28 @@ function GiftIcon() {
   );
 }
 
+function RepeatIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="17 1 21 5 17 9"/>
+      <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+      <polyline points="7 23 3 19 7 15"/>
+      <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+    </svg>
+  );
+}
+
+function NoteIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/>
+      <line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>
+  );
+}
+
 // ── Budget Card ───────────────────────────────────────────────────────────────
 
 function BudgetCard({ budgetItems, creditCards, loading }: {
@@ -139,11 +147,11 @@ function BudgetCard({ budgetItems, creditCards, loading }: {
   const totalIncome = income15 + income30;
 
   const isPositive = surplus >= 0;
-  const color = '#E31937';
+  const accentColor = isPositive ? '#10b981' : '#ef4444';
 
   return (
-    <Card to="/budget" accent={color}>
-      <CardLabel color={color} icon={<DollarIcon />} title="Budget" />
+    <Card to="/budget" accent={accentColor}>
+      <CardLabel color="#E31937" icon={<DollarIcon />} title="Budget" />
       {loading ? (
         <div className="flex flex-col gap-2">
           <Skeleton w="w-36" h="h-11" />
@@ -206,19 +214,13 @@ function FinancialCard() {
 
 // ── Projects Card ─────────────────────────────────────────────────────────────
 
-const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
-  active:   { label: 'Active',   color: '#10b981', bg: 'rgba(16,185,129,0.1)'  },
-  planned:  { label: 'Planned',  color: '#E31937', bg: 'rgba(227,25,55,0.1)' },
-  on_hold:  { label: 'On Hold',  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  complete: { label: 'Done',     color: '#64748b', bg: 'rgba(100,116,139,0.1)' },
-};
-
 function ProjectsCard() {
   const { state } = useApp();
+  const navigate = useNavigate();
   const projects = state.projects;
   const entries = state.entries;
 
-  const active = projects.filter(p => p.status === 'active').length;
+  const activeProjects = projects.filter(p => p.status === 'active');
   const planned = projects.filter(p => p.status === 'planned').length;
   const done = projects.filter(p => p.status === 'complete').length;
   const totalSpent = entries.filter(e => !e.isPending).reduce((s, e) => s + e.price, 0);
@@ -235,9 +237,9 @@ function ProjectsCard() {
           <span className="text-[13px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">total</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {active > 0 && (
+          {activeProjects.length > 0 && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold" style={{ background: STATUS_META.active.bg, color: STATUS_META.active.color }}>
-              {active} active
+              {activeProjects.length} active
             </span>
           )}
           {planned > 0 && (
@@ -251,6 +253,25 @@ function ProjectsCard() {
             </span>
           )}
         </div>
+
+        {activeProjects.length > 0 && (
+          <div className="flex flex-col gap-1.5 mt-1 pt-2.5 border-t border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]">
+            {activeProjects.slice(0, 3).map(p => {
+              const spent = entries.filter(e => e.projectId === p.id && !e.isPending).reduce((s, e) => s + e.price, 0);
+              return (
+                <button
+                  key={p.id}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/project/${p.id}`); }}
+                  className="flex items-center justify-between text-left hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.03)] -mx-1.5 px-1.5 py-1 rounded-lg transition-colors"
+                >
+                  <span className="text-[12px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">{p.name}</span>
+                  <span className="text-[12px] font-semibold text-[#10b981] tabular-nums shrink-0 ml-2">{formatCurrency(spent)}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="text-[12px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
           <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{fmt(totalSpent)}</span> total spent
         </div>
@@ -259,22 +280,22 @@ function ProjectsCard() {
   );
 }
 
-// ── Maintenance Card ──────────────────────────────────────────────────────────
+// ── Maintenance Card (enhanced with task names) ──────────────────────────────
 
 function MaintenanceCard({ tasks, loading }: { tasks: ReturnType<typeof useMaintenance>['tasks']; loading: boolean }) {
   const today = new Date().toISOString().slice(0, 10);
 
-  const overdue = tasks.filter(t => t.nextDueDate && t.nextDueDate < today && !t.snoozedUntil).length;
-  const dueSoon = tasks.filter(t => {
-    if (!t.nextDueDate || t.nextDueDate < today) return false;
-    const days = (new Date(t.nextDueDate).getTime() - Date.now()) / 86400000;
-    return days <= 30;
-  }).length;
+  const overdueTasks = tasks.filter(t => t.nextDueDate && t.nextDueDate < today && !t.snoozedUntil);
+  const dueSoonTasks = tasks.filter(t => {
+    if (!t.nextDueDate || t.nextDueDate < today || t.snoozedUntil) return false;
+    return daysUntil(t.nextDueDate) <= 30;
+  });
 
   const color = '#f59e0b';
-  const urgentColor = overdue > 0 ? '#ef4444' : dueSoon > 0 ? '#f59e0b' : '#10b981';
-  const urgentCount = overdue > 0 ? overdue : dueSoon;
-  const urgentLabel = overdue > 0 ? 'overdue' : dueSoon > 0 ? 'due soon' : '';
+  const urgentColor = overdueTasks.length > 0 ? '#ef4444' : dueSoonTasks.length > 0 ? '#f59e0b' : '#10b981';
+  const urgentCount = overdueTasks.length > 0 ? overdueTasks.length : dueSoonTasks.length;
+  const urgentLabel = overdueTasks.length > 0 ? 'overdue' : dueSoonTasks.length > 0 ? 'due soon' : '';
+  const urgentItems = overdueTasks.length > 0 ? overdueTasks : dueSoonTasks;
 
   return (
     <Card to="/maintenance" accent={color}>
@@ -286,7 +307,7 @@ function MaintenanceCard({ tasks, loading }: { tasks: ReturnType<typeof useMaint
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {overdue === 0 && dueSoon === 0 ? (
+          {overdueTasks.length === 0 && dueSoonTasks.length === 0 ? (
             <>
               <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none text-emerald-500 dark:text-emerald-400">
                 {tasks.length}
@@ -303,10 +324,30 @@ function MaintenanceCard({ tasks, loading }: { tasks: ReturnType<typeof useMaint
               <div className="text-[12px] font-medium" style={{ color: urgentColor }}>
                 {urgentLabel}
               </div>
-              {overdue > 0 && dueSoon > 0 && (
-                <div className="text-[11px] text-amber-500">{dueSoon} more due soon</div>
+              {overdueTasks.length > 0 && dueSoonTasks.length > 0 && (
+                <div className="text-[11px] text-amber-500">{dueSoonTasks.length} more due soon</div>
               )}
             </>
+          )}
+
+          {/* Inline task names */}
+          {urgentItems.length > 0 && (
+            <div className="flex flex-col gap-1 mt-1 pt-2.5 border-t border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]">
+              {urgentItems.slice(0, 3).map(t => {
+                const d = t.nextDueDate ? daysUntil(t.nextDueDate) : null;
+                const timeLabel = d !== null
+                  ? d < 0 ? `${Math.abs(d)}d overdue` : d === 0 ? 'today' : `${d}d`
+                  : '';
+                return (
+                  <div key={t.id} className="flex items-center justify-between py-0.5">
+                    <span className="text-[12px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">{t.name}</span>
+                    <span className="text-[11px] font-medium tabular-nums shrink-0 ml-2" style={{ color: urgentColor }}>
+                      {timeLabel}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       )}
@@ -314,11 +355,15 @@ function MaintenanceCard({ tasks, loading }: { tasks: ReturnType<typeof useMaint
   );
 }
 
-// ── Gifts Card ────────────────────────────────────────────────────────────────
+// ── Gifts Card (enhanced with progress) ──────────────────────────────────────
 
 function GiftsCard() {
   const { recipients, gifts, loading } = useGifts();
   const purchased = gifts.filter(g => g.status === 'purchased').length;
+  const totalGifts = gifts.length;
+  const totalBudget = recipients.reduce((s, r) => s + (r.budget || 0), 0);
+  const totalSpent = gifts.filter(g => g.status === 'purchased').reduce((s, g) => s + g.cost, 0);
+  const progressPct = totalGifts > 0 ? (purchased / totalGifts) * 100 : 0;
   const color = '#ec4899';
 
   return (
@@ -335,19 +380,24 @@ function GiftsCard() {
             {recipients.length}
           </div>
           <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
-            {recipients.length === 1 ? 'recipient' : 'recipients'}{purchased > 0 ? ` · ${purchased} purchased` : ''}
+            {recipients.length === 1 ? 'recipient' : 'recipients'}
+            {totalGifts > 0 && ` · ${purchased}/${totalGifts} purchased`}
           </div>
-          {recipients.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1">
-              {recipients.slice(0, 4).map(r => (
-                <span
-                  key={r.id}
-                  className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold"
-                  style={{ background: 'rgba(236,72,153,0.1)', color: '#ec4899' }}
-                >
-                  {r.name}
+
+          {/* Purchase progress bar */}
+          {totalGifts > 0 && (
+            <div className="flex items-center gap-2.5 mt-1">
+              <div className="flex-1 h-1.5 rounded-full bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.08)] overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${progressPct}%`, background: progressPct === 100 ? '#10b981' : color }}
+                />
+              </div>
+              {totalBudget > 0 && (
+                <span className="text-[11px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] tabular-nums shrink-0">
+                  {fmt(totalSpent)}/{fmt(totalBudget)}
                 </span>
-              ))}
+              )}
             </div>
           )}
         </div>
@@ -356,39 +406,101 @@ function GiftsCard() {
   );
 }
 
-// ── Stat strip ────────────────────────────────────────────────────────────────
+// ── Subscriptions Card ───────────────────────────────────────────────────────
 
-function StatStrip({ tasks }: { tasks: ReturnType<typeof useMaintenance>['tasks'] }) {
-  const { state } = useApp();
-  const today = new Date().toISOString().slice(0, 10);
+function SubscriptionsCard() {
+  const { subscriptions, loading } = useSubscriptions();
+  const color = '#8b5cf6';
 
-  const activeProjects = state.projects.filter(p => p.status === 'active').length;
-  const overdueTasks = tasks.filter(t => t.nextDueDate && t.nextDueDate < today && !t.snoozedUntil).length;
-  const pendingSpend = state.entries.filter(e => e.isPending).reduce((s, e) => s + e.price, 0);
-
-  const stats = [
-    { label: 'Active Projects', value: String(activeProjects), color: '#10b981' },
-    { label: 'Overdue Tasks',   value: String(overdueTasks),   color: overdueTasks > 0 ? '#ef4444' : '#34d399' },
-    { label: 'Pending Spend',   value: fmt(pendingSpend),      color: '#f59e0b' },
-  ];
+  const active = subscriptions.filter(s => s.status === 'active');
+  const monthlyTotal = active.reduce((s, sub) => {
+    return s + (sub.frequency === 'annual' ? sub.amount / 12 : sub.amount);
+  }, 0);
+  const annualTotal = monthlyTotal * 12;
+  const trialCount = active.filter(s => s.freeTrial).length;
 
   return (
-    <div className="flex items-stretch gap-0 rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] overflow-hidden bg-white dark:bg-[#111118] mb-6"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}>
-      {stats.map((stat, i) => (
-        <div
-          key={stat.label}
-          className={`flex-1 px-5 py-4 flex flex-col gap-1 ${i < stats.length - 1 ? 'border-r border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)]' : ''}`}
-        >
-          <div className="text-[11px] font-semibold tracking-[0.04em] uppercase text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)]">
-            {stat.label}
+    <Card to="/budget" accent={color}>
+      <CardLabel color={color} icon={<RepeatIcon />} title="Subscriptions" />
+      {loading ? (
+        <div className="flex flex-col gap-2">
+          <Skeleton w="w-24" h="h-11" />
+          <Skeleton w="w-28" h="h-3" />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none" style={{ color }}>
+            {fmt(monthlyTotal)}
           </div>
-          <div className="text-[22px] font-bold tracking-[-0.04em]" style={{ color: stat.color }}>
-            {stat.value}
+          <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
+            /month · {fmt(annualTotal)}/yr
+          </div>
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold" style={{ background: 'rgba(139,92,246,0.1)', color }}>
+              {active.length} active
+            </span>
+            {trialCount > 0 && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400">
+                {trialCount} trial{trialCount > 1 ? 's' : ''}
+              </span>
+            )}
           </div>
         </div>
-      ))}
-    </div>
+      )}
+    </Card>
+  );
+}
+
+// ── Scratchpad Card ──────────────────────────────────────────────────────────
+
+function ScratchpadCard() {
+  const { notes, loading } = useScratchpad();
+  const color = '#64748b';
+
+  const sorted = [...notes].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+  return (
+    <Card to="/scratchpad" accent={color}>
+      <CardLabel color={color} icon={<NoteIcon />} title="Notes" />
+      {loading ? (
+        <div className="flex flex-col gap-2">
+          <Skeleton w="w-16" h="h-11" />
+          <Skeleton w="w-28" h="h-3" />
+        </div>
+      ) : notes.length === 0 ? (
+        <div className="flex flex-col gap-2">
+          <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none" style={{ color }}>
+            0
+          </div>
+          <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
+            no notes yet
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <div className="text-[42px] font-extrabold tracking-[-0.05em] leading-none" style={{ color }}>
+            {notes.length}
+          </div>
+          <div className="text-[12px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
+            note{notes.length !== 1 ? 's' : ''}
+          </div>
+
+          {/* Recent notes */}
+          <div className="flex flex-col gap-1 mt-1 pt-2.5 border-t border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]">
+            {sorted.slice(0, 3).map(n => (
+              <div key={n.id} className="flex items-center justify-between py-0.5">
+                <span className="text-[12px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
+                  {n.title || 'Untitled'}
+                </span>
+                <span className="text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] shrink-0 ml-2">
+                  {formatRelative(n.updatedAt)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </Card>
   );
 }
 
@@ -397,29 +509,50 @@ function StatStrip({ tasks }: { tasks: ReturnType<typeof useMaintenance>['tasks'
 export function Dashboard() {
   const { budgetItems, creditCards, loading: budgetLoading } = useBudget();
   const { tasks, loading: maintenanceLoading } = useMaintenance();
+  const { state } = useApp();
+
+  const today = new Date().toISOString().slice(0, 10);
+  const activeProjects = state.projects.filter(p => p.status === 'active').length;
+  const overdueTasks = tasks.filter(t => t.nextDueDate && t.nextDueDate < today && !t.snoozedUntil).length;
+  const pendingSpend = state.entries.filter(e => e.isPending).reduce((s, e) => s + e.price, 0);
+
+  const upcomingMaint = tasks.filter(t => {
+    if (!t.nextDueDate || t.snoozedUntil) return false;
+    const d = daysUntil(t.nextDueDate);
+    return d >= 0 && d <= 30;
+  }).length;
+
+  const stats = [
+    { label: 'Active Projects', value: String(activeProjects), color: '#10b981' },
+    { label: 'Overdue Tasks',   value: String(overdueTasks),   color: overdueTasks > 0 ? '#ef4444' : '#34d399' },
+    { label: 'Pending Spend',   value: fmt(pendingSpend),      color: '#f59e0b' },
+    { label: 'Upcoming Maint.', value: String(upcomingMaint),  color: upcomingMaint > 0 ? '#f59e0b' : '#34d399' },
+  ];
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-      {/* Page header */}
+      {/* Page header with greeting */}
       <div className="mb-7">
         <h1 className="text-[28px] sm:text-[34px] font-extrabold tracking-[-0.05em] text-[#0a0a14] dark:text-[#f0f0fa]">
-          Home
+          {getGreeting()}
         </h1>
         <p className="mt-1 text-[13px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
-          Your finances, projects &amp; home at a glance.
+          {formatToday()} — your finances, projects &amp; home at a glance.
         </p>
       </div>
 
       {/* Quick stat strip */}
-      <StatStrip tasks={tasks} />
+      <StatStrip stats={stats} className="mb-6" />
 
-      {/* Main cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <BudgetCard budgetItems={budgetItems} creditCards={creditCards} loading={budgetLoading} />
-        <FinancialCard />
-        <ProjectsCard />
-        <MaintenanceCard tasks={tasks} loading={maintenanceLoading} />
-        <GiftsCard />
+      {/* Main cards — 3x3 grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-grid">
+        <div style={{ '--i': 0 } as React.CSSProperties}><BudgetCard budgetItems={budgetItems} creditCards={creditCards} loading={budgetLoading} /></div>
+        <div style={{ '--i': 1 } as React.CSSProperties}><FinancialCard /></div>
+        <div style={{ '--i': 2 } as React.CSSProperties}><ProjectsCard /></div>
+        <div style={{ '--i': 3 } as React.CSSProperties}><MaintenanceCard tasks={tasks} loading={maintenanceLoading} /></div>
+        <div style={{ '--i': 4 } as React.CSSProperties}><GiftsCard /></div>
+        <div style={{ '--i': 5 } as React.CSSProperties}><SubscriptionsCard /></div>
+        <div style={{ '--i': 6 } as React.CSSProperties}><ScratchpadCard /></div>
       </div>
     </main>
   );

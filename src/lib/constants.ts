@@ -10,7 +10,15 @@ export const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: 'on_hold',  label: 'On Hold'  },
 ];
 
-// dot color + text color pairs used by StatusBadge
+/** Single source of truth for project status colors, labels, and backgrounds */
+export const STATUS_META: Record<ProjectStatus, { label: string; color: string; bg: string; dotAnim?: boolean }> = {
+  active:   { label: 'Active',   color: '#10b981', bg: 'rgba(16,185,129,0.1)',  dotAnim: true },
+  planned:  { label: 'Planned',  color: '#E31937', bg: 'rgba(227,25,55,0.1)'  },
+  on_hold:  { label: 'On Hold',  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  complete: { label: 'Complete', color: '#64748b', bg: 'rgba(100,116,139,0.1)' },
+};
+
+// Legacy exports for backward compat (StatusBadge in old code)
 export const STATUS_COLORS: Record<ProjectStatus, string> = {
   planned:  'text-[#E31937] dark:text-[#FF4D5C]',
   active:   'text-[#16a34a] dark:text-[#22c55e]',

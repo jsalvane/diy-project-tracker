@@ -1,20 +1,16 @@
 import { useNavigate } from 'react-router-dom';
-import type { Project, Entry } from '../lib/types';
+import type { Project, Entry, Task } from '../lib/types';
+import { STATUS_META } from '../lib/constants';
 import { formatCurrency, formatDate, calcDuration, todayStr } from '../lib/utils';
+import { IconBadge } from './ui/Card';
 
 interface Props {
   project: Project;
   entries: Entry[];
+  tasks: Task[];
   onEdit: () => void;
   onDelete: () => void;
 }
-
-const STATUS_META: Record<string, { label: string; color: string; bg: string; dotAnim?: boolean }> = {
-  active:   { label: 'Active',   color: '#10b981', bg: 'rgba(16,185,129,0.1)',  dotAnim: true },
-  planned:  { label: 'Planned',  color: '#E31937', bg: 'rgba(227,25,55,0.1)'  },
-  on_hold:  { label: 'On Hold',  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  complete: { label: 'Complete', color: '#64748b', bg: 'rgba(100,116,139,0.1)' },
-};
 
 function WrenchIcon() {
   return (
@@ -24,7 +20,7 @@ function WrenchIcon() {
   );
 }
 
-export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
+export function ProjectCard({ project, entries, tasks, onEdit, onDelete }: Props) {
   const navigate = useNavigate();
   const total = entries.reduce((s, e) => s + e.price, 0);
   const pendingTotal = entries.filter(e => e.isPending).reduce((s, e) => s + e.price, 0);
@@ -33,6 +29,11 @@ export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
   const duration = calcDuration(project.startDate, endDate);
   const isInProgress = project.status === 'active' && !project.finishDate;
   const meta = STATUS_META[project.status] || STATUS_META.planned;
+
+  // Task progress
+  const totalTasks = tasks.length;
+  const doneTasks = tasks.filter(t => t.completed).length;
+  const taskPct = totalTasks > 0 ? (doneTasks / totalTasks) * 100 : 0;
 
   return (
     <div
@@ -54,12 +55,7 @@ export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
       {/* Header: icon + title + status */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div
-            className="w-7 h-7 rounded-[8px] flex items-center justify-center shrink-0"
-            style={{ background: `${meta.color}18`, color: meta.color }}
-          >
-            <WrenchIcon />
-          </div>
+          <IconBadge color={meta.color} icon={<WrenchIcon />} size="md" />
           <h3 className="text-[14px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] leading-snug tracking-[-0.015em] truncate">
             {project.name}
           </h3>
@@ -89,6 +85,24 @@ export function ProjectCard({ project, entries, onEdit, onDelete }: Props) {
           )}
         </div>
       </div>
+
+      {/* Task progress bar */}
+      {totalTasks > 0 && (
+        <div className="flex items-center gap-2.5">
+          <div className="flex-1 h-1.5 rounded-full bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.08)] overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${taskPct}%`,
+                background: taskPct === 100 ? '#10b981' : meta.color,
+              }}
+            />
+          </div>
+          <span className="text-[11px] font-medium text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] tabular-nums shrink-0">
+            {doneTasks}/{totalTasks}
+          </span>
+        </div>
+      )}
 
       {/* Meta details row */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)]">

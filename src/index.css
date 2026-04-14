@@ -114,6 +114,12 @@ body {
 .animate-page-in    { animation: page-in   0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 .animate-cmd-modal  { animation: cmd-modal 0.2s  cubic-bezier(0.16, 1, 0.3, 1); }
 
+/* Staggered card entrance — use style={{'--i': index}} on each child */
+.stagger-grid > * {
+  animation: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
 /* ── Skeleton loading ────────────────────────────────────────────────────────── */
 .skeleton {
   background: linear-gradient(

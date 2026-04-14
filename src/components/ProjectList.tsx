@@ -5,6 +5,9 @@ import { ProjectForm } from './ProjectForm';
 import { ConfirmDialog } from './ConfirmDialog';
 import { EmptyState } from './EmptyState';
 import { formatCurrency } from '../lib/utils';
+import { StatStrip } from './ui/StatStrip';
+import { SectionHeader } from './ui/SectionHeader';
+import { Skeleton } from './ui/Skeleton';
 import type { Project } from '../lib/types';
 
 function PlusIcon() {
@@ -30,46 +33,48 @@ function ChevronRight({ open }: { open: boolean }) {
   );
 }
 
-function StatStrip({ projects, totalSpent, pendingSpend }: { projects: Project[]; totalSpent: number; pendingSpend: number }) {
-  const active = projects.filter(p => p.status === 'active').length;
-  const planned = projects.filter(p => p.status === 'planned').length;
-  const complete = projects.filter(p => p.status === 'complete').length;
-
-  const stats = [
-    { label: 'Active', value: String(active), color: '#10b981' },
-    { label: 'Planned', value: String(planned), color: '#E31937' },
-    { label: 'Complete', value: String(complete), color: '#64748b' },
-    { label: 'Total Spent', value: formatCurrency(totalSpent), color: '#0a0a14' },
-    ...(pendingSpend > 0 ? [{ label: 'Pending', value: formatCurrency(pendingSpend), color: '#f59e0b' }] : []),
-  ];
-
+function BoltIcon() {
   return (
-    <div className="flex items-stretch gap-0 rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] overflow-hidden bg-white dark:bg-[#111118] mb-6"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}>
-      {stats.map((stat, i) => (
-        <div
-          key={stat.label}
-          className={`flex-1 px-4 sm:px-5 py-3.5 sm:py-4 flex flex-col gap-1 min-w-0 ${i < stats.length - 1 ? 'border-r border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)]' : ''}`}
-        >
-          <div className="text-[10px] sm:text-[11px] font-semibold tracking-[0.04em] uppercase text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] truncate">
-            {stat.label}
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+  );
+}
+
+function ProjectListSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Stat strip skeleton */}
+      <div className="flex items-stretch gap-0 rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] overflow-hidden bg-white dark:bg-[#111118]" style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}>
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} className={`flex-1 px-4 sm:px-5 py-3.5 sm:py-4 flex flex-col gap-2 ${i < 3 ? 'border-r border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)]' : ''}`}>
+            <Skeleton w="w-14" h="h-3" />
+            <Skeleton w="w-10" h="h-6" />
           </div>
-          <div
-            className="text-[18px] sm:text-[22px] font-bold tracking-[-0.04em] truncate"
-            style={{ color: stat.label === 'Total Spent' ? undefined : stat.color }}
-          >
-            <span className={stat.label === 'Total Spent' ? 'text-[#0a0a14] dark:text-[#e2e2f0]' : ''}>
-              {stat.value}
-            </span>
+        ))}
+      </div>
+      {/* Card grid skeleton */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[0, 1, 2].map(i => (
+          <div key={i} className="rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-white dark:bg-[#111118] p-5 sm:p-6 flex flex-col gap-4" style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.05)' }}>
+            <div className="flex items-center gap-2.5">
+              <Skeleton w="w-7" h="h-7" className="rounded-[8px]" />
+              <Skeleton w="w-28" h="h-4" />
+            </div>
+            <Skeleton w="w-24" h="h-9" />
+            <Skeleton w="w-full" h="h-3" />
+            <div className="pt-3 border-t border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]">
+              <Skeleton w="w-20" h="h-3" />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
 
 export function ProjectList() {
-  const { state, addProject, updateProject, deleteProject } = useApp();
+  const { state, loading, addProject, updateProject, deleteProject } = useApp();
   const [showForm, setShowForm]     = useState(false);
   const [editingProject, setEditingProject] = useState<Project | undefined>();
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -100,14 +105,24 @@ export function ProjectList() {
   const totalSpent = state.entries.filter(e => !e.isPending).reduce((s, e) => s + e.price, 0);
   const pendingSpend = state.entries.filter(e => e.isPending).reduce((s, e) => s + e.price, 0);
 
-  const renderCard = (project: Project) => (
-    <ProjectCard
-      key={project.id}
-      project={project}
-      entries={state.entries.filter((e) => e.projectId === project.id)}
-      onEdit={() => handleEdit(project)}
-      onDelete={() => setDeletingId(project.id)}
-    />
+  const stats = [
+    { label: 'Active', value: String(activeProjects.length), color: '#10b981' },
+    { label: 'Planned', value: String(state.projects.filter(p => p.status === 'planned').length), color: '#E31937' },
+    { label: 'Complete', value: String(state.projects.filter(p => p.status === 'complete').length), color: '#64748b' },
+    { label: 'Total Spent', value: formatCurrency(totalSpent) },
+    ...(pendingSpend > 0 ? [{ label: 'Pending', value: formatCurrency(pendingSpend), color: '#f59e0b' }] : []),
+  ];
+
+  const renderCard = (project: Project, index: number) => (
+    <div key={project.id} style={{ '--i': index } as React.CSSProperties}>
+      <ProjectCard
+        project={project}
+        entries={state.entries.filter((e) => e.projectId === project.id)}
+        tasks={state.tasks.filter((t) => t.projectId === project.id)}
+        onEdit={() => handleEdit(project)}
+        onDelete={() => setDeletingId(project.id)}
+      />
+    </div>
   );
 
   return (
@@ -134,8 +149,17 @@ export function ProjectList() {
         </button>
       </div>
 
-      {state.projects.length === 0 ? (
-        <EmptyState message="No projects yet. Create one to get started.">
+      {loading ? (
+        <ProjectListSkeleton />
+      ) : state.projects.length === 0 ? (
+        <EmptyState
+          icon={
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          }
+          message="No projects yet. Create one to start tracking spending and tasks."
+        >
           <button
             onClick={() => setShowForm(true)}
             className="text-[13px] font-medium text-[#E31937] dark:text-[#FF4D5C] hover:underline"
@@ -146,27 +170,15 @@ export function ProjectList() {
       ) : (
         <>
           {/* Stat strip */}
-          <StatStrip projects={state.projects} totalSpent={totalSpent} pendingSpend={pendingSpend} />
+          <StatStrip stats={stats} className="mb-6" />
 
           <div className="space-y-6 sm:space-y-8">
             {activeProjects.length > 0 ? (
               <>
                 {/* Active section */}
                 <div>
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <div className="w-6 h-6 rounded-[7px] flex items-center justify-center shrink-0" style={{ background: 'rgba(16,185,129,0.18)', color: '#10b981' }}>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                      </svg>
-                    </div>
-                    <span className="text-[12px] font-semibold tracking-[-0.01em] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] uppercase tracking-[0.04em]">
-                      Active
-                    </span>
-                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[rgba(16,185,129,0.12)] text-[10px] font-bold text-[#10b981] dark:text-[#34d399]">
-                      {activeProjects.length}
-                    </span>
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <SectionHeader color="#10b981" icon={<BoltIcon />} title="Active" count={activeProjects.length} />
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-grid">
                     {activeProjects.map(renderCard)}
                   </div>
                 </div>
@@ -181,7 +193,7 @@ export function ProjectList() {
                       <div className="w-6 h-6 rounded-[7px] flex items-center justify-center shrink-0 bg-[rgba(100,116,139,0.12)] text-[#64748b] dark:text-[rgba(226,226,240,0.4)] group-hover:bg-[rgba(100,116,139,0.18)] transition-colors">
                         <ChevronRight open={showOthers} />
                       </div>
-                      <span className="text-[12px] font-semibold tracking-[-0.01em] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] uppercase tracking-[0.04em] group-hover:text-[rgba(10,10,20,0.65)] dark:group-hover:text-[rgba(226,226,240,0.55)] transition-colors">
+                      <span className="text-[12px] font-semibold text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] uppercase tracking-[0.04em] group-hover:text-[rgba(10,10,20,0.65)] dark:group-hover:text-[rgba(226,226,240,0.55)] transition-colors">
                         Other
                       </span>
                       <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[rgba(100,116,139,0.1)] text-[10px] font-bold text-[#64748b] dark:text-[rgba(226,226,240,0.4)]">
@@ -190,7 +202,7 @@ export function ProjectList() {
                     </button>
 
                     {showOthers && (
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 animate-fade-in">
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-grid">
                         {otherProjects.map(renderCard)}
                       </div>
                     )}
@@ -198,7 +210,7 @@ export function ProjectList() {
                 )}
               </>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-grid">
                 {otherProjects.map(renderCard)}
               </div>
             )}
