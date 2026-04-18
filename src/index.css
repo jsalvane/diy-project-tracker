@@ -19,19 +19,19 @@ body {
 /* ── Design tokens ───────────────────────────────────────────────────────────── */
 :root {
   --paper:        #f0eee9;
-  --paper-2:      #e8e4db;
-  --paper-3:      #dcd6c7;
+  --paper-2:      #e4ded3;
+  --paper-3:      #d5cdc0;
   --ink:          #1a1612;
-  --ink-2:        #3d332a;
-  --ink-3:        #6b5d4f;
-  --ink-4:        #9a8d7c;
+  --ink-2:        #2e261f;
+  --ink-3:        #5a4d42;
+  --ink-4:        #7d7060;
   --rust:         #b8451f;
   --rust-ink:     #7a2d13;
-  --moss:         #556b2f;
-  --ochre:        #c8922e;
-  --ink-line:     rgba(26, 22, 18, 0.12);
-  --ink-line-2:   rgba(26, 22, 18, 0.22);
-  --blueprint:    rgba(26, 22, 18, 0.04);
+  --moss:         #4a5e28;
+  --ochre:        #b07a1a;
+  --ink-line:     rgba(26, 22, 18, 0.22);
+  --ink-line-2:   rgba(26, 22, 18, 0.38);
+  --blueprint:    rgba(26, 22, 18, 0.05);
   --sidebar-w:    220px;
 
   /* Aliases so any stray inline var(--c-*) references still resolve */
@@ -55,19 +55,19 @@ body {
 /* Dark mode is out of scope — mirror light tokens */
 .dark {
   --paper:        #f0eee9;
-  --paper-2:      #e8e4db;
-  --paper-3:      #dcd6c7;
+  --paper-2:      #e4ded3;
+  --paper-3:      #d5cdc0;
   --ink:          #1a1612;
-  --ink-2:        #3d332a;
-  --ink-3:        #6b5d4f;
-  --ink-4:        #9a8d7c;
+  --ink-2:        #2e261f;
+  --ink-3:        #5a4d42;
+  --ink-4:        #7d7060;
   --rust:         #b8451f;
   --rust-ink:     #7a2d13;
-  --moss:         #556b2f;
-  --ochre:        #c8922e;
-  --ink-line:     rgba(26, 22, 18, 0.12);
-  --ink-line-2:   rgba(26, 22, 18, 0.22);
-  --blueprint:    rgba(26, 22, 18, 0.04);
+  --moss:         #4a5e28;
+  --ochre:        #b07a1a;
+  --ink-line:     rgba(26, 22, 18, 0.22);
+  --ink-line-2:   rgba(26, 22, 18, 0.38);
+  --blueprint:    rgba(26, 22, 18, 0.05);
   --c-bg:          var(--paper);
   --c-surface:     var(--paper);
   --c-surface-2:   var(--paper-2);
