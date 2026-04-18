@@ -15,8 +15,8 @@ interface Props {
 
 export function IncomeVsExpenses({ data }: Props) {
   return (
-    <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-      <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-4">
+    <div className="border border-[var(--ink-line)] rounded-xl p-5">
+      <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-4">
         Income vs Expenses
       </p>
       <ResponsiveContainer width="100%" height={260}>

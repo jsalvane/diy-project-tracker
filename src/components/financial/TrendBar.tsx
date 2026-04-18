@@ -24,18 +24,18 @@ export function TrendBar({
     delta === undefined
       ? ''
       : delta > 0
-      ? 'text-green-600 dark:text-green-400'
+      ? 'text-[var(--moss)]'
       : delta < 0
-      ? 'text-red-500 dark:text-red-400'
-      : 'text-gray-400 dark:text-zinc-500';
+      ? 'text-[var(--rust)]'
+      : 'text-[var(--ink-4)]';
 
   return (
     <div className="flex items-center gap-3 min-w-0">
-      <span className="text-xs text-gray-500 dark:text-zinc-400 w-24 shrink-0 truncate">
+      <span className="text-xs text-[var(--ink-4)] w-24 shrink-0 truncate">
         {label}
       </span>
       <div className="flex-1 min-w-0">
-        <div className="h-2.5 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
           {!isNegative && (
             <div
               className={`h-full ${color} rounded-full transition-all duration-300`}
@@ -46,7 +46,7 @@ export function TrendBar({
       </div>
       <span
         className={`text-xs font-semibold tabular-nums w-24 text-right shrink-0 ${
-          isNegative ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'
+          isNegative ? 'text-[var(--rust)]' : 'text-[var(--ink)]'
         }`}
       >
         {formattedValue}

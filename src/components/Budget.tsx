@@ -78,8 +78,8 @@ export function Budget({ embedded }: { embedded?: boolean } = {}) {
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="relative w-8 h-8">
-            <div className="absolute inset-0 rounded-full border border-[#E31937]/20" />
-            <div className="absolute inset-0 rounded-full border-t border-[#E31937] animate-spin" />
+            <div className="absolute inset-0 rounded-full border border-[var(--rust)]/20" />
+            <div className="absolute inset-0 rounded-full border-t border-[var(--rust)] animate-spin" />
           </div>
         </div>
       ) : (

@@ -29,8 +29,8 @@ export function HealthGauge({ label, value, max, displayValue, zones, invertColo
   const data = [{ value: pct, fill: color }];
 
   return (
-    <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-4 flex flex-col items-center">
-      <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-1">
+    <div className="border border-[var(--ink-line)] rounded-xl p-4 flex flex-col items-center">
+      <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-1">
         {label}
       </p>
       <div className="relative w-full" style={{ maxWidth: 160 }}>
@@ -53,7 +53,7 @@ export function HealthGauge({ label, value, max, displayValue, zones, invertColo
           </RadialBarChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-lg font-bold text-gray-900 dark:text-gray-100 tabular-nums">
+          <p className="text-lg font-bold text-[var(--ink)] tabular-nums">
             {displayValue}
           </p>
         </div>

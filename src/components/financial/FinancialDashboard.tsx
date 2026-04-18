@@ -52,23 +52,23 @@ export function FinancialDashboard({ quarter, priorQuarter, allQuarters, onEdit,
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-bold text-[var(--ink)]">
             {quarter.quarterLabel}
           </h2>
-          <p className="text-sm text-gray-500 dark:text-zinc-400">
+          <p className="text-sm text-[var(--ink-4)]">
             Captured {quarter.dateCaptured}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onEdit}
-            className="px-4 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-black text-[var(--paper)] rounded-lg hover:bg-gray-800 transition-colors"
           >
             Edit
           </button>
           <button
             onClick={onDelete}
-            className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-zinc-700 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ink-line)] text-[var(--rust)] rounded-lg hover:bg-[rgba(184,69,31,0.05)] transition-colors"
           >
             Delete
           </button>
@@ -182,11 +182,11 @@ export function FinancialDashboard({ quarter, priorQuarter, allQuarters, onEdit,
 
       {/* Notes */}
       {quarter.notes && (
-        <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-          <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-2">
+        <div className="border border-[var(--ink-line)] rounded-xl p-5">
+          <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-2">
             Notes
           </p>
-          <p className="text-sm text-gray-700 dark:text-zinc-300 whitespace-pre-wrap">
+          <p className="text-sm text-[var(--ink-2)] whitespace-pre-wrap">
             {quarter.notes}
           </p>
         </div>

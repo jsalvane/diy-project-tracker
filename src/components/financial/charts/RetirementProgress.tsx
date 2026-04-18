@@ -18,8 +18,8 @@ export function RetirementProgress({ trendData, annualTarget, annualYtd }: Props
   const pct = annualTarget > 0 ? Math.min((annualYtd / annualTarget) * 100, 100) : 0;
 
   return (
-    <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-      <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-4">
+    <div className="border border-[var(--ink-line)] rounded-xl p-5">
+      <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-4">
         Retirement Progress
       </p>
       <ResponsiveContainer width="100%" height={240}>
@@ -54,7 +54,7 @@ export function RetirementProgress({ trendData, annualTarget, annualYtd }: Props
 
       {annualTarget > 0 && (
         <div className="mt-4">
-          <div className="flex justify-between text-xs text-gray-500 dark:text-zinc-400 mb-1.5">
+          <div className="flex justify-between text-xs text-[var(--ink-4)] mb-1.5">
             <span>Annual Retirement YTD</span>
             <span className="tabular-nums">
               {fmtCurrency(annualYtd)} / {fmtCurrency(annualTarget)} ({pct.toFixed(0)}%)

@@ -68,7 +68,7 @@ export function QuarterDetail({ quarter, priorQuarter }: QuarterDetailProps) {
     return (
       <div>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-bold text-[var(--ink)]">
             Editing {quarter.quarterLabel}
           </h2>
         </div>
@@ -87,23 +87,23 @@ export function QuarterDetail({ quarter, priorQuarter }: QuarterDetailProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-bold text-[var(--ink)]">
             {quarter.quarterLabel}
           </h2>
-          <p className="text-sm text-gray-500 dark:text-zinc-400">
+          <p className="text-sm text-[var(--ink-4)]">
             Captured {quarter.dateCaptured}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setDraft(syncDerivedValues(quarter)); setMode('edit'); }}
-            className="px-4 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 text-sm font-medium bg-black text-[var(--paper)] rounded-lg hover:bg-gray-800 transition-colors"
           >
             Edit
           </button>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-zinc-700 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ink-line)] text-[var(--rust)] rounded-lg hover:bg-[rgba(184,69,31,0.05)] transition-colors"
           >
             Delete
           </button>
@@ -112,20 +112,20 @@ export function QuarterDetail({ quarter, priorQuarter }: QuarterDetailProps) {
 
       {/* Delete confirm */}
       {showDeleteConfirm && (
-        <div className="border border-red-200 dark:border-red-800/40 bg-red-50 dark:bg-red-950/20 rounded-xl p-4 flex items-center justify-between gap-4">
-          <p className="text-sm text-red-800 dark:text-red-200">
+        <div className="border border-red-200 bg-[rgba(184,69,31,0.05)] rounded-xl p-4 flex items-center justify-between gap-4">
+          <p className="text-sm text-red-800">
             Delete <strong>{quarter.quarterLabel}</strong>? This cannot be undone.
           </p>
           <div className="flex gap-2 shrink-0">
             <button
               onClick={() => setShowDeleteConfirm(false)}
-              className="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium border border-[var(--ink-line)] text-[var(--ink-2)] rounded-lg hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleDelete}
-              className="px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium bg-red-600 text-[var(--paper)] rounded-lg hover:bg-red-700 transition-colors"
             >
               Delete
             </button>
@@ -181,8 +181,8 @@ export function QuarterDetail({ quarter, priorQuarter }: QuarterDetailProps) {
       {flags.length > 0 && <ValidationWarnings flags={flags} />}
 
       {/* Comparison table */}
-      <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-        <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-4">
+      <div className="border border-[var(--ink-line)] rounded-xl p-5">
+        <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-4">
           {priorQuarter ? `vs ${priorQuarter.quarterLabel}` : 'Metrics Summary'}
         </p>
 
@@ -210,11 +210,11 @@ export function QuarterDetail({ quarter, priorQuarter }: QuarterDetailProps) {
 
       {/* Notes */}
       {quarter.notes && (
-        <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-          <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-2">
+        <div className="border border-[var(--ink-line)] rounded-xl p-5">
+          <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-2">
             Notes
           </p>
-          <p className="text-sm text-gray-700 dark:text-zinc-300 whitespace-pre-wrap">
+          <p className="text-sm text-[var(--ink-2)] whitespace-pre-wrap">
             {quarter.notes}
           </p>
         </div>

@@ -126,7 +126,7 @@ export function ExportButtons({ quarters, activeQuarter, onImport }: ExportButto
         className="hidden"
       />
       {importError && (
-        <span className="text-xs text-red-500 dark:text-red-400">{importError}</span>
+        <span className="text-xs text-[var(--rust)]">{importError}</span>
       )}
     </div>
   );

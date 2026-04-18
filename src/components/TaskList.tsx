@@ -95,7 +95,7 @@ export function TaskList({ projectId }: Props) {
   return (
     <div>
       {totalCount > 0 && (
-        <p className="text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-3">
+        <p className="text-[11px] text-[var(--ink-4)] mb-3">
           {openCount === 0
             ? `All ${totalCount} tasks complete`
             : `${openCount} of ${totalCount} remaining`}
@@ -103,7 +103,7 @@ export function TaskList({ projectId }: Props) {
       )}
 
       {tasks.length > 0 && (
-        <ul className="border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl overflow-hidden divide-y divide-[rgba(0,0,20,0.04)] dark:divide-[rgba(255,255,255,0.04)] mb-3">
+        <ul className="border border-[var(--ink-line)] rounded-xl overflow-hidden divide-y divide-[var(--ink-line)] mb-3">
           {tasks.map((task) => {
             const idxInIncomplete = incompleteIds.indexOf(task.id);
             const canMoveUp = !task.completed && idxInIncomplete > 0;
@@ -113,13 +113,13 @@ export function TaskList({ projectId }: Props) {
             return (
               <li
                 key={task.id}
-                className="flex items-center gap-2 px-4 py-3 hover:bg-[rgba(227,25,55,0.03)] dark:hover:bg-[rgba(255,77,92,0.04)] transition-colors group"
+                className="flex items-center gap-2 px-4 py-3 hover:bg-[rgba(227,25,55,0.03)] transition-colors group"
               >
                 <input
                   type="checkbox"
                   checked={task.completed}
                   onChange={() => toggleTask(task)}
-                  className="accent-[#E31937] w-4 h-4 shrink-0 cursor-pointer rounded"
+                  className="accent-[var(--rust)] w-4 h-4 shrink-0 cursor-pointer rounded"
                 />
 
                 {isEditing ? (
@@ -133,15 +133,15 @@ export function TaskList({ projectId }: Props) {
                       if (e.key === 'Escape') setEditingId(null);
                     }}
                     onBlur={() => saveEdit(task)}
-                    className="flex-1 text-[13px] leading-snug bg-transparent border-b border-[#E31937] dark:border-[#FF4D5C] text-[#0a0a14] dark:text-[#e2e2f0] focus:outline-none py-0.5"
+                    className="flex-1 text-[13px] leading-snug bg-transparent border-b border-[var(--rust)] text-[var(--ink)] focus:outline-none py-0.5"
                   />
                 ) : (
                   <span
                     onClick={() => !task.completed && startEdit(task)}
                     className={`flex-1 text-[13px] leading-snug ${
                       task.completed
-                        ? 'line-through text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'
-                        : 'text-[#0a0a14] dark:text-[#e2e2f0] cursor-text'
+                        ? 'line-through text-[var(--ink-4)]'
+                        : 'text-[var(--ink)] cursor-text'
                     }`}
                   >
                     {task.text}
@@ -153,7 +153,7 @@ export function TaskList({ projectId }: Props) {
                     <button
                       onClick={() => moveTask(task.id, 'up')}
                       disabled={!canMoveUp}
-                      className="text-xs text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] disabled:opacity-25 disabled:cursor-not-allowed p-0.5 transition-colors leading-none"
+                      className="text-xs text-[var(--ink-4)] hover:text-[var(--rust)] disabled:opacity-25 disabled:cursor-not-allowed p-0.5 transition-colors leading-none"
                       title="Move up"
                     >
                       ↑
@@ -161,7 +161,7 @@ export function TaskList({ projectId }: Props) {
                     <button
                       onClick={() => moveTask(task.id, 'down')}
                       disabled={!canMoveDown}
-                      className="text-xs text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] disabled:opacity-25 disabled:cursor-not-allowed p-0.5 transition-colors leading-none"
+                      className="text-xs text-[var(--ink-4)] hover:text-[var(--rust)] disabled:opacity-25 disabled:cursor-not-allowed p-0.5 transition-colors leading-none"
                       title="Move down"
                     >
                       ↓
@@ -171,7 +171,7 @@ export function TaskList({ projectId }: Props) {
 
                 <button
                   onClick={() => deleteTask(task.id)}
-                  className="text-sm text-[rgba(10,10,20,0.15)] dark:text-[rgba(226,226,240,0.12)] opacity-0 group-hover:opacity-100 hover:!text-red-500 dark:hover:!text-red-400 p-0.5 transition-colors shrink-0"
+                  className="text-sm text-[var(--ink-4)] opacity-0 group-hover:opacity-100 hover:!text-[var(--rust)]!text-[var(--rust)] p-0.5 transition-colors shrink-0"
                   title="Delete task"
                 >
                   ✕
@@ -183,7 +183,7 @@ export function TaskList({ projectId }: Props) {
       )}
 
       {tasks.length === 0 && (
-        <div className="border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] py-10 mb-3">
+        <div className="border border-[var(--ink-line)] rounded-xl text-center text-[13px] text-[var(--ink-4)] py-10 mb-3">
           No tasks yet. Add one below.
         </div>
       )}
@@ -196,7 +196,7 @@ export function TaskList({ projectId }: Props) {
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
           placeholder="Add a task and press Enter…"
-          className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-dashed border-[rgba(0,0,20,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-transparent text-[#0a0a14] dark:text-[#e2e2f0] placeholder-[rgba(10,10,20,0.3)] dark:placeholder-[rgba(226,226,240,0.25)] focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C] transition-colors"
+          className="flex-1 text-[13px] px-3 py-2 rounded-lg border border-dashed border-[var(--ink-line-2)] bg-transparent text-[var(--ink)] placeholder-[rgba(10,10,20,0.3)] focus:outline-none focus:border-[var(--rust)] transition-colors"
         />
       </div>
     </div>

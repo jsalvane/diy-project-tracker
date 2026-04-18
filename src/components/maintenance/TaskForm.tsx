@@ -41,8 +41,8 @@ const SEASON_OPTIONS: { value: RecurrenceUnit; label: string }[] = [
   { value: 'post-salt', label: 'Post-salt' },
 ];
 
-const inputCls = 'w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C]';
-const labelCls = 'block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5';
+const inputCls = 'field';
+const labelCls = 'tape-label block mb-1.5';
 
 export function TaskForm({ task, machines = [], defaultMachineId = '', onSave, onCancel }: Props) {
   const [group, setGroup] = useState<MaintenanceGroup>(task?.group ?? 'home');
@@ -115,7 +115,7 @@ export function TaskForm({ task, machines = [], defaultMachineId = '', onSave, o
 
   return (
     <div className="space-y-5">
-      <h2 className="text-lg font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">
+      <h2 className="text-lg font-semibold text-[var(--ink)]">
         {task ? 'Edit Task' : 'Add Task'}
       </h2>
 
@@ -129,8 +129,8 @@ export function TaskForm({ task, machines = [], defaultMachineId = '', onSave, o
               onClick={() => handleGroupChange(g)}
               className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
                 group === g
-                  ? 'border-[#E31937] dark:border-[#FF4D5C] bg-[rgba(227,25,55,0.08)] dark:bg-[rgba(255,77,92,0.08)] text-[#E31937] dark:text-[#FF4D5C]'
-                  : 'border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.5)] hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.03)]'
+                  ? 'border-[var(--rust)] bg-[rgba(227,25,55,0.08)] text-[var(--rust)]'
+                  : 'border-[var(--ink-line)] text-[var(--ink-3)] hover:bg-[var(--paper-2)]'
               }`}
             >
               {g === 'home' ? 'Home' : 'Machines'}
@@ -259,14 +259,14 @@ export function TaskForm({ task, machines = [], defaultMachineId = '', onSave, o
       <div className="flex gap-3 pt-2">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.5)] hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.03)]"
+          className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-[var(--ink-line)] text-[var(--ink-3)] hover:bg-[var(--paper-2)]"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={!name.trim()}
-          className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#E31937] text-white hover:bg-[#C41230] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--rust)] text-[var(--paper)] hover:bg-[var(--rust-ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           {task ? 'Save Changes' : 'Add Task'}
         </button>

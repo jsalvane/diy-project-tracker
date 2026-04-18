@@ -94,8 +94,8 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-const inputCls = 'w-full rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-[#ffffff] dark:bg-[#161626] px-3 py-2 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none focus:border-[#E31937] transition-colors';
-const labelCls = 'block text-xs font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-1';
+const inputCls = 'w-full rounded-lg field outline-none focus:border-[var(--rust)] transition-colors';
+const labelCls = 'block text-xs font-medium text-[var(--ink-4)] mb-1';
 
 function CardModal({
   initial,
@@ -134,16 +134,16 @@ function CardModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
       <div
-        className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+        className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-lg overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-          <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ink-line)]">
+          <h2 className="font-semibold text-[var(--ink)] text-sm">
             {initial ? 'Edit Card' : 'Add Card'}
           </h2>
-          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none">✕</button>
+          <button onClick={onClose} className="text-[var(--ink-4)] hover:text-[var(--ink)] transition-colors text-lg leading-none">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
@@ -195,17 +195,17 @@ function CardModal({
                 type="checkbox"
                 checked={form.isChargeCard}
                 onChange={e => set('isChargeCard', e.target.checked)}
-                className="w-4 h-4 accent-[#E31937]"
+                className="w-4 h-4 accent-[var(--rust)]"
               />
-              <label htmlFor="charge-card" className="text-sm text-[rgba(10,10,20,0.7)] dark:text-[rgba(226,226,240,0.65)]">Charge card (no preset limit)</label>
+              <label htmlFor="charge-card" className="text-sm text-[rgba(10,10,20,0.7)]">Charge card (no preset limit)</label>
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+            <button type="button" onClick={onClose} className="btn-ghost btn-sm">
               Cancel
             </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
+            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] text-white transition-colors">
               {initial ? 'Save Changes' : 'Add Card'}
             </button>
           </div>
@@ -258,28 +258,28 @@ function SimpleFinConnectPanel({
   }
 
   return (
-    <div className="rounded-xl border border-dashed border-[rgba(0,0,20,0.12)] dark:border-[rgba(255,255,255,0.1)] p-5 mb-5 sm:mb-8">
+    <div className="rounded-xl border border-dashed border-[var(--ink-line-2)] p-5 mb-5 sm:mb-8">
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-[rgba(0,0,20,0.04)] dark:bg-[rgba(255,255,255,0.06)] flex items-center justify-center text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">
+        <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-[var(--paper-2)] flex items-center justify-center text-[var(--ink-4)]">
           <LinkIcon />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-3 mb-1">
-            <h3 className="text-sm font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">
+            <h3 className="text-sm font-semibold text-[var(--ink)]">
               Auto-sync balances with SimpleFin
             </h3>
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 flex-shrink-0">
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[rgba(74,94,40,0.1)] text-green-700 flex-shrink-0">
               ~$15/yr
             </span>
           </div>
-          <p className="text-xs text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-3">
+          <p className="text-xs text-[var(--ink-4)] mb-3">
             Connect your Chase, Amex, Discover, Citi, and Apple Card accounts to pull live balances into your budget automatically.
           </p>
           {!showInput ? (
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowInput(true)}
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors"
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] text-white transition-colors"
               >
                 Connect SimpleFin
               </button>
@@ -287,16 +287,16 @@ function SimpleFinConnectPanel({
                 href="https://beta-bridge.simplefin.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors underline underline-offset-2"
+                className="text-xs text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors underline underline-offset-2"
               >
                 Get a setup token →
               </a>
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+              <p className="text-xs text-[var(--ink-4)]">
                 1. Go to{' '}
-                <a href="https://beta-bridge.simplefin.org" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors">
+                <a href="https://beta-bridge.simplefin.org" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[var(--rust)] transition-colors">
                   beta-bridge.simplefin.org
                 </a>
                 , connect your banks, then copy the setup token here.
@@ -312,19 +312,19 @@ function SimpleFinConnectPanel({
                 <button
                   onClick={handleConnect}
                   disabled={connecting || syncing || !token.trim()}
-                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#E31937] hover:bg-[#C41230] disabled:opacity-50 text-white transition-colors whitespace-nowrap"
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] disabled:opacity-50 text-white transition-colors whitespace-nowrap"
                 >
                   {connecting ? 'Connecting…' : 'Connect'}
                 </button>
                 <button
                   onClick={() => { setShowInput(false); setToken(''); }}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-lg border border-[var(--ink-line)] text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors"
                 >
                   Cancel
                 </button>
               </div>
               {error && (
-                <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
+                <p className="text-xs text-[var(--rust)]">{error}</p>
               )}
             </div>
           )}
@@ -364,13 +364,13 @@ function SimpleFinSyncPanel({
   }
 
   return (
-    <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4 mb-5 sm:mb-8 bg-[rgba(0,200,100,0.03)] dark:bg-[rgba(0,200,100,0.04)]">
+    <div className="rounded-xl border border-[var(--ink-line)] p-4 mb-5 sm:mb-8 bg-[rgba(0,200,100,0.03)]">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2.5">
           <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
           <div>
-            <span className="text-sm font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">SimpleFin connected</span>
-            <span className="text-xs text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] ml-2">
+            <span className="text-sm font-semibold text-[var(--ink)]">SimpleFin connected</span>
+            <span className="text-xs text-[var(--ink-4)] ml-2">
               Last synced: {formatSynced(lastSynced)}
             </span>
           </div>
@@ -379,27 +379,27 @@ function SimpleFinSyncPanel({
           <button
             onClick={onSync}
             disabled={syncing}
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#E31937] hover:bg-[#C41230] disabled:opacity-60 text-white transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] disabled:opacity-60 text-white transition-colors"
           >
             <RefreshIcon spin={syncing} />
             {syncing ? 'Syncing…' : 'Sync Balances'}
           </button>
           <button
             onClick={onMapAccounts}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors"
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-[var(--ink-line)] text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors"
           >
             Map Accounts
           </button>
           <button
             onClick={onDisconnect}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 hover:border-red-300 dark:hover:text-red-400 transition-colors"
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-[var(--ink-line)] text-[var(--ink-4)] hover:text-[var(--rust)] hover:border-red-300 transition-colors"
           >
             Disconnect
           </button>
         </div>
       </div>
       {error && (
-        <p className="mt-2 text-xs text-red-500 dark:text-red-400">{error}</p>
+        <p className="mt-2 text-xs text-[var(--rust)]">{error}</p>
       )}
     </div>
   );
@@ -436,31 +436,31 @@ function MapAccountsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
       <div
-        className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden"
+        className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ink-line)]">
           <div>
-            <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm">Map SimpleFin Accounts</h2>
-            <p className="text-xs text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5">
+            <h2 className="font-semibold text-[var(--ink)] text-sm">Map SimpleFin Accounts</h2>
+            <p className="text-xs text-[var(--ink-4)] mt-0.5">
               Match each SimpleFin account to a card in your list
             </p>
           </div>
-          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none">✕</button>
+          <button onClick={onClose} className="text-[var(--ink-4)] hover:text-[var(--ink)] transition-colors text-lg leading-none">✕</button>
         </div>
 
         <div className="p-5 max-h-[60vh] overflow-y-auto">
           {sfAccounts.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-sm text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-3">
+              <p className="text-sm text-[var(--ink-4)] mb-3">
                 No accounts loaded yet.
               </p>
               <button
                 onClick={handleFetch}
                 disabled={fetching}
-                className="flex items-center gap-1.5 mx-auto text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] disabled:opacity-60 text-white transition-colors"
+                className="flex items-center gap-1.5 mx-auto text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] disabled:opacity-60 text-white transition-colors"
               >
                 <RefreshIcon spin={fetching} />
                 {fetching ? 'Loading…' : 'Load Accounts from SimpleFin'}
@@ -482,17 +482,17 @@ function MapAccountsModal({
                 const recentTxns = (acct.transactions ?? []).slice(0, 3);
 
                 return (
-                  <div key={acct.id} className="rounded-lg border border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.06)] overflow-hidden">
+                  <div key={acct.id} className="rounded-lg border border-[var(--ink-line)] overflow-hidden">
                     {/* Account header */}
-                    <div className="p-3 bg-[rgba(0,0,20,0.02)] dark:bg-[rgba(255,255,255,0.03)]">
+                    <div className="p-3 bg-[var(--paper-2)]">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           {orgName && (
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-0.5">
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--ink-4)] mb-0.5">
                               {orgName}
                             </div>
                           )}
-                          <div className="text-sm font-medium text-[#0a0a14] dark:text-[#e2e2f0]">
+                          <div className="text-sm font-medium text-[var(--ink)]">
                             {acct.name !== orgName ? acct.name : 'Account'}
                           </div>
                         </div>
@@ -523,46 +523,46 @@ function MapAccountsModal({
                       {/* Balance details */}
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs">
                         <span>
-                          <span className="text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">Balance: </span>
-                          <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{displayBal}</span>
+                          <span className="text-[var(--ink-4)]">Balance: </span>
+                          <span className="font-semibold text-[var(--ink)]">{displayBal}</span>
                         </span>
                         {availBal !== null && (
                           <span>
-                            <span className="text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">Available: </span>
-                            <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(Math.abs(availBal))}</span>
+                            <span className="text-[var(--ink-4)]">Available: </span>
+                            <span className="font-semibold text-[var(--ink)]">{formatCurrency(Math.abs(availBal))}</span>
                           </span>
                         )}
                         {impliedLimit !== null && impliedLimit > 0 && (
                           <span>
-                            <span className="text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]">Limit: </span>
-                            <span className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">~{formatCurrency(impliedLimit)}</span>
+                            <span className="text-[var(--ink-4)]">Limit: </span>
+                            <span className="font-semibold text-[var(--ink)]">~{formatCurrency(impliedLimit)}</span>
                           </span>
                         )}
                         {balanceDate && (
-                          <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                          <span className="text-[var(--ink-4)]">
                             as of {balanceDate}
                           </span>
                         )}
                       </div>
 
                       {/* Full account ID */}
-                      <div className="mt-1.5 font-mono text-[10px] text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.2)] break-all select-all">
+                      <div className="mt-1.5 font-mono text-[10px] text-[var(--ink-4)] break-all select-all">
                         ID: {acct.id}
                       </div>
                     </div>
 
                     {/* Recent transactions to help identify the account */}
                     {recentTxns.length > 0 && (
-                      <div className="px-3 py-2 border-t border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)]">
-                        <div className="text-[10px] font-semibold uppercase tracking-wider text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.2)] mb-1">
+                      <div className="px-3 py-2 border-t border-[var(--ink-line)]">
+                        <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--ink-4)] mb-1">
                           Recent transactions
                         </div>
                         {recentTxns.map((txn, i) => (
                           <div key={txn.id || i} className="flex items-center justify-between text-[11px] py-0.5">
-                            <span className="text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.5)] truncate mr-2">
+                            <span className="text-[var(--ink-3)] truncate mr-2">
                               {txn.description}
                             </span>
-                            <span className="font-medium text-[#0a0a14] dark:text-[#e2e2f0] flex-shrink-0">
+                            <span className="font-medium text-[var(--ink)] flex-shrink-0">
                               {formatCurrency(Math.abs(parseFloat(txn.amount)))}
                             </span>
                           </div>
@@ -577,11 +577,11 @@ function MapAccountsModal({
         </div>
 
         {sfAccounts.length > 0 && (
-          <div className="flex gap-3 px-5 py-4 border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-            <button onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+          <div className="flex gap-3 px-5 py-4 border-t border-[var(--ink-line)]">
+            <button onClick={onClose} className="btn-ghost btn-sm">
               Cancel
             </button>
-            <button onClick={handleSave} className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
+            <button onClick={handleSave} className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] text-white transition-colors">
               Save Mapping
             </button>
           </div>
@@ -668,26 +668,26 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
     setModal(null);
   }
 
-  const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]';
-  const tdCls = 'px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200';
+  const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-[var(--ink-4)]';
+  const tdCls = 'px-4 py-2.5 text-sm text-[var(--ink)]';
 
   return (
     <div>
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-8">
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Total Credit</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] truncate">{formatCurrency(totalLimit)}</div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">{activeCards.filter(c => !c.isChargeCard).length} cards</div>
+        <div className="rounded-xl border border-[var(--ink-line)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Total Credit</div>
+          <div className="text-lg sm:text-2xl font-bold text-[var(--ink)] truncate">{formatCurrency(totalLimit)}</div>
+          <div className="text-[10px] sm:text-xs text-[var(--ink-4)] mt-0.5">{activeCards.filter(c => !c.isChargeCard).length} cards</div>
         </div>
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Annual Fees</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] truncate">{formatCurrency(totalAnnualFees)}</div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">per year</div>
+        <div className="rounded-xl border border-[var(--ink-line)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Annual Fees</div>
+          <div className="text-lg sm:text-2xl font-bold text-[var(--ink)] truncate">{formatCurrency(totalAnnualFees)}</div>
+          <div className="text-[10px] sm:text-xs text-[var(--ink-4)] mt-0.5">per year</div>
         </div>
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Avg Account Age</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0]">
+        <div className="rounded-xl border border-[var(--ink-line)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Avg Account Age</div>
+          <div className="text-lg sm:text-2xl font-bold text-[var(--ink)]">
             {activeCards.length > 0
               ? (() => {
                   const avgMonths = Math.round(
@@ -700,7 +700,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                 })()
               : '—'}
           </div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">{activeCards.length} active cards</div>
+          <div className="text-[10px] sm:text-xs text-[var(--ink-4)] mt-0.5">{activeCards.length} active cards</div>
         </div>
       </div>
 
@@ -717,7 +717,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
               onDisconnect={sf.disconnect}
             />
             {syncResult && (
-              <div className="mb-4 text-xs font-medium text-green-600 dark:text-green-400 text-center">
+              <div className="mb-4 text-xs font-medium text-[var(--moss)] text-center">
                 {syncResult}
               </div>
             )}
@@ -733,10 +733,10 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
 
       {/* Active cards header */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0]">Active Cards</h2>
+        <h2 className="text-base font-bold text-[var(--ink)]">Active Cards</h2>
         <button
           onClick={() => setModal('add')}
-          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors"
+          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] text-white transition-colors"
         >
           <span className="text-base leading-none">+</span> Add Card
         </button>
@@ -758,10 +758,10 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
         );
 
         return (
-          <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0 mb-5 sm:mb-8">
+          <div className="rounded-xl border border-[var(--ink-line)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0 mb-5 sm:mb-8">
             <table className="w-full text-sm min-w-[520px]">
               <thead>
-                <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
+                <tr className="bg-[var(--paper-2)]">
                   <th className={thCls}>Card</th>
                   <th className={`${thCls} text-right`}>Limit</th>
                   <th className={`${thCls} text-right`}>Ann Fee</th>
@@ -774,7 +774,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
               <tbody>
                 {activeCards.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-[var(--ink-4)]">
                       No active cards yet
                     </td>
                   </tr>
@@ -785,14 +785,14 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                   return (
                     <>
                       {/* Servicer header row */}
-                      <tr key={`hdr-${servicer}`} className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
+                      <tr key={`hdr-${servicer}`} className="bg-[var(--paper-2)] border-t border-[var(--ink-line)]">
                         <td className="px-4 py-2">
-                          <span className="text-xs font-bold uppercase tracking-widest text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">{servicer}</span>
+                          <span className="text-xs font-bold uppercase tracking-widest text-[var(--ink-4)]">{servicer}</span>
                         </td>
-                        <td className="px-4 py-2 text-right text-xs font-semibold text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+                        <td className="px-4 py-2 text-right text-xs font-semibold text-[var(--ink-4)]">
                           {groupLimit > 0 ? formatCurrency(groupLimit) : '—'}
                         </td>
-                        <td className="px-4 py-2 text-right text-xs font-semibold text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+                        <td className="px-4 py-2 text-right text-xs font-semibold text-[var(--ink-4)]">
                           {groupFees > 0 ? formatCurrency(groupFees) : '—'}
                         </td>
                         <td colSpan={4} />
@@ -803,39 +803,39 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                         const ageLabel = ageMonths === null ? '—' : ageMonths >= 12 ? `${Math.round(ageMonths / 12)}y` : `${ageMonths}mo`;
                         const counts524 = card.openDate && card.openDate > cutoff;
                         return (
-                          <tr key={card.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
+                          <tr key={card.id} className="group hover:bg-[var(--paper-2)] border-t border-[var(--ink-line)]">
                             <td className={tdCls}>
                               <div className="flex items-center gap-2 pl-3">
                                 <span className="font-medium">{card.name}</span>
                                 {card.isChargeCard && (
-                                  <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-[rgba(255,255,255,0.1)] text-zinc-500 dark:text-[rgba(226,226,240,0.3)]">charge</span>
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-500">charge</span>
                                 )}
                                 {counts524 && (
-                                  <span className="text-xs px-1.5 py-0.5 rounded bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)] text-[#E31937] dark:text-[#FF4D5C]">5/24</span>
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-[rgba(227,25,55,0.1)] text-[var(--rust)]">5/24</span>
                                 )}
                                 {sf.connected && Object.values(sf.mappings).includes(card.id) && (
-                                  <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">auto</span>
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-[rgba(74,94,40,0.1)] text-[var(--moss)]">auto</span>
                                 )}
                               </div>
                             </td>
                             <td className={`${tdCls} text-right`}>
-                              {card.isChargeCard ? <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] text-xs">No preset</span> : formatCurrency(card.creditLimit)}
+                              {card.isChargeCard ? <span className="text-[var(--ink-4)] text-xs">No preset</span> : formatCurrency(card.creditLimit)}
                             </td>
                             <td className={`${tdCls} text-right`}>
-                              {card.annualFee > 0 ? formatCurrency(card.annualFee) : <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">—</span>}
+                              {card.annualFee > 0 ? formatCurrency(card.annualFee) : <span className="text-[var(--ink-4)]">—</span>}
                             </td>
                             <td className={tdCls}>{card.openDate ? formatDate(card.openDate) : '—'}</td>
                             <td className={`${tdCls} text-right`}>{ageLabel}</td>
                             <td className="px-4 py-2.5 text-center">
-                              <div className="inline-flex rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] overflow-hidden text-xs font-semibold">
+                              <div className="inline-flex rounded-lg border border-[var(--ink-line)] overflow-hidden text-xs font-semibold">
                                 {(['15', '30'] as const).map(g => (
                                   <button
                                     key={g}
                                     onClick={() => updateCreditCard({ ...card, billDueGroup: card.billDueGroup === g ? '' : g })}
                                     className={`px-2.5 py-1 transition-colors ${
                                       card.billDueGroup === g
-                                        ? 'bg-[#E31937] text-white'
-                                        : 'text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:bg-[rgba(0,0,20,0.04)] dark:hover:bg-[rgba(255,255,255,0.04)]'
+                                        ? 'bg-[var(--rust)] text-white'
+                                        : 'text-[var(--ink-4)] hover:bg-[var(--paper-2)]'
                                     }`}
                                   >
                                     {g}th
@@ -845,10 +845,10 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                             </td>
                             <td className="px-2 py-2.5">
                               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => setModal(card)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors">
+                                <button onClick={() => setModal(card)} className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                                   <PencilIcon />
                                 </button>
-                                <button onClick={() => deleteCreditCard(card.id)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors">
+                                <button onClick={() => deleteCreditCard(card.id)} className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                                   <TrashIcon />
                                 </button>
                               </div>
@@ -868,17 +868,17 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
       {/* Closed cards collapsible */}
       <button
         onClick={() => setClosedOpen(o => !o)}
-        className="flex items-center gap-2 text-sm font-semibold text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[rgba(10,10,20,0.7)] dark:hover:text-[rgba(226,226,240,0.65)] transition-colors mb-3"
+        className="flex items-center gap-2 text-sm font-semibold text-[var(--ink-4)] hover:text-[rgba(10,10,20,0.7)] transition-colors mb-3"
       >
         <ChevronIcon open={closedOpen} />
         Closed Cards ({closedCards.length})
       </button>
 
       {closedOpen && (
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
+        <div className="rounded-xl border border-[var(--ink-line)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
           <table className="w-full text-sm min-w-[420px]">
             <thead>
-              <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
+              <tr className="bg-[var(--paper-2)]">
                 <th className={thCls}>Card</th>
                 <th className={thCls}>Servicer</th>
                 <th className={thCls}>Opened</th>
@@ -887,10 +887,10 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                 <th className="w-16 px-2 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
+            <tbody className="divide-y divide-[var(--ink-line)]">
               {closedCards.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                  <td colSpan={6} className="px-4 py-6 text-center text-sm text-[var(--ink-4)]">
                     No closed cards
                   </td>
                 </tr>
@@ -904,7 +904,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                   ageAtClose === null ? '—' : ageAtClose >= 12 ? `${Math.round(ageAtClose / 12)}y` : `${ageAtClose}mo`;
 
                 return (
-                  <tr key={card.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] opacity-70">
+                  <tr key={card.id} className="group hover:bg-[var(--paper-2)] opacity-70">
                     <td className={tdCls}>{card.name}</td>
                     <td className={tdCls}>{card.servicer || '—'}</td>
                     <td className={tdCls}>{card.openDate ? formatDate(card.openDate) : '—'}</td>
@@ -912,10 +912,10 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
                     <td className={`${tdCls} text-right`}>{ageLabel}</td>
                     <td className="px-2 py-2.5">
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setModal(card)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors">
+                        <button onClick={() => setModal(card)} className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                           <PencilIcon />
                         </button>
-                        <button onClick={() => deleteCreditCard(card.id)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors">
+                        <button onClick={() => deleteCreditCard(card.id)} className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                           <TrashIcon />
                         </button>
                       </div>
@@ -929,21 +929,21 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
       )}
 
       {/* 5/24 Status Banner */}
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4 sm:p-5 mt-5 sm:mt-8">
+      <div className="rounded-xl border border-[var(--ink-line)] p-4 sm:p-5 mt-5 sm:mt-8">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-[#0a0a14] dark:text-[#e2e2f0] uppercase tracking-wider">Chase 5/24 Status</h2>
-          <span className={`text-sm font-bold ${count524 >= 5 ? 'text-red-500' : count524 >= 4 ? 'text-[#E31937] dark:text-[#FF4D5C]' : 'text-green-500'}`}>
+          <h2 className="text-sm font-bold text-[var(--ink)] uppercase tracking-wider">Chase 5/24 Status</h2>
+          <span className={`text-sm font-bold ${count524 >= 5 ? 'text-[var(--rust)]' : count524 >= 4 ? 'text-[var(--rust)]' : 'text-[var(--moss)]'}`}>
             {count524} / 5 slots used
           </span>
         </div>
         {/* Progress bar */}
-        <div className="w-full h-2 bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden mb-3">
+        <div className="w-full h-2 bg-[var(--paper-2)] rounded-full overflow-hidden mb-3">
           <div
-            className={`h-full rounded-full transition-all ${count524 >= 5 ? 'bg-red-500' : count524 >= 4 ? 'bg-[#E31937]' : 'bg-green-500'}`}
+            className={`h-full rounded-full transition-all ${count524 >= 5 ? 'bg-[rgba(184,69,31,0.05)]0' : count524 >= 4 ? 'bg-[var(--rust)]' : 'bg-green-500'}`}
             style={{ width: `${Math.min(100, (count524 / 5) * 100)}%` }}
           />
         </div>
-        <div className="flex items-center justify-between text-xs text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+        <div className="flex items-center justify-between text-xs text-[var(--ink-4)]">
           <span>
             {slotsRemaining > 0
               ? `${slotsRemaining} slot${slotsRemaining !== 1 ? 's' : ''} remaining`
@@ -951,7 +951,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
           </span>
           {nextSlotDate && (
             <span>
-              Next slot opens <span className="font-semibold text-[rgba(10,10,20,0.7)] dark:text-[rgba(226,226,240,0.65)]">{formatDate(nextSlotDate)}</span>
+              Next slot opens <span className="font-semibold text-[rgba(10,10,20,0.7)]">{formatDate(nextSlotDate)}</span>
               {' '}({cards524[0].name})
             </span>
           )}
@@ -959,7 +959,7 @@ export function CreditCardsTab({ creditCards, addCreditCard, updateCreditCard, d
         {cards524.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {cards524.map(c => (
-              <span key={c.id} className="text-xs px-2 py-0.5 rounded-full bg-[rgba(227,25,55,0.1)] text-[#E31937] dark:bg-[rgba(255,77,92,0.1)] dark:text-[#FF4D5C] font-medium">
+              <span key={c.id} className="text-xs px-2 py-0.5 rounded-full bg-[rgba(227,25,55,0.1)] text-[var(--rust)] font-medium">
                 {c.name} ({formatDate(c.openDate)})
               </span>
             ))}

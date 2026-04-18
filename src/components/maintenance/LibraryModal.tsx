@@ -77,12 +77,12 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg max-h-[85vh] flex flex-col bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] shadow-xl animate-[scale-in_0.28s_ease]">
+      <div className="absolute inset-0 bg-[rgba(26,22,18,0.4)] " onClick={onClose} />
+      <div className="relative w-full max-w-lg max-h-[85vh] flex flex-col bg-[var(--paper)] rounded-[14px] border border-[var(--ink-line)]  animate-[scale-in_0.28s_ease]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.06)] shrink-0">
-          <h3 className="text-base font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">Task Library</h3>
-          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] text-lg leading-none">&times;</button>
+        <div className="flex items-center justify-between p-5 border-b border-[var(--ink-line)] shrink-0">
+          <h3 className="text-base font-semibold text-[var(--ink)]">Task Library</h3>
+          <button onClick={onClose} className="text-[var(--ink-4)] hover:text-[var(--ink)] text-lg leading-none">&times;</button>
         </div>
 
         {/* Search */}
@@ -92,7 +92,7 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search tasks..."
-            className="w-full px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C]"
+            className="field"
           />
         </div>
 
@@ -109,18 +109,18 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
                 <div className="flex items-center gap-2 mb-1.5">
                   <button
                     onClick={() => toggleCollapse(cat)}
-                    className="text-xs text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0]"
+                    className="text-xs text-[var(--ink-4)] hover:text-[var(--ink)]"
                   >
                     {isCollapsed ? '▸' : '▾'}
                   </button>
                   <span className="text-sm">{meta.icon}</span>
-                  <span className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.35)]">
+                  <span className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[var(--ink-4)]">
                     {meta.label}
                   </span>
                   {selectableItems.length > 0 && (
                     <button
                       onClick={() => toggleCategory(cat)}
-                      className="ml-auto text-[11px] font-medium text-[#E31937] dark:text-[#FF4D5C] hover:underline"
+                      className="ml-auto text-[11px] font-medium text-[var(--rust)] hover:underline"
                     >
                       {allSelected ? 'Deselect all' : 'Select all'}
                     </button>
@@ -131,18 +131,18 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
                   return (
                     <label
                       key={index}
-                      className={`flex items-center gap-3 py-1.5 px-2 rounded-lg cursor-pointer hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] ${alreadyAdded ? 'opacity-40 cursor-not-allowed' : ''}`}
+                      className={`flex items-center gap-3 py-1.5 px-2 rounded-lg cursor-pointer hover:bg-[var(--paper-2)] ${alreadyAdded ? 'opacity-40 cursor-not-allowed' : ''}`}
                     >
                       <input
                         type="checkbox"
                         checked={alreadyAdded || selected.has(index)}
                         disabled={alreadyAdded}
                         onChange={() => togglePreset(index)}
-                        className="rounded border-[rgba(0,0,20,0.2)] dark:border-[rgba(255,255,255,0.15)] text-[#E31937] focus:ring-[#E31937]"
+                        className="rounded border-[rgba(0,0,20,0.2)] text-[var(--rust)] focus:ring-[var(--rust)]"
                       />
-                      <span className="text-sm text-[#0a0a14] dark:text-[#e2e2f0]">{preset.name}</span>
+                      <span className="text-sm text-[var(--ink)]">{preset.name}</span>
                       {alreadyAdded && (
-                        <span className="ml-auto text-[10px] font-medium text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">Added</span>
+                        <span className="ml-auto text-[10px] font-medium text-[var(--ink-4)]">Added</span>
                       )}
                     </label>
                   );
@@ -153,11 +153,11 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="p-5 border-t border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.06)] shrink-0">
+        <div className="p-5 border-t border-[var(--ink-line)] shrink-0">
           <button
             onClick={handleImport}
             disabled={selected.size === 0}
-            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#E31937] text-white hover:bg-[#C41230] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-[var(--rust)] text-[var(--paper)] hover:bg-[var(--rust-ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Add Selected ({selected.size})
           </button>

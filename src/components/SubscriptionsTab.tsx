@@ -20,16 +20,16 @@ const CATEGORY_LABELS: Record<SubscriptionCategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<SubscriptionCategory, string> = {
-  streaming:  'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-  software:   'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-  fitness:    'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
-  news:       'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
-  gaming:     'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
-  utilities:  'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
-  food:       'bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300',
-  shopping:   'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300',
-  finance:    'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
-  other:      'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+  streaming:  'bg-purple-100 text-purple-700',
+  software:   'bg-[rgba(176,122,26,0.1)] text-[var(--ochre)]',
+  fitness:    'bg-[rgba(74,94,40,0.1)] text-green-700',
+  news:       'bg-yellow-100 text-yellow-700',
+  gaming:     'bg-[rgba(184,69,31,0.10)] text-red-700',
+  utilities:  'bg-orange-100 text-orange-700',
+  food:       'bg-lime-100 text-lime-700',
+  shopping:   'bg-pink-100 text-pink-700',
+  finance:    'bg-teal-100 text-teal-700',
+  other:      'bg-gray-100 text-[var(--ink-3)]',
 };
 
 const STATUS_LABELS: Record<SubscriptionStatus, string> = {
@@ -37,9 +37,9 @@ const STATUS_LABELS: Record<SubscriptionStatus, string> = {
 };
 
 const STATUS_COLORS: Record<SubscriptionStatus, string> = {
-  active:    'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
-  paused:    'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
-  cancelled: 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300',
+  active:    'bg-[rgba(74,94,40,0.1)] text-green-700',
+  paused:    'bg-yellow-100 text-yellow-700',
+  cancelled: 'bg-[rgba(184,69,31,0.10)] text-[var(--rust)]',
 };
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -76,13 +76,13 @@ function daysUntil(dateStr: string): number {
 
 function trialStatus(sub: Subscription): { label: string; cls: string } | null {
   if (!sub.freeTrial) return null;
-  if (!sub.trialExpiration) return { label: 'Yes', cls: 'text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)]' };
+  if (!sub.trialExpiration) return { label: 'Yes', cls: 'text-[var(--ink-3)]' };
   const days = daysUntil(sub.trialExpiration);
   const date = new Date(sub.trialExpiration + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  if (days < 0) return { label: `Expired ${date}`, cls: 'text-red-500 dark:text-red-400' };
-  if (days <= 7) return { label: `Expires ${date} (${days}d)`, cls: 'text-red-500 dark:text-red-400 font-semibold' };
-  if (days <= 30) return { label: `Expires ${date} (${days}d)`, cls: 'text-yellow-600 dark:text-yellow-400 font-medium' };
-  return { label: `Expires ${date}`, cls: 'text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)]' };
+  if (days < 0) return { label: `Expired ${date}`, cls: 'text-[var(--rust)]' };
+  if (days <= 7) return { label: `Expires ${date} (${days}d)`, cls: 'text-[var(--rust)] font-semibold' };
+  if (days <= 30) return { label: `Expires ${date} (${days}d)`, cls: 'text-[var(--ochre)] font-medium' };
+  return { label: `Expires ${date}`, cls: 'text-[var(--ink-3)]' };
 }
 
 // ── Form default ──────────────────────────────────────────────────────────
@@ -127,8 +127,8 @@ function PencilIcon() {
 
 // ── Modal ────────────────────────────────────────────────────────────────
 
-const inputCls = 'w-full rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-[#ffffff] dark:bg-[#161626] px-3 py-2 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none focus:border-[#E31937] transition-colors';
-const labelCls = 'block text-xs font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-1';
+const inputCls = 'w-full rounded-lg field outline-none focus:border-[var(--rust)] transition-colors';
+const labelCls = 'block text-xs font-medium text-[var(--ink-4)] mb-1';
 
 function SubscriptionModal({
   initial,
@@ -168,13 +168,13 @@ function SubscriptionModal({
     : MONTHS.map((m, i) => ({ value: i + 1, label: m }));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
-      <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-          <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
+      <div className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ink-line)]">
+          <h2 className="font-semibold text-[var(--ink)] text-sm">
             {initial ? 'Edit Subscription' : 'Add Subscription'}
           </h2>
-          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none">✕</button>
+          <button onClick={onClose} className="text-[var(--ink-4)] hover:text-[var(--ink)] transition-colors text-lg leading-none">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Name + Category */}
@@ -235,14 +235,14 @@ function SubscriptionModal({
           </div>
 
           {/* Free Trial */}
-          <div className="rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.08)] p-3 space-y-3">
+          <div className="rounded-lg border border-[var(--ink-line)] p-3 space-y-3">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox" checked={form.freeTrial}
                 onChange={e => { set('freeTrial', e.target.checked); if (!e.target.checked) set('trialExpiration', ''); }}
-                className="w-4 h-4 rounded accent-[#E31937]"
+                className="w-4 h-4 rounded accent-[var(--rust)]"
               />
-              <span className="text-sm text-[#0a0a14] dark:text-[#e2e2f0]">Free Trial</span>
+              <span className="text-sm text-[var(--ink)]">Free Trial</span>
             </label>
             {form.freeTrial && (
               <div>
@@ -256,10 +256,10 @@ function SubscriptionModal({
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
+            <button type="button" onClick={onClose} className="btn-ghost btn-sm">
               Cancel
             </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
+            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] text-white transition-colors">
               {initial ? 'Save Changes' : 'Add Subscription'}
             </button>
           </div>
@@ -336,8 +336,8 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
 
   // ── Table classes ─────────────────────────────────────────────────────
 
-  const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]';
-  const tdCls = 'px-4 py-3 text-sm text-gray-800 dark:text-gray-200';
+  const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-[var(--ink-4)]';
+  const tdCls = 'px-4 py-3 text-sm text-[var(--ink)]';
 
   const statusFilters: { id: StatusFilter; label: string }[] = [
     { id: 'all', label: 'All' },
@@ -351,24 +351,24 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
       {/* ── Dashboard Cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-5 sm:mb-6">
         {/* Monthly Cost */}
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Monthly Cost</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] truncate">{formatCurrency(totalMonthly)}</div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">active subscriptions</div>
+        <div className="rounded-xl border border-[var(--ink-line)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Monthly Cost</div>
+          <div className="text-lg sm:text-2xl font-bold text-[var(--ink)] truncate">{formatCurrency(totalMonthly)}</div>
+          <div className="text-[10px] sm:text-xs text-[var(--ink-4)] mt-0.5">active subscriptions</div>
         </div>
 
         {/* Annual Cost */}
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Annual Cost</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#E31937] dark:text-[#FF4D5C] truncate">{formatCurrency(totalAnnual)}</div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">per year</div>
+        <div className="rounded-xl border border-[var(--ink-line)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Annual Cost</div>
+          <div className="text-lg sm:text-2xl font-bold text-[var(--rust)] truncate">{formatCurrency(totalAnnual)}</div>
+          <div className="text-[10px] sm:text-xs text-[var(--ink-4)] mt-0.5">per year</div>
         </div>
 
         {/* Active Count */}
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Active</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0]">{active.length}</div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">
+        <div className="rounded-xl border border-[var(--ink-line)] p-3 sm:p-4">
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Active</div>
+          <div className="text-lg sm:text-2xl font-bold text-[var(--ink)]">{active.length}</div>
+          <div className="text-[10px] sm:text-xs text-[var(--ink-4)] mt-0.5">
             of {subscriptions.length} total
           </div>
         </div>
@@ -376,17 +376,17 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
         {/* Free Trials */}
         <div className={`rounded-xl border p-3 sm:p-4 ${
           trialsExpiringSoon.length > 0
-            ? 'border-yellow-300 dark:border-yellow-700/50 bg-yellow-50/50 dark:bg-yellow-900/10'
-            : 'border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]'
+            ? 'border-[rgba(176,122,26,0.3)] bg-[rgba(176,122,26,0.05)]/50'
+            : 'border-[var(--ink-line)]'
         }`}>
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Free Trials</div>
-          <div className={`text-lg sm:text-2xl font-bold ${trialsExpiringSoon.length > 0 ? 'text-yellow-600 dark:text-yellow-400' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>
+          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Free Trials</div>
+          <div className={`text-lg sm:text-2xl font-bold ${trialsExpiringSoon.length > 0 ? 'text-[var(--ochre)]' : 'text-[var(--ink)]'}`}>
             {subscriptions.filter(s => s.freeTrial && s.status === 'active').length}
           </div>
           <div className="text-[10px] sm:text-xs mt-0.5">
             {trialsExpiringSoon.length > 0
-              ? <span className="text-yellow-600 dark:text-yellow-400 font-medium">{trialsExpiringSoon.length} expiring within 30d</span>
-              : <span className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">none expiring soon</span>
+              ? <span className="text-[var(--ochre)] font-medium">{trialsExpiringSoon.length} expiring within 30d</span>
+              : <span className="text-[var(--ink-4)]">none expiring soon</span>
             }
           </div>
         </div>
@@ -394,8 +394,8 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
 
       {/* ── Category Breakdown Bar ── */}
       {categoryTotals.length > 0 && (
-        <div className="mb-5 sm:mb-6 rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4">
-          <div className="text-xs font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-3 uppercase tracking-wider">Monthly by Category</div>
+        <div className="mb-5 sm:mb-6 rounded-xl border border-[var(--ink-line)] p-4">
+          <div className="text-xs font-medium text-[var(--ink-4)] mb-3 uppercase tracking-wider">Monthly by Category</div>
           <div className="flex h-2 rounded-full overflow-hidden gap-px mb-3">
             {categoryTotals.map(({ cat, amt }) => (
               <div
@@ -410,8 +410,8 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
             {categoryTotals.map(({ cat, amt }) => (
               <div key={cat} className="flex items-center gap-1.5 text-xs">
                 <span className={`inline-block w-2.5 h-2.5 rounded-sm ${CATEGORY_COLORS[cat].split(' ')[0]}`} />
-                <span className="text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.5)]">{CATEGORY_LABELS[cat]}</span>
-                <span className="font-medium text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(amt)}</span>
+                <span className="text-[var(--ink-3)]">{CATEGORY_LABELS[cat]}</span>
+                <span className="font-medium text-[var(--ink)]">{formatCurrency(amt)}</span>
               </div>
             ))}
           </div>
@@ -427,8 +427,8 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
               onClick={() => setStatusFilter(f.id)}
               className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                 statusFilter === f.id
-                  ? 'bg-[#E31937] text-white'
-                  : 'bg-[rgba(0,0,20,0.04)] dark:bg-[rgba(255,255,255,0.05)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.5)] hover:bg-[rgba(0,0,20,0.07)] dark:hover:bg-[rgba(255,255,255,0.08)]'
+                  ? 'bg-[var(--rust)] text-white'
+                  : 'bg-[var(--paper-2)] text-[var(--ink-3)] hover:bg-[rgba(0,0,20,0.07)]'
               }`}
             >
               {f.label}
@@ -439,7 +439,7 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value as typeof categoryFilter)}
-            className="ml-1 rounded-full border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-transparent px-2.5 py-1 text-xs text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.5)] outline-none cursor-pointer"
+            className="ml-1 rounded-full border border-[var(--ink-line)] bg-transparent px-2.5 py-1 text-xs text-[var(--ink-3)] outline-none cursor-pointer"
           >
             <option value="all">All Categories</option>
             {(Object.keys(CATEGORY_LABELS) as SubscriptionCategory[]).map(c => (
@@ -450,17 +450,17 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
 
         <button
           onClick={() => setModal('add')}
-          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors"
+          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] text-white transition-colors"
         >
           <span className="text-base leading-none">+</span> Add Subscription
         </button>
       </div>
 
       {/* ── Table ── */}
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
+      <div className="rounded-xl border border-[var(--ink-line)] overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
         <table className="w-full text-sm min-w-[540px]">
           <thead>
-            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
+            <tr className="bg-[var(--paper-2)]">
               <th className={thCls}>Subscription</th>
               <th className={`${thCls} text-right`}>Amount</th>
               <th className={thCls}>Frequency</th>
@@ -470,10 +470,10 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
               <th className="w-16 px-2 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
+          <tbody className="divide-y divide-[var(--ink-line)]">
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                <td colSpan={7} className="px-4 py-10 text-center text-sm text-[var(--ink-4)]">
                   {subscriptions.length === 0 ? 'No subscriptions yet — add one above.' : 'No subscriptions match the current filter.'}
                 </td>
               </tr>
@@ -485,7 +485,7 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
               return (
                 <tr
                   key={sub.id}
-                  className={`group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] ${
+                  className={`group hover:bg-[var(--paper-2)] ${
                     sub.status === 'cancelled' ? 'opacity-50' : ''
                   }`}
                 >
@@ -504,7 +504,7 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
                     <div className="flex flex-col items-end">
                       <span className="font-semibold">{formatCurrency(sub.amount)}</span>
                       {sub.frequency === 'annual' && (
-                        <span className="text-[10px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                        <span className="text-[10px] text-[var(--ink-4)]">
                           {formatCurrency(monthlyCost)}/mo
                         </span>
                       )}
@@ -515,15 +515,15 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
                   <td className={tdCls}>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       sub.frequency === 'monthly'
-                        ? 'bg-[rgba(227,25,55,0.1)] text-[#E31937] dark:text-[#FF4D5C]'
-                        : 'bg-[rgba(168,85,247,0.1)] text-purple-600 dark:text-purple-400'
+                        ? 'bg-[rgba(227,25,55,0.1)] text-[var(--rust)]'
+                        : 'bg-[rgba(90,77,66,0.1)] text-[var(--ink-2)]'
                     }`}>
                       {sub.frequency === 'monthly' ? 'Monthly' : 'Annual'}
                     </span>
                   </td>
 
                   {/* Renewal date */}
-                  <td className={`${tdCls} text-[rgba(10,10,20,0.65)] dark:text-[rgba(226,226,240,0.6)]`}>
+                  <td className={`${tdCls} text-[var(--ink-3)]`}>
                     {renewalLabel(sub)}
                   </td>
 
@@ -532,7 +532,7 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
                     {trial ? (
                       <span className={`text-xs ${trial.cls}`}>{trial.label}</span>
                     ) : (
-                      <span className="text-xs text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">No</span>
+                      <span className="text-xs text-[var(--ink-4)]">No</span>
                     )}
                   </td>
 
@@ -548,13 +548,13 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => setModal(sub)}
-                        className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
+                        className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors"
                       >
                         <PencilIcon />
                       </button>
                       <button
                         onClick={() => deleteSubscription(sub.id)}
-                        className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors"
+                        className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors"
                       >
                         <TrashIcon />
                       </button>
@@ -568,16 +568,16 @@ export function SubscriptionsTab({ subscriptions, addSubscription, updateSubscri
           {/* Footer totals for filtered view */}
           {filtered.length > 0 && (
             <tfoot>
-              <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] font-semibold text-sm">
-                <td className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+              <tr className="bg-[var(--paper-2)] border-t border-[var(--ink-line)] font-semibold text-sm">
+                <td className="px-4 py-3 text-[var(--ink-4)]">
                   {filtered.length} subscription{filtered.length !== 1 ? 's' : ''}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex flex-col items-end">
-                    <span className="text-[#0a0a14] dark:text-[#e2e2f0]">
+                    <span className="text-[var(--ink)]">
                       {formatCurrency(filtered.filter(s => s.status !== 'cancelled').reduce((sum, s) => sum + toMonthlyCost(s), 0))}/mo
                     </span>
-                    <span className="text-[10px] font-normal text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                    <span className="text-[10px] font-normal text-[var(--ink-4)]">
                       {formatCurrency(filtered.filter(s => s.status !== 'cancelled').reduce((sum, s) => sum + toAnnualCost(s), 0))}/yr
                     </span>
                   </div>

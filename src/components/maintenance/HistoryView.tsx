@@ -9,7 +9,7 @@ interface Props {
   completions: MaintenanceCompletion[];
 }
 
-const inputCls = 'px-3 py-2 rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#ffffff] dark:bg-[#0a0a14] text-[#0a0a14] dark:text-[#e2e2f0] text-sm focus:outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C]';
+const inputCls = 'px-3 py-2 rounded-lg border border-[var(--ink-line)] bg-[var(--paper)] text-[var(--ink)] text-sm focus:outline-none focus:border-[var(--rust)]';
 
 export function HistoryView({ tasks, completions }: Props) {
   const [dateFrom, setDateFrom] = useState('');
@@ -52,15 +52,15 @@ export function HistoryView({ tasks, completions }: Props) {
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-end">
         <div>
-          <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5">From</label>
+          <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[var(--ink-4)] mb-1.5">From</label>
           <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className={inputCls} />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5">To</label>
+          <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[var(--ink-4)] mb-1.5">To</label>
           <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className={inputCls} />
         </div>
         <div>
-          <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5">Category</label>
+          <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[var(--ink-4)] mb-1.5">Category</label>
           <select value={catFilter} onChange={e => setCatFilter(e.target.value)} className={inputCls}>
             <option value="all">All Categories</option>
             {categories.map(cat => (
@@ -71,25 +71,25 @@ export function HistoryView({ tasks, completions }: Props) {
         <button
           onClick={handleExport}
           disabled={filtered.length === 0}
-          className="px-4 py-2 rounded-lg text-sm font-medium bg-[#E31937] text-white hover:bg-[#C41230] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--rust)] text-white hover:bg-[var(--rust-ink)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           Export CSV
         </button>
       </div>
 
       {/* Summary */}
-      <div className="flex items-center gap-4 text-sm text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)]">
+      <div className="flex items-center gap-4 text-sm text-[var(--ink-3)]">
         <span>{filtered.length} completion{filtered.length !== 1 ? 's' : ''}</span>
         {totalCost > 0 && <span>Total cost: {formatCurrency(totalCost)}</span>}
       </div>
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.25)]">
+        <div className="text-center py-12 text-[var(--ink-4)]">
           <p className="text-sm">No completions found.</p>
         </div>
       ) : (
-        <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.05)]">
+        <div className="bg-[var(--paper)] rounded-[14px] border border-[var(--ink-line)] divide-y divide-[var(--ink-line)]">
           {filtered.map(c => {
             const task = tasksById[c.taskId];
             const meta = task ? CATEGORY_META[task.category] : null;
@@ -98,29 +98,29 @@ export function HistoryView({ tasks, completions }: Props) {
                 <span className="text-base shrink-0">{task?.icon || meta?.icon || '🔧'}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
+                    <h4 className="text-sm font-medium text-[var(--ink)] truncate">
                       {task?.name ?? 'Unknown Task'}
                     </h4>
-                    <span className="shrink-0 text-xs text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] tabular-nums">
+                    <span className="shrink-0 text-xs text-[var(--ink-4)] tabular-nums">
                       {new Date(c.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
                   </div>
                   {meta && (
-                    <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-[rgba(227,25,55,0.08)] dark:bg-[rgba(255,77,92,0.08)] text-[#E31937] dark:text-[#FF4D5C]">
+                    <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-[rgba(227,25,55,0.08)] text-[var(--rust)]">
                       {meta.label}
                     </span>
                   )}
                   {c.notes && (
-                    <p className="text-xs text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] mt-1 line-clamp-2">{c.notes}</p>
+                    <p className="text-xs text-[var(--ink-3)] mt-1 line-clamp-2">{c.notes}</p>
                   )}
                   {c.usageAtCompletion > 0 && task && (
-                    <p className="text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">
+                    <p className="text-[11px] text-[var(--ink-4)] mt-0.5">
                       at {c.usageAtCompletion.toLocaleString()} {task.recurrenceUnit}
                     </p>
                   )}
                 </div>
                 {c.cost > 0 && (
-                  <span className="shrink-0 text-sm font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tabular-nums">
+                  <span className="shrink-0 text-sm font-semibold text-[var(--ink)] tabular-nums">
                     {formatCurrency(c.cost)}
                   </span>
                 )}

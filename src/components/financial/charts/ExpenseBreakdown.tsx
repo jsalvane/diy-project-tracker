@@ -27,8 +27,8 @@ export function ExpenseBreakdown({ expenses }: Props) {
   const maxVal = data[0]?.value ?? 1;
 
   return (
-    <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-      <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-4">
+    <div className="border border-[var(--ink-line)] rounded-xl p-5">
+      <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-4">
         Expense Breakdown
       </p>
       <ResponsiveContainer width="100%" height={Math.max(200, data.length * 32 + 20)}>

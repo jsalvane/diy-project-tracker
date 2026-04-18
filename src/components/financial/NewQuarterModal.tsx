@@ -28,7 +28,7 @@ function suggestNextMonth(previousLabel: string): string {
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5">
+    <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[var(--ink-4)] mb-1.5">
       {children}
     </label>
   );
@@ -73,16 +73,16 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-fade-in p-4">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-[rgba(26,22,18,0.45)]  animate-fade-in p-4">
       <div
-        className="bg-[#ffffff] dark:bg-[#0f0f1a] border border-[rgba(0,0,20,0.08)] dark:border-[rgba(255,255,255,0.07)] rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6)] w-full max-w-md animate-scale-in"
+        className="bg-[var(--paper)] border border-[var(--ink-line)] rounded-[14px] shadow-[0_24px_80px_rgba(0,0,0,0.18)] w-full max-w-md animate-scale-in"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-          <h2 className="text-[14px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.015em]">New Month</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ink-line)]">
+          <h2 className="text-[14px] font-semibold text-[var(--ink)] tracking-[-0.015em]">New Month</h2>
           <button
             onClick={onCancel}
-            className="w-6 h-6 flex items-center justify-center rounded-md text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] hover:text-[rgba(10,10,20,0.65)] dark:hover:text-[rgba(226,226,240,0.6)] hover:bg-[rgba(0,0,20,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+            className="w-6 h-6 flex items-center justify-center rounded-md text-[var(--ink-4)] hover:text-[var(--ink-3)] hover:bg-[var(--paper-2)] transition-colors"
           >
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/>
@@ -92,11 +92,11 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
 
         <div className="p-6">
           {previousQuarter ? (
-            <p className="text-[12.5px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] mb-5 leading-relaxed">
-              Cloning from <strong className="text-[#0a0a14] dark:text-[#e2e2f0]">{previousQuarter.quarterLabel}</strong>. All values are carried forward — update any that changed. Retirement YTD is reset to 0.
+            <p className="text-[12.5px] text-[var(--ink-3)] mb-5 leading-relaxed">
+              Cloning from <strong className="text-[var(--ink)]">{previousQuarter.quarterLabel}</strong>. All values are carried forward — update any that changed. Retirement YTD is reset to 0.
             </p>
           ) : (
-            <p className="text-[12.5px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] mb-5">
+            <p className="text-[12.5px] text-[var(--ink-3)] mb-5">
               No previous month to clone from. Starting with blank values.
             </p>
           )}

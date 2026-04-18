@@ -78,10 +78,10 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
       <div className="flex items-center justify-center py-24">
         <div className="flex flex-col items-center gap-4">
           <div className="relative w-8 h-8">
-            <div className="absolute inset-0 rounded-full border border-[#E31937]/20" />
-            <div className="absolute inset-0 rounded-full border-t border-[#E31937] animate-spin" />
+            <div className="absolute inset-0 rounded-full border border-[var(--rust)]/20" />
+            <div className="absolute inset-0 rounded-full border-t border-[var(--rust)] animate-spin" />
           </div>
-          <span className="text-[12px] font-medium tracking-[0.06em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)]">
+          <span className="text-[12px] font-medium tracking-[0.06em] uppercase text-[var(--ink-4)]">
             Loading
           </span>
         </div>
@@ -95,11 +95,11 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-8">
         <div>
           {!embedded && (
-            <h1 className="text-[22px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.035em]">
+            <h1 className="text-[22px] font-bold text-[var(--ink)] tracking-[-0.035em]">
               Financial Health
             </h1>
           )}
-          <p className="text-[12px] font-medium text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] mt-0.5 tracking-[0.01em]">
+          <p className="text-[12px] font-medium text-[rgba(10,10,20,0.38)] mt-0.5 tracking-[0.01em]">
             {state.quarters.length === 0
               ? 'No months tracked yet'
               : `${state.quarters.length} month${state.quarters.length !== 1 ? 's' : ''} tracked`}
@@ -145,7 +145,7 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
         <aside className="w-44 shrink-0 hidden sm:block">
           <div className="space-y-0.5">
             {sortedDesc.length === 0 ? (
-              <p className="text-[12px] text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] px-2 py-4 text-center">
+              <p className="text-[12px] text-[rgba(10,10,20,0.38)] px-2 py-4 text-center">
                 No months yet.<br />Create one to start.
               </p>
             ) : (
@@ -158,18 +158,18 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
                     onClick={() => { setActiveQuarter(q.id); setMode('view'); }}
                     className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-[rgba(227,25,55,0.08)] dark:bg-[rgba(255,77,92,0.08)] border border-[rgba(227,25,55,0.2)] dark:border-[rgba(255,77,92,0.15)]'
-                        : 'hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.04)] border border-transparent'
+                        ? 'bg-[rgba(227,25,55,0.08)] border border-[rgba(227,25,55,0.2)]'
+                        : 'hover:bg-[var(--paper-2)] border border-transparent'
                     }`}
                   >
                     <p className={`text-[13px] font-semibold leading-tight tracking-[-0.01em] ${
                       isActive
-                        ? 'text-[#E31937] dark:text-[#FF4D5C]'
-                        : 'text-[#0a0a14] dark:text-[#e2e2f0]'
+                        ? 'text-[var(--rust)]'
+                        : 'text-[var(--ink)]'
                     }`}>
                       {q.quarterLabel}
                     </p>
-                    <p className="text-[11px] tabular-nums text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5">
+                    <p className="text-[11px] tabular-nums text-[var(--ink-4)] mt-0.5">
                       {fmtCurrency(d.netWorth)}
                     </p>
                   </button>
@@ -182,16 +182,16 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
         {/* Main content */}
         <main className="flex-1 min-w-0">
           {!activeQuarter ? (
-            <div className="text-center py-20 border border-dashed border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] rounded-2xl">
-              <div className="w-12 h-12 rounded-2xl bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)] flex items-center justify-center mx-auto mb-4">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#E31937] dark:text-[#FF4D5C]">
+            <div className="text-center py-20 border border-dashed border-[var(--ink-line)] rounded-[14px]">
+              <div className="w-12 h-12 rounded-[14px] bg-[rgba(184,69,31,0.1)] flex items-center justify-center mx-auto mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--rust)]">
                   <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
                 </svg>
               </div>
-              <p className="text-[15px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.015em] mb-1.5">
+              <p className="text-[15px] font-semibold text-[var(--ink)] tracking-[-0.015em] mb-1.5">
                 No months yet
               </p>
-              <p className="text-[13px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-6">
+              <p className="text-[13px] text-[var(--ink-4)] mb-6">
                 Create your first month to start tracking your financial health.
               </p>
               <button onClick={() => setShowNewQuarterModal(true)} className="btn-primary mx-auto">
@@ -201,7 +201,7 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
           ) : mode === 'edit' && draft ? (
             <div>
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-[16px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.02em]">
+                <h2 className="text-[16px] font-bold text-[var(--ink)] tracking-[-0.02em]">
                   Editing {activeQuarter.quarterLabel}
                 </h2>
               </div>
@@ -215,8 +215,8 @@ export function FinancialHealth({ embedded }: { embedded?: boolean } = {}) {
           ) : (
             <>
               {showDeleteConfirm && (
-                <div className="border border-[rgba(220,38,38,0.2)] dark:border-[rgba(248,113,113,0.15)] bg-[rgba(220,38,38,0.04)] dark:bg-[rgba(248,113,113,0.05)] rounded-xl p-4 flex items-center justify-between gap-4 mb-5">
-                  <p className="text-[13px] text-[rgba(10,10,20,0.7)] dark:text-[rgba(226,226,240,0.65)]">
+                <div className="border border-[rgba(220,38,38,0.2)] bg-[rgba(220,38,38,0.04)] rounded-xl p-4 flex items-center justify-between gap-4 mb-5">
+                  <p className="text-[13px] text-[rgba(10,10,20,0.7)]">
                     Delete <strong>{activeQuarter.quarterLabel}</strong>? This cannot be undone.
                   </p>
                   <div className="flex gap-2 shrink-0">

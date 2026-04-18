@@ -7,7 +7,7 @@ interface Props {
 
 // Palette: minimal, single-family color ramp
 const COLORS = [
-  '#FF4D5C', // indigo-400
+  'var(--rust)', // indigo-400
   '#a78bfa', // violet-400
   '#60a5fa', // blue-400
   '#34d399', // emerald-400
@@ -32,7 +32,7 @@ export function CategoryChart({ entries }: Props) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] py-12 bg-white dark:bg-[#111118]">
+      <div className="rounded-[14px] border border-[var(--ink-line)] text-center text-[13px] text-[var(--ink-4)] py-12 bg-[var(--paper)]">
         No expense data yet.
       </div>
     );
@@ -40,15 +40,15 @@ export function CategoryChart({ entries }: Props) {
 
   return (
     <div
-      className="rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] bg-white dark:bg-[#111118] overflow-hidden"
+      className="rounded-[14px] border border-[var(--ink-line)] bg-[var(--paper)] overflow-hidden"
       style={{ boxShadow: '0 1px 3px rgba(0,0,20,0.04)' }}
     >
       {/* Header */}
       <div className="px-5 pt-5 pb-4 flex items-center justify-between">
-        <span className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)]">
+        <span className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.38)]">
           By Category
         </span>
-        <span className="text-[13px] font-bold tracking-[-0.02em] text-[#0a0a14] dark:text-[#e2e2f0]">
+        <span className="text-[13px] font-bold tracking-[-0.02em] text-[var(--ink)]">
           {formatCurrency(grandTotal)}
         </span>
       </div>
@@ -63,21 +63,21 @@ export function CategoryChart({ entries }: Props) {
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                  <span className="text-[13px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">
+                  <span className="text-[13px] font-medium text-[var(--ink)] truncate">
                     {cat}
                   </span>
                 </div>
                 <div className="shrink-0 flex items-baseline gap-1.5 ml-3">
-                  <span className="text-[13px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">
+                  <span className="text-[13px] font-semibold text-[var(--ink)]">
                     {formatCurrency(total)}
                   </span>
-                  <span className="text-[10px] font-medium text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                  <span className="text-[10px] font-medium text-[var(--ink-4)]">
                     {pct.toFixed(0)}%
                   </span>
                 </div>
               </div>
               {/* Bar track */}
-              <div className="h-[6px] rounded-full bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.06)] overflow-hidden">
+              <div className="h-[6px] rounded-full bg-[var(--paper-2)] overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700"
                   style={{

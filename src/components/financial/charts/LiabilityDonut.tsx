@@ -23,18 +23,18 @@ export function LiabilityDonut({ liabilities, totalLiabilities }: Props) {
 
   if (data.length === 0) {
     return (
-      <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5 flex flex-col items-center justify-center" style={{ minHeight: 320 }}>
-        <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-4">
+      <div className="border border-[var(--ink-line)] rounded-xl p-5 flex flex-col items-center justify-center" style={{ minHeight: 320 }}>
+        <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-4">
           Liability Breakdown
         </p>
-        <p className="text-lg font-bold text-green-500">Debt Free</p>
+        <p className="text-lg font-bold text-[var(--moss)]">Debt Free</p>
       </div>
     );
   }
 
   return (
-    <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-      <p className="text-xs font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-widest mb-2">
+    <div className="border border-[var(--ink-line)] rounded-xl p-5">
+      <p className="text-xs font-semibold text-[var(--ink-4)] uppercase tracking-widest mb-2">
         Liability Breakdown
       </p>
       <div className="relative">
@@ -62,16 +62,16 @@ export function LiabilityDonut({ liabilities, totalLiabilities }: Props) {
         </ResponsiveContainer>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="text-center">
-            <p className="text-lg font-bold text-gray-900 dark:text-gray-100 tabular-nums">
+            <p className="text-lg font-bold text-[var(--ink)] tabular-nums">
               {fmtCurrency(totalLiabilities)}
             </p>
-            <p className="text-[10px] text-gray-500 dark:text-zinc-500 uppercase">Total</p>
+            <p className="text-[10px] text-[var(--ink-4)] uppercase">Total</p>
           </div>
         </div>
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 justify-center">
         {data.map((d, i) => (
-          <div key={i} className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-zinc-400">
+          <div key={i} className="flex items-center gap-1.5 text-[11px] text-[var(--ink-4)]">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
             {d.name}
           </div>

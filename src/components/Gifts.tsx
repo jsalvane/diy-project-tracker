@@ -5,14 +5,14 @@ import { formatCurrency } from '../lib/utils';
 
 // ─── Color palette ─────────────────────────────────────────────────────────────
 const COLORS = [
-  { key: 'orange', bar: 'bg-orange-400', text: 'text-orange-500 dark:text-orange-400', dot: 'bg-orange-400' },
-  { key: 'blue',   bar: 'bg-blue-400',   text: 'text-blue-500 dark:text-blue-400',     dot: 'bg-blue-400'   },
-  { key: 'emerald',bar: 'bg-emerald-400',text: 'text-emerald-500 dark:text-emerald-400',dot:'bg-emerald-400' },
-  { key: 'violet', bar: 'bg-violet-400', text: 'text-violet-500 dark:text-violet-400', dot: 'bg-violet-400' },
-  { key: 'rose',   bar: 'bg-rose-400',   text: 'text-rose-500 dark:text-rose-400',     dot: 'bg-rose-400'   },
-  { key: 'amber',  bar: 'bg-amber-400',  text: 'text-amber-500 dark:text-amber-400',   dot: 'bg-amber-400'  },
-  { key: 'cyan',   bar: 'bg-cyan-400',   text: 'text-cyan-500 dark:text-cyan-400',     dot: 'bg-cyan-400'   },
-  { key: 'pink',   bar: 'bg-pink-400',   text: 'text-pink-500 dark:text-pink-400',     dot: 'bg-pink-400'   },
+  { key: 'orange', bar: 'bg-orange-400', text: 'text-orange-500', dot: 'bg-orange-400' },
+  { key: 'blue',   bar: 'bg-blue-400',   text: 'text-[var(--ochre)]',     dot: 'bg-blue-400'   },
+  { key: 'emerald',bar: 'bg-emerald-400',text: 'text-emerald-500',dot:'bg-emerald-400' },
+  { key: 'violet', bar: 'bg-violet-400', text: 'text-violet-500', dot: 'bg-violet-400' },
+  { key: 'rose',   bar: 'bg-rose-400',   text: 'text-rose-500',     dot: 'bg-rose-400'   },
+  { key: 'amber',  bar: 'bg-amber-400',  text: 'text-[var(--ochre)]',   dot: 'bg-amber-400'  },
+  { key: 'cyan',   bar: 'bg-cyan-400',   text: 'text-cyan-500',     dot: 'bg-cyan-400'   },
+  { key: 'pink',   bar: 'bg-pink-400',   text: 'text-pink-500',     dot: 'bg-pink-400'   },
 ];
 
 
@@ -67,9 +67,9 @@ function PersonTile({
   const budgetPct = recipient.budget > 0 ? Math.min(100, (spent / recipient.budget) * 100) : 0;
 
   return (
-    <button
+    <div
       onClick={onSelect}
-      className="w-full text-left p-4 transition-all duration-150"
+      className="w-full text-left p-4 transition-all duration-150 cursor-pointer"
       style={{
         borderRadius: 12,
         border: `1px solid ${isSelected ? 'var(--ink-line-2)' : 'var(--ink-line)'}`,
@@ -125,7 +125,7 @@ function PersonTile({
       ) : spent > 0 ? (
         <div className="tape-label tabular-nums" style={{ color: 'var(--ink-2)', fontSize: 9 }}>{formatCurrency(spent)} spent</div>
       ) : null}
-    </button>
+    </div>
   );
 }
 
@@ -231,9 +231,9 @@ function GiftModal({ gift, recipientId, onSave, onClose }: {
   }
 
   const priorityConfig: Record<GiftPriority, { label: string; active: string; inactive: string }> = {
-    high:   { label: 'High',   active: 'bg-rose-500 border-rose-500 text-white',   inactive: 'border-[rgba(0,0,20,0.13)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] hover:border-rose-300 dark:hover:border-rose-700' },
-    medium: { label: 'Medium', active: 'bg-amber-500 border-amber-500 text-white', inactive: 'border-[rgba(0,0,20,0.13)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] hover:border-amber-300 dark:hover:border-amber-700' },
-    low:    { label: 'Low',    active: 'bg-[rgba(0,0,20,0.25)] dark:bg-[rgba(255,255,255,0.2)] border-transparent text-white', inactive: 'border-[rgba(0,0,20,0.13)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)]' },
+    high:   { label: 'High',   active: 'bg-rose-500 border-rose-500 text-[var(--paper)]',   inactive: 'border-[rgba(0,0,20,0.13)] text-[var(--ink-3)] hover:border-rose-300' },
+    medium: { label: 'Medium', active: 'bg-[rgba(176,122,26,0.05)]0 border-amber-500 text-[var(--paper)]', inactive: 'border-[rgba(0,0,20,0.13)] text-[var(--ink-3)] hover:border-amber-300' },
+    low:    { label: 'Low',    active: 'bg-[rgba(0,0,20,0.25)] border-transparent text-[var(--paper)]', inactive: 'border-[rgba(0,0,20,0.13)] text-[var(--ink-3)]' },
   };
 
   return (

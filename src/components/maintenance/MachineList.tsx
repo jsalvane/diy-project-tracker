@@ -32,13 +32,13 @@ export function MachineList({ machines, tasks, onSelectMachine, onAddMachine }: 
     return (
       <div className="text-center py-16 px-4">
         <div className="text-5xl mb-4">🔩</div>
-        <h3 className="text-base font-semibold text-[#0a0a14] dark:text-[#e2e2f0] mb-2">No machines yet</h3>
-        <p className="text-sm text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] mb-6 max-w-xs mx-auto">
+        <h3 className="text-base font-semibold text-[var(--ink)] mb-2">No machines yet</h3>
+        <p className="text-sm text-[var(--ink-3)] mb-6 max-w-xs mx-auto">
           Add your snowblower, lawnmower, vehicles, and other equipment to track their maintenance.
         </p>
         <button
           onClick={onAddMachine}
-          className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-[#E31937] text-white hover:bg-[#C41230] transition-colors"
+          className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--rust)] text-[var(--paper)] hover:bg-[var(--rust-ink)] transition-colors"
         >
           Add First Machine
         </button>
@@ -49,12 +49,12 @@ export function MachineList({ machines, tasks, onSelectMachine, onAddMachine }: 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+        <p className="text-sm text-[var(--ink-4)]">
           {machines.length} machine{machines.length !== 1 ? 's' : ''}
         </p>
         <button
           onClick={onAddMachine}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#E31937] text-white hover:bg-[#C41230] transition-colors"
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--rust)] text-[var(--paper)] hover:bg-[var(--rust-ink)] transition-colors"
         >
           + Add Machine
         </button>
@@ -68,16 +68,16 @@ export function MachineList({ machines, tasks, onSelectMachine, onAddMachine }: 
             <button
               key={machine.id}
               onClick={() => onSelectMachine(machine.id)}
-              className="w-full text-left bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4 transition-all duration-150 hover:border-[rgba(227,25,55,0.3)] hover:shadow-md"
+              className="w-full text-left bg-[var(--paper)] rounded-[14px] border border-[var(--ink-line)] p-4 transition-all duration-150 hover:border-[rgba(227,25,55,0.3)] hover:shadow-md"
             >
               {/* Header */}
               <div className="flex items-start gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-[rgba(227,25,55,0.08)] dark:bg-[rgba(255,77,92,0.08)] flex items-center justify-center text-xl shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[rgba(227,25,55,0.08)] flex items-center justify-center text-xl shrink-0">
                   {machine.icon || meta.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-semibold text-[#0a0a14] dark:text-[#e2e2f0] truncate">{machine.name}</h3>
-                  <p className="text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] truncate">
+                  <h3 className="text-sm font-semibold text-[var(--ink)] truncate">{machine.name}</h3>
+                  <p className="text-[11px] text-[var(--ink-4)] truncate">
                     {[machine.manufacturer, machine.model, machine.year].filter(Boolean).join(' · ') || meta.label}
                   </p>
                 </div>
@@ -85,16 +85,16 @@ export function MachineList({ machines, tasks, onSelectMachine, onAddMachine }: 
 
               {/* Stats */}
               <div className="flex items-center gap-3">
-                <span className="text-[11px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+                <span className="text-[11px] text-[var(--ink-4)]">
                   {stats.total} task{stats.total !== 1 ? 's' : ''}
                 </span>
                 {stats.overdue > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[rgba(220,38,38,0.1)] text-[#dc2626] dark:text-[#f87171]">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[rgba(220,38,38,0.1)] text-[#dc2626]">
                     {stats.overdue} overdue
                   </span>
                 )}
                 {stats.total > 0 && stats.overdue === 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[rgba(22,163,74,0.1)] text-[#16a34a] dark:text-[#4ade80]">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[rgba(22,163,74,0.1)] text-[#16a34a]">
                     Up to date
                   </span>
                 )}
@@ -102,7 +102,7 @@ export function MachineList({ machines, tasks, onSelectMachine, onAddMachine }: 
 
               {/* Manual link indicator */}
               {machine.manualUrl && (
-                <div className="mt-2 flex items-center gap-1 text-[11px] text-[#E31937] dark:text-[#FF4D5C]">
+                <div className="mt-2 flex items-center gap-1 text-[11px] text-[var(--rust)]">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                     <polyline points="15 3 21 3 21 9"/>

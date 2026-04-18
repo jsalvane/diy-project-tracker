@@ -15,12 +15,12 @@ const CATEGORY_LABELS: Record<HSACategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<HSACategory, string> = {
-  medical:       'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-  dental:        'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
-  vision:        'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-  prescription:  'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
-  'mental-health': 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300',
-  other:         'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+  medical:       'bg-[rgba(176,122,26,0.1)] text-[var(--ochre)]',
+  dental:        'bg-teal-100 text-teal-700',
+  vision:        'bg-purple-100 text-purple-700',
+  prescription:  'bg-orange-100 text-orange-700',
+  'mental-health': 'bg-pink-100 text-pink-700',
+  other:         'bg-gray-100 text-[var(--ink-3)]',
 };
 
 // ── Form types ──────────────────────────────────────────────────────────
@@ -217,33 +217,33 @@ function ReceiptModal({
         </div>
         <div className="p-5">
           {uploading ? (
-            <div className="w-full flex flex-col items-center justify-center h-48 bg-[#f6f6fb] dark:bg-[#161626] rounded-xl">
-              <div className="w-8 h-8 border-2 border-[#E31937] border-t-transparent rounded-full animate-spin mb-3" />
-              <span className="text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">Uploading...</span>
+            <div className="w-full flex flex-col items-center justify-center h-48 bg-[var(--paper-2)] rounded-xl">
+              <div className="w-8 h-8 border-2 border-[var(--rust)] border-t-transparent rounded-full animate-spin mb-3" />
+              <span className="text-sm text-[var(--ink-4)]">Uploading...</span>
             </div>
           ) : expense.receiptUrl ? (
             isPdf ? (
-              <div className="w-full flex flex-col items-center justify-center h-48 bg-[#f6f6fb] dark:bg-[#161626] rounded-xl gap-3">
-                <ReceiptIcon className="w-14 h-14 text-red-400" />
+              <div className="w-full flex flex-col items-center justify-center h-48 bg-[var(--paper-2)] rounded-xl gap-3">
+                <ReceiptIcon className="w-14 h-14 text-[var(--rust)]" />
                 <a href={expense.receiptUrl} target="_blank" rel="noopener noreferrer" download
-                  className="text-sm font-medium text-[#E31937] hover:text-[#C41230] dark:text-[#FF4D5C] underline underline-offset-2 transition-colors">
+                  className="text-sm font-medium text-[var(--rust)] hover:text-[var(--rust-ink)] underline underline-offset-2 transition-colors">
                   Download Receipt PDF
                 </a>
               </div>
             ) : (
               <div className="relative group">
-                <img src={expense.receiptUrl} alt="Receipt" className="w-full rounded-xl object-contain max-h-80 bg-[#f6f6fb] dark:bg-[#161626]" />
+                <img src={expense.receiptUrl} alt="Receipt" className="w-full rounded-xl object-contain max-h-80 bg-[var(--paper-2)]" />
                 <a href={expense.receiptUrl} target="_blank" rel="noopener noreferrer" download
-                  className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium px-2.5 py-1 rounded-lg bg-black/60 text-white hover:bg-black/80">
+                  className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium px-2.5 py-1 rounded-lg bg-[rgba(26,22,18,0.5)] text-[var(--paper)] hover:bg-black/80">
                   Download
                 </a>
               </div>
             )
           ) : (
             <button onClick={() => fileRef.current?.click()}
-              className="w-full flex flex-col items-center justify-center h-48 bg-[#f6f6fb] dark:bg-[#161626] rounded-xl border-2 border-dashed border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.08)] hover:border-[#E31937] dark:hover:border-[#FF4D5C] transition-colors group">
-              <ReceiptIcon className="w-8 h-8 text-[rgba(10,10,20,0.2)] dark:text-[rgba(226,226,240,0.2)] group-hover:text-[#E31937] dark:group-hover:text-[#FF4D5C] mb-2 transition-colors" />
-              <span className="text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] group-hover:text-[#E31937] dark:group-hover:text-[#FF4D5C] transition-colors">
+              className="w-full flex flex-col items-center justify-center h-48 bg-[var(--paper-2)] rounded-xl border-2 border-dashed border-[var(--ink-line)] hover:border-[var(--rust)] transition-colors group">
+              <ReceiptIcon className="w-8 h-8 text-[rgba(10,10,20,0.2)] group-hover:text-[var(--rust)] mb-2 transition-colors" />
+              <span className="text-sm text-[var(--ink-4)] group-hover:text-[var(--rust)] transition-colors">
                 Tap to add receipt (photo or PDF)
               </span>
             </button>
@@ -252,11 +252,11 @@ function ReceiptModal({
         {expense.receiptUrl && !uploading && (
           <div className="flex gap-2 px-5 pb-5">
             <button onClick={() => fileRef.current?.click()}
-              className="flex-1 text-sm font-medium px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
+              className="flex-1 text-sm font-medium px-4 py-2 rounded-lg bg-[var(--rust)] hover:bg-[var(--rust-ink)] text-[var(--paper)] transition-colors">
               Replace
             </button>
             <button onClick={onRemove}
-              className="text-sm font-medium px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+              className="text-sm font-medium px-4 py-2 rounded-lg border border-[var(--ink-line)] text-[var(--rust)] hover:bg-[rgba(184,69,31,0.05)] transition-colors">
               Remove
             </button>
           </div>
@@ -364,7 +364,7 @@ export function HSA() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-8 h-8 border-2 border-[#E31937] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--rust)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -403,7 +403,7 @@ export function HSA() {
           <select
             value={personFilter}
             onChange={e => setPersonFilter(e.target.value as PersonFilter)}
-            className="rounded-full border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-transparent px-2.5 py-1 text-xs text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.5)] outline-none cursor-pointer"
+            className="rounded-full border border-[var(--ink-line)] bg-transparent px-2.5 py-1 text-xs text-[var(--ink-3)] outline-none cursor-pointer"
           >
             <option value="all">All People</option>
             {PEOPLE.map(p => <option key={p} value={p}>{p}</option>)}
@@ -413,7 +413,7 @@ export function HSA() {
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value as CategoryFilter)}
-            className="rounded-full border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-transparent px-2.5 py-1 text-xs text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.5)] outline-none cursor-pointer"
+            className="rounded-full border border-[var(--ink-line)] bg-transparent px-2.5 py-1 text-xs text-[var(--ink-3)] outline-none cursor-pointer"
           >
             <option value="all">All Categories</option>
             {(Object.keys(CATEGORY_LABELS) as HSACategory[]).map(c => (
@@ -446,29 +446,29 @@ export function HSA() {
           <tbody style={{ borderTop: '1px solid var(--ink-line)' }}>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-10 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                <td colSpan={9} className="px-4 py-10 text-center text-sm text-[var(--ink-4)]">
                   {expenses.length === 0 ? 'No HSA expenses yet — add one above.' : 'No expenses match the current filters.'}
                 </td>
               </tr>
             )}
             {filtered.map(exp => (
-              <tr key={exp.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
+              <tr key={exp.id} className="group hover:bg-[var(--paper-2)]">
                 <td className={`${tdCls} font-medium`}>{exp.person}</td>
                 <td className={tdCls}>{exp.provider}</td>
-                <td className={`${tdCls} text-[rgba(10,10,20,0.65)] dark:text-[rgba(226,226,240,0.6)]`}>{formatDate(exp.date)}</td>
+                <td className={`${tdCls} text-[var(--ink-3)]`}>{formatDate(exp.date)}</td>
                 <td className={tdCls}>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[exp.category]}`}>
                     {CATEGORY_LABELS[exp.category]}
                   </span>
                 </td>
-                <td className={`${tdCls} text-[rgba(10,10,20,0.65)] dark:text-[rgba(226,226,240,0.6)] max-w-[200px] truncate`}>{exp.description || '—'}</td>
+                <td className={`${tdCls} text-[var(--ink-3)] max-w-[200px] truncate`}>{exp.description || '—'}</td>
                 <td className={`${tdCls} text-right font-semibold`}>{formatCurrency(exp.amount)}</td>
                 <td className={`${tdCls} text-center`}>
                   <input
                     type="checkbox"
                     checked={exp.reimbursed}
                     onChange={e => updateExpense({ ...exp, reimbursed: e.target.checked })}
-                    className="w-4 h-4 rounded accent-[#E31937] cursor-pointer"
+                    className="w-4 h-4 rounded accent-[var(--rust)] cursor-pointer"
                   />
                 </td>
                 <td className={`${tdCls} text-center`}>
@@ -476,8 +476,8 @@ export function HSA() {
                     onClick={() => setReceiptModal(exp)}
                     className={`p-1 transition-colors ${
                       exp.receiptUrl
-                        ? 'text-green-500 dark:text-green-400 hover:text-green-600'
-                        : 'text-[rgba(10,10,20,0.2)] dark:text-[rgba(226,226,240,0.15)] hover:text-[#E31937] dark:hover:text-[#FF4D5C]'
+                        ? 'text-[var(--moss)] hover:text-[var(--moss)]'
+                        : 'text-[rgba(10,10,20,0.2)] hover:text-[var(--rust)]'
                     }`}
                     title={exp.receiptUrl ? 'View receipt' : 'Add receipt'}
                   >
@@ -486,10 +486,10 @@ export function HSA() {
                 </td>
                 <td className="px-2 py-3">
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => setModal(exp)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors">
+                    <button onClick={() => setModal(exp)} className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                       <PencilIcon />
                     </button>
-                    <button onClick={() => deleteExpense(exp.id)} className="p-1 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors">
+                    <button onClick={() => deleteExpense(exp.id)} className="p-1 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                       <TrashIcon />
                     </button>
                   </div>
@@ -499,11 +499,11 @@ export function HSA() {
           </tbody>
           {filtered.length > 0 && (
             <tfoot>
-              <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] font-semibold text-sm">
-                <td className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]" colSpan={5}>
+              <tr className="bg-[var(--paper-2)] border-t border-[var(--ink-line)] font-semibold text-sm">
+                <td className="px-4 py-3 text-[var(--ink-4)]" colSpan={5}>
                   {filtered.length} expense{filtered.length !== 1 ? 's' : ''}
                 </td>
-                <td className="px-4 py-3 text-right text-[#0a0a14] dark:text-[#e2e2f0]">
+                <td className="px-4 py-3 text-right text-[var(--ink)]">
                   {formatCurrency(filtered.reduce((sum, e) => sum + e.amount, 0))}
                 </td>
                 <td colSpan={3} />
@@ -516,45 +516,45 @@ export function HSA() {
       {/* ── Mobile Card Layout ── */}
       <div className="sm:hidden space-y-2">
         {filtered.length === 0 && (
-          <div className="text-center py-10 text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+          <div className="text-center py-10 text-sm text-[var(--ink-4)]">
             {expenses.length === 0 ? 'No HSA expenses yet — add one above.' : 'No expenses match the current filters.'}
           </div>
         )}
         {filtered.map(exp => (
-          <div key={exp.id} className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3">
+          <div key={exp.id} className="rounded-xl border border-[var(--ink-line)] p-3">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="min-w-0">
-                <div className="font-medium text-sm text-[#0a0a14] dark:text-[#e2e2f0] truncate">{exp.provider}</div>
-                <div className="text-xs text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mt-0.5">
+                <div className="font-medium text-sm text-[var(--ink)] truncate">{exp.provider}</div>
+                <div className="text-xs text-[var(--ink-4)] mt-0.5">
                   {exp.person} · {formatDate(exp.date)}
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <div className="font-semibold text-sm text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(exp.amount)}</div>
+                <div className="font-semibold text-sm text-[var(--ink)]">{formatCurrency(exp.amount)}</div>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[exp.category]}`}>
                   {CATEGORY_LABELS[exp.category]}
                 </span>
               </div>
             </div>
             {exp.description && (
-              <div className="text-xs text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.4)] mb-2 truncate">{exp.description}</div>
+              <div className="text-xs text-[var(--ink-3)] mb-2 truncate">{exp.description}</div>
             )}
-            <div className="flex items-center justify-between pt-2 border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
+            <div className="flex items-center justify-between pt-2 border-t border-[var(--ink-line)]">
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox" checked={exp.reimbursed}
                     onChange={e => updateExpense({ ...exp, reimbursed: e.target.checked })}
-                    className="w-3.5 h-3.5 rounded accent-[#E31937]"
+                    className="w-3.5 h-3.5 rounded accent-[var(--rust)]"
                   />
-                  <span className="text-xs text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">Reimbursed</span>
+                  <span className="text-xs text-[var(--ink-4)]">Reimbursed</span>
                 </label>
                 <button
                   onClick={() => setReceiptModal(exp)}
                   className={`flex items-center gap-1 text-xs ${
                     exp.receiptUrl
-                      ? 'text-green-500 dark:text-green-400'
-                      : 'text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'
+                      ? 'text-[var(--moss)]'
+                      : 'text-[var(--ink-4)]'
                   }`}
                 >
                   <ReceiptIcon className="w-3.5 h-3.5" />
@@ -562,10 +562,10 @@ export function HSA() {
                 </button>
               </div>
               <div className="flex items-center gap-1">
-                <button onClick={() => setModal(exp)} className="p-1.5 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#E31937] transition-colors">
+                <button onClick={() => setModal(exp)} className="p-1.5 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                   <PencilIcon />
                 </button>
-                <button onClick={() => deleteExpense(exp.id)} className="p-1.5 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-colors">
+                <button onClick={() => deleteExpense(exp.id)} className="p-1.5 text-[var(--ink-4)] hover:text-[var(--rust)] transition-colors">
                   <TrashIcon />
                 </button>
               </div>
@@ -573,7 +573,7 @@ export function HSA() {
           </div>
         ))}
         {filtered.length > 0 && (
-          <div className="text-center text-xs font-semibold text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] pt-2">
+          <div className="text-center text-xs font-semibold text-[var(--ink-4)] pt-2">
             {filtered.length} expense{filtered.length !== 1 ? 's' : ''} · {formatCurrency(filtered.reduce((sum, e) => sum + e.amount, 0))}
           </div>
         )}

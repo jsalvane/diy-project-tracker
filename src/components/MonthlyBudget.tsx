@@ -44,8 +44,8 @@ type EditCell = { id: string; field: 'name' | 'payment' } | null;
 const STATUS_CYCLE: BudgetItem['status'][] = ['auto', 'manual'];
 
 const STATUS_STYLES: Record<BudgetItem['status'], string> = {
-  auto: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-  manual: 'bg-[rgba(227,25,55,0.1)] text-[#E31937] dark:bg-[rgba(255,77,92,0.1)] dark:text-[#FF4D5C]',
+  auto: 'bg-[rgba(176,122,26,0.1)] text-[var(--ochre)]',
+  manual: 'bg-[rgba(227,25,55,0.1)] text-[var(--rust)]',
 };
 
 function TrashIcon() {
@@ -77,8 +77,8 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
 
   return (
     <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3">
-        <div className="text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Income</div>
+      <div className="rounded-xl border border-[var(--ink-line)] p-3">
+        <div className="text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Income</div>
         {editing ? (
           <input
             autoFocus
@@ -90,11 +90,11 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
             onFocus={e => e.target.select()}
             onBlur={commit}
             onKeyDown={e => e.key === 'Enter' && commit()}
-            className="w-full bg-[#ffffff] dark:bg-[#161626] border border-[#E31937] dark:border-[#FF4D5C] rounded px-2 py-0.5 text-lg font-bold text-[#0a0a14] dark:text-[#e2e2f0] outline-none"
+            className="w-full bg-[var(--paper)] border border-[var(--rust)] rounded px-2 py-0.5 text-lg font-bold text-[var(--ink)] outline-none"
           />
         ) : (
           <div
-            className="text-xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] cursor-pointer hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
+            className="text-xl font-bold text-[var(--ink)] cursor-pointer hover:text-[var(--rust)] transition-colors"
             onClick={startEdit}
             title="Click to edit income"
           >
@@ -102,13 +102,13 @@ function IncomeSummary({ income, bills, onIncomeChange }: { income: number; bill
           </div>
         )}
       </div>
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3">
-        <div className="text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Bills</div>
-        <div className="text-xl font-bold text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(bills)}</div>
+      <div className="rounded-xl border border-[var(--ink-line)] p-3">
+        <div className="text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Bills</div>
+        <div className="text-xl font-bold text-[var(--ink)]">{formatCurrency(bills)}</div>
       </div>
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3">
-        <div className="text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Surplus</div>
-        <div className={`text-xl font-bold ${surplus >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+      <div className="rounded-xl border border-[var(--ink-line)] p-3">
+        <div className="text-xs uppercase tracking-wider text-[var(--ink-4)] mb-1">Surplus</div>
+        <div className={`text-xl font-bold ${surplus >= 0 ? 'text-[var(--moss)]' : 'text-[var(--rust)]'}`}>
           {formatCurrency(surplus)}
         </div>
       </div>
@@ -192,36 +192,36 @@ function Section({
   }
 
   const inputCls =
-    'bg-[#ffffff] dark:bg-[#161626] border border-[#E31937] dark:border-[#FF4D5C] rounded px-2 py-0.5 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none';
+    'bg-[var(--paper)] border border-[var(--rust)] rounded px-2 py-0.5 text-sm text-[var(--ink)] outline-none';
 
   return (
     <div>
-      <h2 className="text-base font-bold text-[#0a0a14] dark:text-[#e2e2f0] mb-3">
+      <h2 className="text-base font-bold text-[var(--ink)] mb-3">
         Due {title === '15' ? '15th' : '30th'}
       </h2>
 
       <IncomeSummary income={income} bills={totalBill} onIncomeChange={onIncomeChange} />
 
-      <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-hidden">
+      <div className="rounded-xl border border-[var(--ink-line)] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+            <tr className="bg-[var(--paper-2)] text-xs uppercase tracking-wider text-[var(--ink-4)]">
               <th className="text-left px-4 py-3 font-medium">Name</th>
               <th className="text-right px-4 py-3 font-medium">Payment</th>
               <th className="text-center px-4 py-3 font-medium">Status</th>
               <th className="w-8 px-2 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
+          <tbody className="divide-y divide-[var(--ink-line)]">
             {items.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">
+                <td colSpan={4} className="px-4 py-6 text-center text-sm text-[var(--ink-4)]">
                   No bills yet
                 </td>
               </tr>
             )}
             {items.map(item => (
-              <tr key={item.id} className="group hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)]">
+              <tr key={item.id} className="group hover:bg-[var(--paper-2)]">
                 {/* Name */}
                 <td className="px-4 py-2.5">
                   {editing?.id === item.id && editing.field === 'name' ? (
@@ -235,7 +235,7 @@ function Section({
                     />
                   ) : (
                     <span
-                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
+                      className="cursor-pointer text-[var(--ink)] hover:text-[var(--rust)] transition-colors"
                       onClick={() => startEdit(item, 'name')}
                     >
                       {item.name}
@@ -260,7 +260,7 @@ function Section({
                     />
                   ) : (
                     <span
-                      className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
+                      className="cursor-pointer text-[var(--ink)] hover:text-[var(--rust)] transition-colors"
                       onClick={() => startEdit(item, 'payment')}
                     >
                       {formatCurrency(item.payment)}
@@ -282,7 +282,7 @@ function Section({
                 <td className="px-2 py-2.5 text-center">
                   <button
                     onClick={() => onDelete(item.id)}
-                    className="opacity-0 group-hover:opacity-100 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-red-500 transition-all"
+                    className="opacity-0 group-hover:opacity-100 text-[var(--ink-4)] hover:text-[var(--rust)] transition-all"
                   >
                     <TrashIcon />
                   </button>
@@ -291,9 +291,9 @@ function Section({
             ))}
             {ccBills.length > 0 && (
               <>
-                <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
+                <tr className="bg-[var(--paper-2)] border-t border-[var(--ink-line)]">
                   <td colSpan={4} className="px-4 py-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">Credit Cards</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-[var(--ink-4)]">Credit Cards</span>
                   </td>
                 </tr>
                 {ccBills.map(card => {
@@ -301,18 +301,18 @@ function Section({
                   const freshness = isLinked ? getFreshness(simpleFin.lastSynced) : null;
 
                   return (
-                    <tr key={card.id} className="hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
+                    <tr key={card.id} className="hover:bg-[var(--paper-2)] border-t border-[var(--ink-line)]">
                       <td className="px-4 py-2.5 pl-7">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-800 dark:text-gray-200">{card.name}</span>
+                          <span className="text-[var(--ink)]">{card.name}</span>
                           {isLinked && (
                             <span
                               className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                                 freshness === 'fresh'
-                                  ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
+                                  ? 'bg-[rgba(74,94,40,0.1)] text-[var(--moss)]'
                                   : freshness === 'stale'
-                                    ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
-                                    : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
+                                    ? 'bg-amber-100 text-[var(--ochre)]'
+                                    : 'bg-zinc-100 text-zinc-500'
                               }`}
                               title={
                                 freshness === 'fresh'
@@ -323,7 +323,7 @@ function Section({
                               }
                             >
                               <span className={`inline-block w-1.5 h-1.5 rounded-full ${
-                                freshness === 'fresh' ? 'bg-green-500' : freshness === 'stale' ? 'bg-amber-500' : 'bg-zinc-400'
+                                freshness === 'fresh' ? 'bg-green-500' : freshness === 'stale' ? 'bg-[rgba(176,122,26,0.05)]0' : 'bg-zinc-400'
                               }`} />
                               auto
                             </span>
@@ -345,7 +345,7 @@ function Section({
                           />
                         ) : (
                           <span
-                            className="cursor-pointer text-gray-800 dark:text-gray-200 hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors"
+                            className="cursor-pointer text-[var(--ink)] hover:text-[var(--rust)] transition-colors"
                             onClick={() => startCcEdit(card)}
                           >
                             {formatCurrency(card.balance)}
@@ -371,11 +371,11 @@ function Section({
             )}
           </tbody>
           <tfoot>
-            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a] border-t border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.07)] text-sm font-semibold">
-              <td className="px-4 py-3 text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">Total</td>
-              <td className="px-4 py-3 text-right text-[#0a0a14] dark:text-[#e2e2f0]">{formatCurrency(totalBill)}</td>
+            <tr className="bg-[var(--paper-2)] border-t border-[var(--ink-line)] text-sm font-semibold">
+              <td className="px-4 py-3 text-[var(--ink-4)]">Total</td>
+              <td className="px-4 py-3 text-right text-[var(--ink)]">{formatCurrency(totalBill)}</td>
               <td colSpan={2} className="px-4 py-3 text-right">
-                <span className={remaining > 0.005 ? 'text-[#E31937] dark:text-[#FF4D5C]' : 'text-green-500'}>
+                <span className={remaining > 0.005 ? 'text-[var(--rust)]' : 'text-[var(--moss)]'}>
                   {remaining > 0.005 ? `${formatCurrency(remaining)} left` : 'Fully paid'}
                 </span>
               </td>
@@ -386,7 +386,7 @@ function Section({
 
       <button
         onClick={onAdd}
-        className="mt-3 flex items-center gap-1.5 text-sm font-medium text-[#E31937] dark:text-[#FF4D5C] hover:text-[#C41230] transition-colors"
+        className="mt-3 flex items-center gap-1.5 text-sm font-medium text-[var(--rust)] hover:text-[var(--rust-ink)] transition-colors"
       >
         <span className="text-lg leading-none">+</span> Add bill
       </button>
