@@ -32,9 +32,6 @@ const DEFAULT_FORM: EntryFormData = {
   isPending: false,
 };
 
-const formInputCls = 'w-full rounded-lg border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.1)] bg-white dark:bg-[#161626] px-3 py-2.5 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none focus:border-[#E31937] dark:focus:border-[#FF4D5C] transition-colors';
-const formLabelCls = 'block text-[10px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1';
-
 function EntryFormModal({
   initial,
   onSave,
@@ -59,55 +56,55 @@ function EntryFormModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+      style={{ background: 'rgba(26,22,18,0.45)' }}
+      onClick={onClose}
+    >
       <div
-        className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-md overflow-hidden animate-slide-up"
+        className="rounded-t-2xl sm:rounded-[14px] w-full sm:max-w-md overflow-hidden animate-slide-up"
+        style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)' }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-          <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm">
-            {initial ? 'Edit Expense' : 'Add Expense'}
-          </h2>
-          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none p-1">✕</button>
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--ink-line)' }}>
+          <span className="tape-label">{initial ? 'Edit Expense' : 'Add Expense'}</span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-3)', fontSize: 18, lineHeight: 1, padding: 4 }}>✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={formLabelCls}>Date</label>
-              <input type="date" className={formInputCls} value={form.date} onChange={e => set('date', e.target.value)} required />
+              <label className="tape-label block mb-1.5">Date</label>
+              <input type="date" className="field" value={form.date} onChange={e => set('date', e.target.value)} required />
             </div>
             <div>
-              <label className={formLabelCls}>Price</label>
-              <input type="number" step="0.01" min="0" className={formInputCls} value={form.price} onChange={e => set('price', e.target.value)} onFocus={e => e.target.select()} placeholder="0.00" inputMode="decimal" required />
+              <label className="tape-label block mb-1.5">Price</label>
+              <input type="number" step="0.01" min="0" className="field" value={form.price} onChange={e => set('price', e.target.value)} onFocus={e => e.target.select()} placeholder="0.00" inputMode="decimal" required />
             </div>
           </div>
           <div>
-            <label className={formLabelCls}>Store</label>
-            <input className={formInputCls} value={form.store} onChange={e => set('store', e.target.value)} placeholder="e.g. Home Depot" />
+            <label className="tape-label block mb-1.5">Store</label>
+            <input className="field" value={form.store} onChange={e => set('store', e.target.value)} placeholder="e.g. Home Depot" />
           </div>
           <div>
-            <label className={formLabelCls}>Category</label>
-            <input className={formInputCls} value={form.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Materials" />
+            <label className="tape-label block mb-1.5">Category</label>
+            <input className="field" value={form.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Materials" />
           </div>
           <div>
-            <label className={formLabelCls}>Description</label>
-            <input className={formInputCls} value={form.description} onChange={e => set('description', e.target.value)} placeholder="What was this for?" />
+            <label className="tape-label block mb-1.5">Description</label>
+            <input className="field" value={form.description} onChange={e => set('description', e.target.value)} placeholder="What was this for?" />
           </div>
           <label className="flex items-center gap-2 cursor-pointer pt-1">
             <input
               type="checkbox" checked={form.isPending}
               onChange={e => set('isPending', e.target.checked)}
-              className="w-4 h-4 rounded accent-amber-500"
+              className="w-4 h-4 rounded"
+              style={{ accentColor: 'var(--ochre)' }}
             />
-            <span className="text-sm text-amber-600 dark:text-amber-400">Pending charge</span>
+            <span className="tape-label" style={{ color: 'var(--ochre)', textTransform: 'none', fontSize: 13 }}>Pending charge</span>
           </label>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2.5 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
-              Cancel
-            </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2.5 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
-              {initial ? 'Save' : 'Add Expense'}
-            </button>
+            <button type="button" onClick={onClose} className="btn-ghost btn-sm">Cancel</button>
+            <button type="submit" className="btn-primary btn-sm flex-1">{initial ? 'Save' : 'Add Expense'}</button>
           </div>
         </form>
       </div>
@@ -134,35 +131,35 @@ function EntryCard({
   const hasReceipt = Boolean(entry.receiptUrl);
   return (
     <div
-      className={`rounded-xl border px-4 py-3 ${
-        entry.isPending
-          ? 'bg-amber-50/50 dark:bg-amber-950/15 border-amber-200/70 dark:border-amber-800/40'
-          : 'bg-white dark:bg-[#111118] border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]'
-      }`}
+      className="rounded-xl px-4 py-3 cursor-pointer"
+      style={{
+        background: entry.isPending ? 'rgba(176,122,26,0.06)' : 'var(--paper)',
+        border: entry.isPending ? '1px solid rgba(176,122,26,0.3)' : '1px solid var(--ink-line)',
+      }}
       onClick={onEdit}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div className="text-[13px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] truncate">{label}</div>
-          <div className="text-[11px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mt-0.5 flex flex-wrap gap-x-2">
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</div>
+          <div className="flex flex-wrap gap-x-2 mt-0.5" style={{ fontSize: 11, color: 'var(--ink-4)' }}>
             <span>{formatDate(entry.date)}</span>
             {entry.category && <span>&middot; {entry.category}</span>}
-            {entry.isPending && <span className="text-amber-500 font-semibold">Pending</span>}
+            {entry.isPending && <span style={{ color: 'var(--ochre)', fontWeight: 600 }}>Pending</span>}
           </div>
         </div>
-        <div className="text-[15px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] shrink-0">
+        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', flexShrink: 0 }}>
           {formatCurrency(entry.price)}
         </div>
       </div>
-      <div className="flex items-center gap-3 mt-2 pt-2 border-t border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]" onClick={e => e.stopPropagation()}>
-        <button onClick={onTogglePending} className={`p-1.5 rounded-lg transition-colors ${entry.isPending ? 'text-amber-500' : 'text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'}`} title={entry.isPending ? 'Mark purchased' : 'Mark pending'}>
+      <div className="flex items-center gap-3 mt-2 pt-2" style={{ borderTop: '1px solid var(--ink-line)' }} onClick={e => e.stopPropagation()}>
+        <button onClick={onTogglePending} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: entry.isPending ? 'var(--ochre)' : 'var(--ink-4)' }} title={entry.isPending ? 'Mark purchased' : 'Mark pending'}>
           <ClockIcon className="w-4 h-4" />
         </button>
-        <button onClick={onReceipt} className={`p-1.5 rounded-lg transition-colors ${hasReceipt ? 'text-[#E31937] dark:text-[#FF4D5C]' : 'text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]'}`} title={hasReceipt ? 'View receipt' : 'Add receipt'}>
+        <button onClick={onReceipt} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: hasReceipt ? 'var(--rust)' : 'var(--ink-4)' }} title={hasReceipt ? 'View receipt' : 'Add receipt'}>
           <CameraIcon className="w-4 h-4" />
         </button>
         <div className="flex-1" />
-        <button onClick={onDelete} className="p-1.5 rounded-lg text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Delete">
+        <button onClick={onDelete} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: 'var(--ink-4)' }} title="Delete">
           <TrashIcon className="w-4 h-4" />
         </button>
       </div>
@@ -308,6 +305,9 @@ export function EntriesTable({ entries, projectId }: Props) {
     ? sorted.find((e) => e.id === receiptEntryId) ?? null
     : null;
 
+  const borderCls = { borderBottom: '1px solid var(--ink-line)', borderRight: '1px solid var(--ink-line)' };
+  const borderClsNoR = { borderBottom: '1px solid var(--ink-line)' };
+
   return (
     <div>
       {/* ── Mobile: card layout ── */}
@@ -323,28 +323,29 @@ export function EntriesTable({ entries, projectId }: Props) {
           />
         ))}
         {sorted.length === 0 && (
-          <div className="text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] py-10">
+          <div className="tape-label text-center py-10" style={{ color: 'var(--ink-4)' }}>
             No entries yet — tap below to add one.
           </div>
         )}
       </div>
 
       {/* ── Desktop: table layout ── */}
-      <div className="hidden sm:block overflow-x-auto scrollbar-hide border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-xl">
+      <div className="hidden sm:block overflow-x-auto scrollbar-hide rounded-xl" style={{ border: '1px solid var(--ink-line)' }}>
         <table className="w-full border-collapse text-left">
           <thead>
-            <tr className="bg-[rgba(0,0,20,0.025)] dark:bg-[rgba(255,255,255,0.025)] sticky top-0 z-10">
+            <tr style={{ background: 'var(--paper-2)' }}>
               {cols.map((col) => (
                 <th
                   key={col.key}
-                  className={`text-[10px] font-semibold text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] uppercase tracking-[0.07em] px-3 py-3 border-b border-r border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)] ${col.width}`}
+                  className={`tape-label px-3 py-3 ${col.width}`}
+                  style={{ ...borderCls }}
                 >
                   {col.label}
                 </th>
               ))}
-              <th className="w-10 px-2 py-3 border-b border-r border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)] text-[10px] font-semibold text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] uppercase tracking-[0.07em]" title="Pending charge" />
-              <th className="w-8 px-2 py-3 border-b border-r border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]" title="Receipt" />
-              <th className="w-8 px-2 py-3 border-b border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]" />
+              <th className="w-10 px-2 py-3 tape-label" style={{ ...borderCls }} title="Pending charge" />
+              <th className="w-8 px-2 py-3" style={{ ...borderCls }} title="Receipt" />
+              <th className="w-8 px-2 py-3" style={{ ...borderClsNoR }} />
             </tr>
           </thead>
           <tbody>
@@ -354,11 +355,8 @@ export function EntriesTable({ entries, projectId }: Props) {
               return (
                 <tr
                   key={entry.id}
-                  className={`transition-colors ${
-                    isPending
-                      ? 'bg-amber-50/50 dark:bg-amber-950/15 hover:bg-amber-50 dark:hover:bg-amber-950/25'
-                      : 'hover:bg-[rgba(227,25,55,0.03)] dark:hover:bg-[rgba(255,77,92,0.04)]'
-                  }`}
+                  className="transition-colors"
+                  style={{ background: isPending ? 'rgba(176,122,26,0.04)' : 'transparent' }}
                 >
                   {cols.map((col, colIdx) => (
                     <EditableCell
@@ -373,15 +371,11 @@ export function EntriesTable({ entries, projectId }: Props) {
                     />
                   ))}
                   {/* Pending toggle */}
-                  <td className="px-1 py-2 border-b border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)] text-center">
+                  <td className="px-1 py-2 text-center" style={{ ...borderCls }}>
                     <div className={isPending ? '' : 'table-row-actions'}>
                       <button
                         onClick={() => handleTogglePending(entry)}
-                        className={`p-0.5 transition-colors rounded ${
-                          isPending
-                            ? 'text-amber-500 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300'
-                            : 'text-[rgba(10,10,20,0.25)] dark:text-[rgba(226,226,240,0.2)] hover:text-amber-400 dark:hover:text-amber-500'
-                        }`}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: isPending ? 'var(--ochre)' : 'var(--ink-4)' }}
                         title={isPending ? 'Mark as purchased' : 'Mark as pending (future charge)'}
                       >
                         <ClockIcon className="w-4 h-4" />
@@ -389,15 +383,11 @@ export function EntriesTable({ entries, projectId }: Props) {
                     </div>
                   </td>
                   {/* Receipt button */}
-                  <td className="px-1 py-2 border-b border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)] text-center">
+                  <td className="px-1 py-2 text-center" style={{ ...borderCls }}>
                     <div className={hasReceipt ? '' : 'table-row-actions'}>
                       <button
                         onClick={() => setReceiptEntryId(entry.id)}
-                        className={`p-0.5 transition-colors ${
-                          hasReceipt
-                            ? 'text-[#E31937] dark:text-[#FF4D5C] hover:text-[#C41230] dark:hover:text-[#a5b4fc]'
-                            : 'text-[rgba(10,10,20,0.25)] dark:text-[rgba(226,226,240,0.2)] hover:text-[rgba(10,10,20,0.5)] dark:hover:text-[rgba(226,226,240,0.5)]'
-                        }`}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: hasReceipt ? 'var(--rust)' : 'var(--ink-4)' }}
                         title={hasReceipt ? 'View receipt' : 'Add receipt'}
                       >
                         <CameraIcon className="w-4 h-4" />
@@ -405,11 +395,11 @@ export function EntriesTable({ entries, projectId }: Props) {
                     </div>
                   </td>
                   {/* Delete button */}
-                  <td className="px-1 py-2 border-b border-[rgba(0,0,20,0.04)] dark:border-[rgba(255,255,255,0.04)] text-center">
+                  <td className="px-1 py-2 text-center" style={{ ...borderClsNoR }}>
                     <div className="table-row-actions">
                       <button
                         onClick={() => handleDeleteEntry(entry.id)}
-                        className="text-sm text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.2)] hover:text-red-500 dark:hover:text-red-400 p-0.5 transition-colors"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, fontSize: 14, color: 'var(--ink-4)' }}
                         title="Delete entry"
                       >
                         ✕
@@ -423,10 +413,11 @@ export function EntriesTable({ entries, projectId }: Props) {
               <tr>
                 <td
                   colSpan={cols.length + 3}
-                  className="text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] py-10"
+                  className="tape-label text-center py-10"
+                  style={{ color: 'var(--ink-4)' }}
                 >
                   No entries yet. Add one below or press{' '}
-                  <kbd className="px-1.5 py-0.5 bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.07)] rounded text-xs font-mono">N</kbd>
+                  <kbd style={{ padding: '2px 6px', background: 'var(--paper-2)', border: '1px solid var(--ink-line)', borderRadius: 4, fontFamily: 'JetBrains Mono, monospace' }}>N</kbd>
                 </td>
               </tr>
             )}
@@ -436,25 +427,26 @@ export function EntriesTable({ entries, projectId }: Props) {
 
       {/* ── Add buttons ── */}
       <div className="mt-3 flex items-center gap-3 flex-wrap">
-        {/* Mobile: opens form modal; Desktop: adds inline row */}
         <button
           onClick={() => {
             if (window.innerWidth < 640) setMobileFormEntry('add');
             else handleAddRow(false);
           }}
-          className="text-[13px] font-medium px-3 py-1.5 rounded-lg border border-dashed border-[rgba(0,0,20,0.12)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:border-[#E31937] hover:text-[#E31937] dark:hover:border-[#FF4D5C] dark:hover:text-[#FF4D5C] transition-colors"
+          className="tape-label px-3 py-1.5 rounded-lg transition-colors"
+          style={{ border: '1px dashed var(--ink-line-2)', color: 'var(--ink-3)', background: 'transparent', cursor: 'pointer', textTransform: 'none', fontSize: 13 }}
         >
           + Add Entry
         </button>
         <button
           onClick={() => handleAddRow(true)}
-          className="hidden sm:flex text-[13px] font-medium px-3 py-1.5 rounded-lg border border-dashed border-amber-300 dark:border-amber-800 text-amber-600 dark:text-amber-500 hover:border-amber-400 hover:text-amber-700 dark:hover:border-amber-600 dark:hover:text-amber-400 transition-colors items-center gap-1.5"
+          className="hidden sm:flex items-center gap-1.5 tape-label px-3 py-1.5 rounded-lg transition-colors"
+          style={{ border: '1px dashed rgba(176,122,26,0.4)', color: 'var(--ochre)', background: 'transparent', cursor: 'pointer', textTransform: 'none', fontSize: 13 }}
         >
           <ClockIcon className="w-3.5 h-3.5" />
           Add Pending
         </button>
-        <span className="hidden sm:inline text-[11px] text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">
-          Press <kbd className="px-1.5 py-0.5 bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.07)] rounded font-mono">N</kbd> to add a row
+        <span className="hidden sm:inline tape-label" style={{ color: 'var(--ink-4)' }}>
+          Press <kbd style={{ padding: '2px 6px', background: 'var(--paper-2)', border: '1px solid var(--ink-line)', borderRadius: 4, fontFamily: 'JetBrains Mono, monospace' }}>N</kbd> to add a row
         </span>
       </div>
 

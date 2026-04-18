@@ -310,11 +310,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Sync dark mode to localStorage + DOM
+  // Dark mode is out of scope — always keep light theme
   useEffect(() => {
-    localStorage.setItem(DARK_MODE_KEY, String(state.darkMode));
-    document.documentElement.classList.toggle('dark', state.darkMode);
-  }, [state.darkMode]);
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   const showToast = useCallback((message: string, undoAction?: () => void) => {
     const id = generateId();
