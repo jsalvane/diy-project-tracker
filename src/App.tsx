@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { FinancialProvider } from './context/FinancialContext';
@@ -6,17 +6,27 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { CommandPalette } from './components/CommandPalette';
 import { Toast } from './components/Toast';
-import { ProjectList } from './components/ProjectList';
-import { ProjectDetail } from './components/ProjectDetail';
-import { FinancialHealth } from './components/FinancialHealth';
-import { Budget } from './components/Budget';
-import { Money } from './components/Money';
-import { Gifts } from './components/Gifts';
-import { Maintenance } from './components/maintenance/Maintenance';
-import { Scratchpad } from './components/Scratchpad';
 import { Dashboard } from './components/Dashboard';
 import { useApp } from './context/AppContext';
 import { PinLock } from './components/PinLock';
+
+// Route-level code splitting — each chunk loads on first visit
+const ProjectList     = lazy(() => import('./components/ProjectList').then(m => ({ default: m.ProjectList })));
+const ProjectDetail   = lazy(() => import('./components/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
+const FinancialHealth = lazy(() => import('./components/FinancialHealth').then(m => ({ default: m.FinancialHealth })));
+const Budget          = lazy(() => import('./components/Budget').then(m => ({ default: m.Budget })));
+const Money           = lazy(() => import('./components/Money').then(m => ({ default: m.Money })));
+const Gifts           = lazy(() => import('./components/Gifts').then(m => ({ default: m.Gifts })));
+const Maintenance     = lazy(() => import('./components/maintenance/Maintenance').then(m => ({ default: m.Maintenance })));
+const Scratchpad      = lazy(() => import('./components/Scratchpad').then(m => ({ default: m.Scratchpad })));
+
+function RouteFallback() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+      <div className="tape-label" style={{ color: 'var(--ink-4)', letterSpacing: '0.18em' }}>Loading</div>
+    </div>
+  );
+}
 
 // ── Page transition wrapper ───────────────────────────────────────────────────
 
@@ -24,17 +34,19 @@ function AnimatedRoutes() {
   const location = useLocation();
   return (
     <div key={location.pathname} className="animate-page-in">
-      <Routes location={location}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/projects" element={<ProjectList />} />
-        <Route path="/project/:id" element={<ProjectDetail />} />
-        <Route path="/money" element={<Money />} />
-        <Route path="/financial-health" element={<FinancialHealth />} />
-        <Route path="/budget" element={<Budget />} />
-        <Route path="/gifts" element={<Gifts />} />
-        <Route path="/maintenance" element={<Maintenance />} />
-        <Route path="/scratchpad" element={<Scratchpad />} />
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes location={location}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/projects" element={<ProjectList />} />
+          <Route path="/project/:id" element={<ProjectDetail />} />
+          <Route path="/money" element={<Money />} />
+          <Route path="/financial-health" element={<FinancialHealth />} />
+          <Route path="/budget" element={<Budget />} />
+          <Route path="/gifts" element={<Gifts />} />
+          <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/scratchpad" element={<Scratchpad />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
