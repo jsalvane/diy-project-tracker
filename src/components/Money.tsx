@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Budget } from './Budget';
 import { FinancialHealth } from './FinancialHealth';
 import { HSA } from './HSA';
+import { Goals } from './Goals';
 
-type MoneyTab = 'budget' | 'financial-health' | 'hsa';
+type MoneyTab = 'budget' | 'financial-health' | 'hsa' | 'goals';
 
 const TABS: { id: MoneyTab; label: string; badge?: string }[] = [
   { id: 'budget',           label: 'Budget'          },
   { id: 'financial-health', label: 'Financial Health' },
   { id: 'hsa',              label: 'HSA' },
+  { id: 'goals',            label: 'Goals' },
 ];
 
 export function Money() {
@@ -48,6 +50,7 @@ export function Money() {
       {activeTab === 'budget'           && <Budget embedded />}
       {activeTab === 'financial-health' && <FinancialHealth embedded />}
       {activeTab === 'hsa'              && <HSA />}
+      {activeTab === 'goals'            && <Goals />}
     </div>
   );
 }

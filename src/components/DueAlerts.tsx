@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useMaintenance } from '../hooks/useMaintenance';
-import { useSubscriptions } from '../hooks/useSubscriptions';
+import type { MaintenanceTask, Subscription } from '../lib/types';
 import { TapeLabel } from './ui';
 
 const DISMISS_KEY = 'due-alerts-dismissed';
@@ -38,9 +37,12 @@ function daysToNextRenewal(renewalDay: number): number {
   return Math.round((next.getTime() - today.getTime()) / 86400000);
 }
 
-export function DueAlerts() {
-  const { tasks } = useMaintenance();
-  const { subscriptions } = useSubscriptions();
+interface Props {
+  tasks: MaintenanceTask[];
+  subscriptions: Subscription[];
+}
+
+export function DueAlerts({ tasks, subscriptions }: Props) {
   const [dismissed, setDismissed] = useState(
     () => sessionStorage.getItem(DISMISS_KEY) === '1'
   );

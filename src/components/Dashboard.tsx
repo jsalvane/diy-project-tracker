@@ -201,7 +201,7 @@ export function Dashboard() {
 
         {/* Alerts */}
         <div style={{ marginTop: 20 }}>
-          <DueAlerts />
+          <DueAlerts tasks={tasks} subscriptions={subscriptions} />
         </div>
 
         {/* ON THE BENCH TODAY */}

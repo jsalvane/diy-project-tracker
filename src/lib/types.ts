@@ -163,6 +163,24 @@ export interface Subscription {
   updatedAt: string;
 }
 
+// ── Goals ────────────────────────────────────────────────────────────────
+
+export type GoalType = 'savings' | 'payoff' | 'retirement' | 'emergency' | 'custom';
+
+export interface Goal {
+  id: string;
+  name: string;
+  type: GoalType;
+  targetAmount: number;
+  currentAmount: number;
+  monthlyContribution: number;
+  targetDate: string; // YYYY-MM-DD or ''
+  notes: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ── Scratchpad ───────────────────────────────────────────────────────────
 
 export interface Note {
