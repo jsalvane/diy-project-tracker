@@ -45,20 +45,30 @@ export function Budget({ embedded }: { embedded?: boolean } = {}) {
   const content = (
     <>
       {!embedded && (
-        <h1 className="text-[22px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.035em] mb-4 sm:mb-7">Budget</h1>
+        <>
+          <div className="tape-label mb-2">Money · Budget</div>
+          <h1 className="display-lg mb-6">
+            Budget<em style={{ color: 'var(--rust)', fontStyle: 'italic' }}>.</em>
+          </h1>
+        </>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] mb-5 sm:mb-8 gap-0 overflow-x-auto scrollbar-hide">
+      <div
+        className="flex mb-5 sm:mb-8 gap-0 overflow-x-auto scrollbar-hide"
+        style={{ borderBottom: '1px solid var(--ink-line)' }}
+      >
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3 sm:px-5 py-2.5 text-[13px] font-medium border-b-2 transition-colors -mb-px whitespace-nowrap shrink-0 ${
-              activeTab === tab.id
-                ? 'border-[#E31937] dark:border-[#FF4D5C] text-[#E31937] dark:text-[#FF4D5C]'
-                : 'border-transparent text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0]'
-            }`}
+            className="tape-label px-3 sm:px-5 py-2.5 border-b-2 -mb-px transition-colors whitespace-nowrap shrink-0"
+            style={{
+              borderColor: activeTab === tab.id ? 'var(--rust)' : 'transparent',
+              color: activeTab === tab.id ? 'var(--rust)' : 'var(--ink-3)',
+              background: 'transparent',
+              cursor: 'pointer',
+            }}
           >
             {tab.label}
           </button>

@@ -10,23 +10,53 @@ export function Toast() {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 animate-slide-up border border-zinc-700 dark:border-gray-200"
+          className="flex items-center gap-3 animate-slide-up"
+          style={{
+            background: 'var(--ink)',
+            color: 'var(--paper)',
+            padding: '10px 16px',
+            borderRadius: 999,
+            fontSize: 14,
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 500,
+            boxShadow: '0 4px 20px rgba(26,22,18,0.3)',
+            maxWidth: 360,
+          }}
         >
-          <span>{toast.message}</span>
+          <span style={{ flex: 1 }}>{toast.message}</span>
           {toast.undoAction && (
             <button
               onClick={() => {
                 toast.undoAction!();
                 dismissToast(toast.id);
               }}
-              className="font-semibold text-orange-400 dark:text-orange-600 hover:underline"
+              style={{
+                fontWeight: 600,
+                color: 'var(--ochre)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontFamily: 'inherit',
+                textDecoration: 'underline',
+                flexShrink: 0,
+              }}
             >
               Undo
             </button>
           )}
           <button
             onClick={() => dismissToast(toast.id)}
-            className="text-zinc-500 dark:text-gray-400 hover:text-white dark:hover:text-zinc-900 ml-1 transition-colors"
+            style={{
+              color: 'var(--ink-4)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 16,
+              lineHeight: 1,
+              flexShrink: 0,
+              padding: 0,
+            }}
           >
             ✕
           </button>

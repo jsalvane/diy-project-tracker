@@ -73,8 +73,8 @@ function ReceiptIcon({ className }: { className?: string }) {
 
 // ── Expense Modal ────────────────────────────────────────────────────────
 
-const inputCls = 'w-full rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] bg-[#ffffff] dark:bg-[#161626] px-3 py-2 text-sm text-[#0a0a14] dark:text-[#e2e2f0] outline-none focus:border-[#E31937] transition-colors';
-const labelCls = 'block text-xs font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-1';
+const inputCls = 'field w-full';
+const labelCls = 'tape-label block mb-1.5';
 
 function ExpenseModal({
   initial,
@@ -109,13 +109,11 @@ function ExpenseModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
-      <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-          <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm">
-            {initial ? 'Edit Expense' : 'Add HSA Expense'}
-          </h2>
-          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none">✕</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26,22,18,0.45)' }} onClick={onClose}>
+      <div style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', width: '100%', maxWidth: 448, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--ink-line)' }}>
+          <span className="tape-label">{initial ? 'Edit Expense' : 'Add HSA Expense'}</span>
+          <button onClick={onClose} style={{ color: 'var(--ink-4)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, lineHeight: 1 }}>✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Person + Date */}
@@ -169,18 +167,15 @@ function ExpenseModal({
             <input
               type="checkbox" checked={form.reimbursed}
               onChange={e => set('reimbursed', e.target.checked)}
-              className="w-4 h-4 rounded accent-[#E31937]"
+              className="w-4 h-4 rounded"
+              style={{ accentColor: 'var(--rust)' }}
             />
-            <span className="text-sm text-[#0a0a14] dark:text-[#e2e2f0]">Reimbursed</span>
+            <span className="tape-label">Reimbursed</span>
           </label>
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="text-sm font-semibold px-4 py-2 rounded-lg border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.55)] dark:text-[rgba(226,226,240,0.65)] hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors">
-              Cancel
-            </button>
-            <button type="submit" className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors">
-              {initial ? 'Save Changes' : 'Add Expense'}
-            </button>
+            <button type="button" onClick={onClose} className="btn-ghost flex-1 justify-center">Cancel</button>
+            <button type="submit" className="btn-primary flex-1 justify-center">{initial ? 'Save Changes' : 'Add Expense'}</button>
           </div>
         </form>
       </div>
@@ -214,13 +209,11 @@ function ReceiptModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
-      <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-          <h2 className="font-semibold text-[#0a0a14] dark:text-[#e2e2f0] text-sm truncate pr-4">
-            Receipt — {expense.provider}
-          </h2>
-          <button onClick={onClose} className="text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] hover:text-[#0a0a14] dark:hover:text-[#e2e2f0] transition-colors text-lg leading-none shrink-0">✕</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26,22,18,0.45)' }} onClick={onClose}>
+      <div style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', width: '100%', maxWidth: 380, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--ink-line)' }}>
+          <span className="tape-label truncate pr-4">Receipt — {expense.provider}</span>
+          <button onClick={onClose} style={{ color: 'var(--ink-4)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, lineHeight: 1, flexShrink: 0 }}>✕</button>
         </div>
         <div className="p-5">
           {uploading ? (
@@ -365,8 +358,8 @@ export function HSA() {
 
   // ── Table classes ──────────────────────────────────────────────────
 
-  const thCls = 'text-left px-4 py-3 font-medium text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]';
-  const tdCls = 'px-4 py-3 text-sm text-gray-800 dark:text-gray-200';
+  const thCls = 'tape-label text-left px-4 py-3';
+  const tdCls = 'px-4 py-3 text-[13px]';
 
   if (loading) {
     return (
@@ -380,31 +373,24 @@ export function HSA() {
     <div>
       {/* ── Dashboard Cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-6">
-        {/* HSA Balance */}
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">HSA Balance</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#0a0a14] dark:text-[#e2e2f0] truncate">{formatCurrency(hsaBalance)}</div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">from financial health</div>
+        <div style={{ borderRadius: 12, border: '1px solid var(--ink-line)', padding: '12px 16px' }}>
+          <div className="tape-label mb-1">HSA Balance</div>
+          <div className="display-md truncate tabular-nums" style={{ color: 'var(--ink)' }}>{formatCurrency(hsaBalance)}</div>
+          <div className="tape-label mt-0.5" style={{ fontSize: 8 }}>from financial health</div>
         </div>
 
-        {/* Total Expenses */}
-        <div className="rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-3 sm:p-4">
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Total Expenses</div>
-          <div className="text-lg sm:text-2xl font-bold text-[#E31937] dark:text-[#FF4D5C] truncate">{formatCurrency(totalExpenses)}</div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">{expenses.length} expense{expenses.length !== 1 ? 's' : ''}</div>
+        <div style={{ borderRadius: 12, border: '1px solid var(--ink-line)', padding: '12px 16px' }}>
+          <div className="tape-label mb-1">Total Expenses</div>
+          <div className="display-md truncate tabular-nums" style={{ color: 'var(--rust)' }}>{formatCurrency(totalExpenses)}</div>
+          <div className="tape-label mt-0.5" style={{ fontSize: 8 }}>{expenses.length} expense{expenses.length !== 1 ? 's' : ''}</div>
         </div>
 
-        {/* Unreimbursed */}
-        <div className={`rounded-xl border p-3 sm:p-4 col-span-2 sm:col-span-1 ${
-          unreimbursed > 0
-            ? 'border-yellow-300 dark:border-yellow-700/50 bg-yellow-50/50 dark:bg-yellow-900/10'
-            : 'border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]'
-        }`}>
-          <div className="text-[10px] sm:text-xs uppercase tracking-wider text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mb-1">Unreimbursed</div>
-          <div className={`text-lg sm:text-2xl font-bold ${unreimbursed > 0 ? 'text-yellow-600 dark:text-yellow-400' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>
+        <div style={{ borderRadius: 12, border: `1px solid ${unreimbursed > 0 ? 'rgba(200,146,46,0.3)' : 'var(--ink-line)'}`, padding: '12px 16px', background: unreimbursed > 0 ? 'rgba(200,146,46,0.06)' : 'transparent' }} className="col-span-2 sm:col-span-1">
+          <div className="tape-label mb-1">Unreimbursed</div>
+          <div className="display-md truncate tabular-nums" style={{ color: unreimbursed > 0 ? 'var(--ochre)' : 'var(--ink)' }}>
             {formatCurrency(unreimbursed)}
           </div>
-          <div className="text-[10px] sm:text-xs text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] mt-0.5">
+          <div className="tape-label mt-0.5" style={{ fontSize: 8 }}>
             {expenses.filter(e => !e.reimbursed).length} pending
           </div>
         </div>
@@ -436,19 +422,16 @@ export function HSA() {
           </select>
         </div>
 
-        <button
-          onClick={() => setModal('add')}
-          className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-[#E31937] hover:bg-[#C41230] text-white transition-colors"
-        >
-          <span className="text-base leading-none">+</span> Add Expense
+        <button onClick={() => setModal('add')} className="btn-primary btn-sm flex items-center gap-1.5">
+          <span>+</span> Add Expense
         </button>
       </div>
 
       {/* ── Desktop Table ── */}
-      <div className="hidden sm:block rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-x-auto scrollbar-hide">
+      <div className="hidden sm:block overflow-x-auto scrollbar-hide" style={{ border: '1px solid var(--ink-line)', borderRadius: 12 }}>
         <table className="w-full text-sm min-w-[700px]">
           <thead>
-            <tr className="bg-[#f6f6fb] dark:bg-[#0f0f1a]">
+            <tr style={{ background: 'var(--paper-2)' }}>
               <th className={thCls}>Person</th>
               <th className={thCls}>Provider</th>
               <th className={thCls}>Date</th>
@@ -460,7 +443,7 @@ export function HSA() {
               <th className="w-16 px-2 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
+          <tbody style={{ borderTop: '1px solid var(--ink-line)' }}>
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={9} className="px-4 py-10 text-center text-sm text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)]">

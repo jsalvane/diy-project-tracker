@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -60,39 +59,15 @@ function NoteIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-function SunIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="4"/>
-      <line x1="12" y1="2" x2="12" y2="4"/>
-      <line x1="12" y1="20" x2="12" y2="22"/>
-      <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/>
-      <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/>
-      <line x1="2" y1="12" x2="4" y2="12"/>
-      <line x1="20" y1="12" x2="22" y2="12"/>
-      <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/>
-      <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/>
-    </svg>
-  );
-}
-
-function MoonIcon({ size = 17 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-  );
-}
-
 // ── Nav config ────────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = [
-  { path: '/',            label: 'Home',       icon: HomeIcon,   exact: true,  matchPaths: null },
-  { path: '/money',       label: 'Money',      icon: DollarIcon, exact: false, matchPaths: ['/money', '/financial-health', '/budget'] },
-  { path: '/projects',    label: 'Projects',   icon: FolderIcon, exact: false, matchPaths: ['/projects', '/project/'] },
-  { path: '/maintenance', label: 'Maintenance',icon: WrenchIcon, exact: false, matchPaths: null },
-  { path: '/gifts',       label: 'Gifts',      icon: GiftIcon,   exact: false, matchPaths: null },
-  { path: '/scratchpad',  label: 'Scratchpad', icon: NoteIcon,   exact: false, matchPaths: null },
+  { path: '/',            label: 'Home',        icon: HomeIcon,   exact: true,  matchPaths: null },
+  { path: '/money',       label: 'Money',       icon: DollarIcon, exact: false, matchPaths: ['/money', '/financial-health', '/budget'] },
+  { path: '/projects',    label: 'Projects',    icon: FolderIcon, exact: false, matchPaths: ['/projects', '/project/'] },
+  { path: '/maintenance', label: 'Maintenance', icon: WrenchIcon, exact: false, matchPaths: null },
+  { path: '/gifts',       label: 'Gifts',       icon: GiftIcon,   exact: false, matchPaths: null },
+  { path: '/scratchpad',  label: 'Scratchpad',  icon: NoteIcon,   exact: false, matchPaths: null },
 ];
 
 function isNavActive(item: typeof NAV_ITEMS[number], pathname: string): boolean {
@@ -106,7 +81,6 @@ function isNavActive(item: typeof NAV_ITEMS[number], pathname: string): boolean 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 
 export function Sidebar({ onCmdK }: { onCmdK: () => void }) {
-  const { state, toggleDarkMode } = useApp();
   const location = useLocation();
 
   return (
@@ -116,20 +90,18 @@ export function Sidebar({ onCmdK }: { onCmdK: () => void }) {
         className="hidden lg:flex flex-col fixed inset-y-0 left-0 z-30"
         style={{
           width: 'var(--sidebar-w)',
-          background: '#0b0b14',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--paper)',
+          borderRight: '1px solid var(--ink-line)',
         }}
       >
         {/* Logo */}
         <div className="px-5 pt-6 pb-5">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <img
-              src="/apple-touch-icon.png"
-              alt="Toolbox"
-              style={{ width: 30, height: 30, borderRadius: 8, boxShadow: '0 0 16px rgba(227,25,55,0.45)' }}
-            />
-            <span className="text-[15px] font-bold tracking-[-0.04em] text-white group-hover:text-[#FF4D5C] transition-colors">
-              Toolbox
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <span
+              className="font-serif"
+              style={{ fontSize: 22, fontStyle: 'italic', color: 'var(--ink)', letterSpacing: '-0.02em', lineHeight: 1 }}
+            >
+              Toolbox<em style={{ color: 'var(--rust)' }}>.</em>
             </span>
           </Link>
         </div>
@@ -143,73 +115,56 @@ export function Sidebar({ onCmdK }: { onCmdK: () => void }) {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 py-[9px] rounded-[9px] transition-all duration-150 ${
-                  active
-                    ? 'bg-[rgba(255,77,92,0.13)] text-[#FF4D5C]'
-                    : 'text-[rgba(255,255,255,0.36)] hover:text-[rgba(255,255,255,0.82)] hover:bg-[rgba(255,255,255,0.055)]'
-                }`}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] transition-colors duration-150 relative"
+                style={{
+                  color: active ? 'var(--ink)' : 'var(--ink-3)',
+                  background: active ? 'var(--paper-2)' : 'transparent',
+                  textDecoration: 'none',
+                }}
               >
-                <Icon size={17} />
-                <span className="text-[13px] font-medium flex-1">{item.label}</span>
                 {active && (
-                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#FF4D5C', opacity: 0.9 }} />
+                  <div
+                    className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
+                    style={{ width: 2, height: 18, background: 'var(--rust)' }}
+                  />
                 )}
+                <Icon size={16} />
+                <span style={{ fontSize: 13, fontWeight: active ? 600 : 500 }}>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Bottom controls */}
-        <div
-          className="px-3 pb-5 pt-3 space-y-0.5"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-        >
-          {/* Search / Cmd+K */}
+        {/* Bottom — search */}
+        <div className="px-3 pb-5 pt-3" style={{ borderTop: '1px solid var(--ink-line)' }}>
           <button
             onClick={onCmdK}
-            className="w-full flex items-center justify-between px-3 py-[9px] rounded-[9px] transition-all duration-150 group hover:bg-[rgba(255,255,255,0.055)]"
-            style={{ color: 'rgba(255,255,255,0.3)' }}
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-[10px] transition-colors duration-150 hover:bg-[var(--paper-2)]"
+            style={{ color: 'var(--ink-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
           >
             <div className="flex items-center gap-3">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"/>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
-              <span className="text-[13px] font-medium group-hover:text-[rgba(255,255,255,0.75)] transition-colors">
-                Search
-              </span>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Search</span>
             </div>
             <kbd
-              className="text-[10px] font-mono px-1.5 py-0.5 rounded tracking-wide transition-colors"
-              style={{
-                background: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
+              className="tape-label px-1.5 py-0.5 rounded"
+              style={{ background: 'var(--paper-2)', border: '1px solid var(--ink-line)', fontSize: 9, letterSpacing: '0.05em' }}
             >
               ⌘K
             </kbd>
-          </button>
-
-          {/* Dark mode toggle */}
-          <button
-            onClick={toggleDarkMode}
-            className="w-full flex items-center gap-3 px-3 py-[9px] rounded-[9px] transition-all duration-150 hover:bg-[rgba(255,255,255,0.055)]"
-            style={{ color: 'rgba(255,255,255,0.36)' }}
-          >
-            {state.darkMode ? <SunIcon size={17} /> : <MoonIcon size={17} />}
-            <span className="text-[13px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {state.darkMode ? 'Light Mode' : 'Dark Mode'}
-            </span>
           </button>
         </div>
       </aside>
 
       {/* ── Mobile bottom tab bar ────────────────────────────────────────── */}
       <nav
-        className="lg:hidden fixed bottom-0 inset-x-0 z-40 flex items-stretch justify-around bg-white dark:bg-[#0b0b14] border-t border-[rgba(0,0,20,0.08)] dark:border-[rgba(255,255,255,0.06)]"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-40 flex items-stretch justify-around"
         style={{
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          background: 'var(--paper)',
+          borderTop: '1px solid var(--ink-line)',
           paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)',
           paddingTop: 8,
         }}
@@ -221,14 +176,34 @@ export function Sidebar({ onCmdK }: { onCmdK: () => void }) {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all duration-150 min-w-0 flex-1 ${
-                active
-                  ? 'text-[#E31937] dark:text-[#FF4D5C]'
-                  : 'text-[rgba(10,10,20,0.3)] dark:text-[rgba(255,255,255,0.28)]'
-              }`}
+              className="flex flex-col items-center gap-0.5 px-1 py-1 min-w-0 flex-1 relative"
+              style={{ color: active ? 'var(--ink)' : 'var(--ink-3)', textDecoration: 'none' }}
             >
-              <Icon size={21} />
-              <span className="text-[10px] font-semibold tracking-tight truncate max-w-full">
+              {active && (
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 20,
+                  height: 2,
+                  background: 'var(--rust)',
+                  borderRadius: 1,
+                }} />
+              )}
+              <Icon size={20} />
+              <span style={{
+                fontSize: 9,
+                fontWeight: 600,
+                fontFamily: "'JetBrains Mono', monospace",
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: active ? 'var(--rust)' : 'var(--ink-3)',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
                 {item.label}
               </span>
             </Link>

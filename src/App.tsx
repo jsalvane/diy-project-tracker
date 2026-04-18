@@ -45,12 +45,8 @@ function LoadingScreen({ exiting }: { exiting: boolean }) {
   return (
     <>
       <style>{`
-        @keyframes ls-icon-rise {
-          from { opacity: 0; transform: scale(0.78) translateY(18px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
         @keyframes ls-rise {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes ls-bar-fill {
@@ -59,13 +55,9 @@ function LoadingScreen({ exiting }: { exiting: boolean }) {
           80%  { width: 84%; }
           100% { width: 94%; }
         }
-        @keyframes ls-bar-shimmer {
-          0%   { left: -40%; }
-          100% { left: 110%; }
-        }
         @keyframes ls-exit {
-          0%   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
-          100% { opacity: 0; transform: scale(1.08) translateY(-18px); filter: blur(20px); }
+          0%   { opacity: 1; }
+          100% { opacity: 0; }
         }
         @keyframes ls-bar-exit {
           0%   { opacity: 1; width: 94%; }
@@ -73,105 +65,38 @@ function LoadingScreen({ exiting }: { exiting: boolean }) {
           100% { opacity: 0; width: 100%; }
         }
 
-        .ls-icon-rise { animation: ls-icon-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
-        .ls-rise-1    { animation: ls-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both; }
-        .ls-rise-2    { animation: ls-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both; }
-        .ls-exit      { animation: ls-exit 0.8s cubic-bezier(0.4, 0, 1, 1) forwards; }
-        .ls-bar-fill  { animation: ls-bar-fill 5s cubic-bezier(0.12, 0, 0.39, 0) 0.4s both; }
-        .ls-bar-exit  { animation: ls-bar-exit 0.8s ease-out forwards; }
-        .ls-shimmer   {
-          position: absolute; top: 0; height: 100%; width: 40%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-          animation: ls-bar-shimmer 1.8s ease-in-out 0.8s infinite;
-        }
+        .ls-rise-1 { animation: ls-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
+        .ls-rise-2 { animation: ls-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both; }
+        .ls-exit   { animation: ls-exit 0.5s ease-out forwards; }
+        .ls-bar-fill { animation: ls-bar-fill 5s cubic-bezier(0.12, 0, 0.39, 0) 0.3s both; }
+        .ls-bar-exit { animation: ls-bar-exit 0.6s ease-out forwards; }
       `}</style>
 
       <div
-        className={exiting ? 'ls-exit' : ''}
+        className={`blueprint-grid ${exiting ? 'ls-exit' : ''}`}
         style={{
           position: 'fixed', inset: 0, zIndex: 999,
-          background: 'linear-gradient(160deg, #232325 0%, #2a0a10 55%, #9b1020 100%)',
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
           overflow: 'hidden',
         }}
       >
-        {/* Center content */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {/* App icon */}
-          <div className="ls-icon-rise" style={{ marginBottom: 32 }}>
-            <img
-              src="/apple-touch-icon.png"
-              alt="Toolbox"
-              style={{
-                width: 84, height: 84,
-                borderRadius: 22,
-                boxShadow: [
-                  '0 28px 72px rgba(0,0,0,0.88)',
-                  '0 0 0 1px rgba(255,255,255,0.08)',
-                  '0 0 56px rgba(227,25,55,0.12)',
-                ].join(', '),
-                display: 'block',
-              }}
-            />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <div className="ls-rise-1 font-serif" style={{ fontSize: 48, lineHeight: 1, color: 'var(--ink)', fontStyle: 'italic' }}>
+            Toolbox<em style={{ color: 'var(--rust)' }}>.</em>
           </div>
-
-          {/* App name — Tesla-style wide tracked caps */}
-          <div
-            className="ls-rise-1"
-            style={{
-              fontSize: 14,
-              fontWeight: 300,
-              color: 'rgba(255,255,255,0.88)',
-              letterSpacing: '0.42em',
-              textTransform: 'uppercase',
-              marginBottom: 12,
-            }}
-          >
-            Toolbox
-          </div>
-
-          {/* Tagline */}
-          <div
-            className="ls-rise-2"
-            style={{
-              fontSize: 11,
-              fontWeight: 400,
-              color: 'rgba(255,255,255,0.26)',
-              letterSpacing: '0.08em',
-            }}
-          >
+          <div className="ls-rise-2 tape-label" style={{ letterSpacing: '0.18em' }}>
             Loading
           </div>
         </div>
 
-        {/* Bottom progress bar — pinned to screen bottom */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0, left: 0, right: 0,
-          height: 2,
-          background: 'rgba(255,255,255,0.06)',
-          overflow: 'hidden',
-        }}>
+        {/* Bottom progress bar */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'var(--ink-line-2)', overflow: 'hidden' }}>
           <div
             className={exiting ? 'ls-bar-exit' : 'ls-bar-fill'}
-            style={{
-              position: 'relative',
-              height: '100%',
-              background: 'rgba(255,255,255,0.55)',
-              overflow: 'hidden',
-            }}
-          >
-            {!exiting && <div className="ls-shimmer" />}
-          </div>
+            style={{ position: 'relative', height: '100%', background: 'var(--ink)' }}
+          />
         </div>
-
-        {/* Subtle bottom line decoration */}
-        <div style={{
-          position: 'absolute',
-          bottom: 2, left: 0, right: 0, height: 1,
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)',
-        }} />
       </div>
     </>
   );
@@ -217,7 +142,7 @@ function AppShell() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5fa] dark:bg-[#08080f] text-[#0a0a14] dark:text-[#e2e2f0]">
+    <div className="min-h-screen" style={{ background: 'var(--paper)', color: 'var(--ink)' }}>
       {/* Sidebar (desktop fixed + mobile bottom nav) */}
       <Sidebar onCmdK={openCmd} />
 

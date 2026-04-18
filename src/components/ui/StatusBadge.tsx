@@ -1,17 +1,40 @@
 import type { ProjectStatus } from '../../lib/types';
 import { STATUS_META } from '../../lib/constants';
 
-/** Pill-style status badge with colored dot and background */
+/** Pill-style status badge — transparent bg, hairline border, mono uppercase */
 export function StatusPill({ status }: { status: ProjectStatus }) {
   const meta = STATUS_META[status] || STATUS_META.planned;
   return (
     <span
-      className="inline-flex items-center gap-1.5 shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold"
-      style={{ background: meta.bg, color: meta.color }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        height: 22,
+        padding: '0 10px',
+        borderRadius: 999,
+        border: `1px solid ${meta.color}66`,
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 10,
+        fontWeight: 500,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase' as const,
+        color: meta.color,
+        background: 'transparent',
+        whiteSpace: 'nowrap' as const,
+        flexShrink: 0,
+      }}
     >
       <span
-        className={`w-[5px] h-[5px] rounded-full shrink-0 ${meta.dotAnim ? 'animate-pulse-dot' : ''}`}
-        style={{ background: meta.color }}
+        className={meta.dotAnim ? 'animate-pulse-dot' : ''}
+        style={{
+          width: 4,
+          height: 4,
+          borderRadius: '50%',
+          background: meta.color,
+          flexShrink: 0,
+          display: 'inline-block',
+        }}
       />
       {meta.label}
     </span>
@@ -23,12 +46,28 @@ export function StatusBadge({ status }: { status: ProjectStatus }) {
   const meta = STATUS_META[status] || STATUS_META.planned;
   return (
     <span
-      className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.02em]"
-      style={{ color: meta.color }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 10,
+        fontWeight: 500,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase' as const,
+        color: meta.color,
+      }}
     >
       <span
-        className={`w-[5px] h-[5px] rounded-full shrink-0 ${meta.dotAnim ? 'animate-pulse-dot' : ''}`}
-        style={{ background: meta.color }}
+        className={meta.dotAnim ? 'animate-pulse-dot' : ''}
+        style={{
+          width: 4,
+          height: 4,
+          borderRadius: '50%',
+          background: meta.color,
+          flexShrink: 0,
+          display: 'inline-block',
+        }}
       />
       {meta.label}
     </span>

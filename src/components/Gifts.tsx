@@ -15,18 +15,17 @@ const COLORS = [
   { key: 'pink',   bar: 'bg-pink-400',   text: 'text-pink-500 dark:text-pink-400',     dot: 'bg-pink-400'   },
 ];
 
-function getColor(key: string) { return COLORS.find(c => c.key === key) ?? COLORS[0]; }
 
-const STATUS_CONFIG: Record<GiftStatus, { label: string; cls: string }> = {
-  want:      { label: 'Want',      cls: 'text-[#E31937] dark:text-[#FF4D5C] bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)]' },
-  purchased: { label: 'Purchased', cls: 'text-[#16a34a] dark:text-[#22c55e] bg-[rgba(22,163,74,0.1)] dark:bg-[rgba(34,197,94,0.1)]' },
-  cancelled: { label: 'Cancelled', cls: 'text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.05)]' },
+const STATUS_CONFIG: Record<GiftStatus, { label: string; color: string; bg: string }> = {
+  want:      { label: 'Want',      color: 'var(--rust)',  bg: 'rgba(184,69,31,0.10)' },
+  purchased: { label: 'Purchased', color: 'var(--moss)',  bg: 'rgba(85,107,47,0.10)' },
+  cancelled: { label: 'Cancelled', color: 'var(--ink-4)', bg: 'rgba(154,141,124,0.10)' },
 };
 
-const PRIORITY_DOT: Record<GiftPriority, string> = {
-  high:   'bg-rose-400',
-  medium: 'bg-amber-400',
-  low:    'bg-[rgba(0,0,20,0.18)] dark:bg-[rgba(255,255,255,0.18)]',
+const PRIORITY_COLOR: Record<GiftPriority, string> = {
+  high:   'var(--rust)',
+  medium: 'var(--ochre)',
+  low:    'var(--ink-4)',
 };
 
 const OCCASIONS = [
@@ -36,7 +35,7 @@ const OCCASIONS = [
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="block text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mb-1.5">
+    <label className="tape-label block mb-1.5">
       {children}
     </label>
   );
@@ -45,25 +44,23 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 // ─── Stat Card ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4">
-      <div className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-1.5">{label}</div>
-      <div className="text-[18px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.025em] tabular-nums">{value}</div>
+    <div style={{ background: 'var(--paper)', border: '1px solid var(--ink-line)', borderRadius: 12, padding: 16 }}>
+      <div className="tape-label mb-1">{label}</div>
+      <div className="display-md tabular-nums" style={{ color: 'var(--ink)' }}>{value}</div>
     </div>
   );
 }
 
 // ─── Person Tile ───────────────────────────────────────────────────────────────
 function PersonTile({
-  recipient, gifts, isSelected, colorIndex, onSelect, onEdit,
+  recipient, gifts, isSelected, onSelect, onEdit,
 }: {
   recipient: GiftRecipient;
   gifts: Gift[];
   isSelected: boolean;
-  colorIndex: number;
   onSelect: () => void;
   onEdit: (e: React.MouseEvent) => void;
 }) {
-  const color = getColor(recipient.color) ?? COLORS[colorIndex % COLORS.length];
   const purchased = gifts.filter(g => g.status === 'purchased');
   const want = gifts.filter(g => g.status === 'want');
   const spent = purchased.reduce((s, g) => s + g.cost, 0);
@@ -72,26 +69,26 @@ function PersonTile({
   return (
     <button
       onClick={onSelect}
-      className={`w-full text-left rounded-xl border p-4 transition-all duration-150 ${
-        isSelected
-          ? 'border-[rgba(227,25,55,0.3)] dark:border-[rgba(255,77,92,0.25)] bg-[rgba(227,25,55,0.05)] dark:bg-[rgba(255,77,92,0.06)] shadow-[0_0_0_3px_rgba(227,25,55,0.12)]'
-          : 'border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] bg-[#ffffff] dark:bg-[#0f0f1a] hover:border-[rgba(0,0,20,0.13)] dark:hover:border-[rgba(255,255,255,0.1)]'
-      }`}
+      className="w-full text-left p-4 transition-all duration-150"
+      style={{
+        borderRadius: 12,
+        border: `1px solid ${isSelected ? 'var(--ink-line-2)' : 'var(--ink-line)'}`,
+        background: isSelected ? 'var(--paper-2)' : 'var(--paper)',
+      }}
     >
-      <div className="flex items-start justify-between mb-2.5">
+      <div className="flex items-start justify-between mb-2">
         <div className="min-w-0">
-          <div className="text-[13px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] truncate tracking-[-0.01em]">
+          <div className="text-[13px] font-semibold truncate" style={{ color: 'var(--ink)' }}>
             {recipient.name}
           </div>
           {recipient.occasion && (
-            <div className="text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mt-0.5 truncate">
-              {recipient.occasion}
-            </div>
+            <div className="tape-label mt-0.5 truncate" style={{ fontSize: 9 }}>{recipient.occasion}</div>
           )}
         </div>
         <button
           onClick={onEdit}
-          className="text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[rgba(10,10,20,0.6)] dark:hover:text-[rgba(226,226,240,0.55)] p-0.5 rounded transition-colors ml-1.5 shrink-0"
+          className="p-0.5 rounded ml-1.5 shrink-0 transition-colors"
+          style={{ color: 'var(--ink-4)' }}
         >
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M11.5 2.5a1.414 1.414 0 0 1 2 2L5 13H2v-3L11.5 2.5z"/>
@@ -99,34 +96,34 @@ function PersonTile({
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="flex flex-wrap gap-1 mb-2.5">
         {want.length > 0 && (
-          <span className="text-[11px] px-1.5 py-0.5 rounded-md font-medium text-[#E31937] dark:text-[#FF4D5C] bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)]">
+          <span className="tape-label px-1.5 py-0.5 rounded" style={{ color: 'var(--rust)', background: 'rgba(184,69,31,0.10)', fontSize: 9 }}>
             {want.length} want
           </span>
         )}
         {purchased.length > 0 && (
-          <span className="text-[11px] px-1.5 py-0.5 rounded-md font-medium text-[#16a34a] dark:text-[#22c55e] bg-[rgba(22,163,74,0.1)] dark:bg-[rgba(34,197,94,0.1)]">
+          <span className="tape-label px-1.5 py-0.5 rounded" style={{ color: 'var(--moss)', background: 'rgba(85,107,47,0.10)', fontSize: 9 }}>
             {purchased.length} bought
           </span>
         )}
         {gifts.length === 0 && (
-          <span className="text-[11px] text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">No gifts yet</span>
+          <span className="tape-label" style={{ fontSize: 9 }}>No gifts yet</span>
         )}
       </div>
 
       {recipient.budget > 0 ? (
         <div>
-          <div className="flex justify-between text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mb-1.5 tabular-nums">
+          <div className="flex justify-between mb-1 tabular-nums" style={{ fontSize: 10, color: 'var(--ink-4)' }}>
             <span>{formatCurrency(spent)}</span>
             <span>{formatCurrency(recipient.budget)}</span>
           </div>
-          <div className="h-1 bg-[rgba(0,0,20,0.07)] dark:bg-[rgba(255,255,255,0.07)] rounded-full overflow-hidden">
-            <div className={`h-full ${color.bar} rounded-full transition-all`} style={{ width: `${budgetPct}%` }} />
+          <div className="h-1 rounded-full overflow-hidden" style={{ background: 'var(--ink-line)' }}>
+            <div style={{ width: `${budgetPct}%`, height: '100%', background: budgetPct > 90 ? 'var(--rust)' : 'var(--moss)', borderRadius: 999, transition: 'width 0.3s' }} />
           </div>
         </div>
       ) : spent > 0 ? (
-        <div className={`text-[12px] font-semibold tabular-nums ${color.text}`}>{formatCurrency(spent)}</div>
+        <div className="tape-label tabular-nums" style={{ color: 'var(--ink-2)', fontSize: 9 }}>{formatCurrency(spent)} spent</div>
       ) : null}
     </button>
   );
@@ -135,20 +132,16 @@ function PersonTile({
 // ─── Modal shell ───────────────────────────────────────────────────────────────
 function ModalShell({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-fade-in p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>
       <div
-        className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6)] w-full max-w-md border border-[rgba(0,0,20,0.08)] dark:border-[rgba(255,255,255,0.07)] animate-scale-in"
+        style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', width: '100%', maxWidth: 448 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)]">
-          <h2 className="text-[14px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.015em]">{title}</h2>
-          <button
-            onClick={onClose}
-            className="w-6 h-6 flex items-center justify-center rounded-md text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] hover:text-[rgba(10,10,20,0.65)] dark:hover:text-[rgba(226,226,240,0.6)] hover:bg-[rgba(0,0,20,0.05)] dark:hover:bg-[rgba(255,255,255,0.06)] transition-colors"
-          >
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--ink-line)' }}>
+          <span className="tape-label">{title}</span>
+          <button onClick={onClose} style={{ color: 'var(--ink-4)', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1 }}>
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-              <line x1="2" y1="2" x2="14" y2="14"/>
-              <line x1="14" y1="2" x2="2" y2="14"/>
+              <line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/>
             </svg>
           </button>
         </div>
@@ -200,7 +193,7 @@ function PersonModal({ recipient, defaultColorKey, onSave, onClose }: {
             {COLORS.map(c => (
               <button
                 key={c.key} type="button" onClick={() => setColor(c.key)}
-                className={`w-6 h-6 rounded-full ${c.bar} transition-transform ${color === c.key ? 'ring-2 ring-offset-2 ring-[#E31937] dark:ring-[#FF4D5C] dark:ring-offset-[#0f0f1a] scale-110' : 'hover:scale-105 opacity-70 hover:opacity-100'}`}
+                className={`w-6 h-6 rounded-full ${c.bar} transition-transform ${color === c.key ? 'ring-2 ring-offset-2 ring-[var(--rust)] scale-110' : 'hover:scale-105 opacity-70 hover:opacity-100'}`}
                 title={c.key}
               />
             ))}
@@ -303,28 +296,28 @@ function ConfirmDelete({ type, onConfirm, onCancel }: {
   onCancel: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-fade-in p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>
       <div
-        className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6)] p-6 max-w-sm w-full border border-[rgba(0,0,20,0.08)] dark:border-[rgba(255,255,255,0.07)] animate-scale-in"
+        style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', padding: 24, maxWidth: 380, width: '100%' }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center mb-4">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 dark:text-red-400">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-            <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-          </svg>
-        </div>
-        <h3 className="text-[14px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.01em] mb-1.5">
-          Delete {type === 'person' ? 'Person' : 'Gift'}?
-        </h3>
-        <p className="text-[12.5px] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] leading-relaxed mb-5">
+        <p className="font-serif mb-2" style={{ fontSize: 20, fontStyle: 'italic', color: 'var(--ink)' }}>
+          Delete {type === 'person' ? 'Person' : 'Gift'}<em style={{ color: 'var(--rust)' }}>?</em>
+        </p>
+        <p className="mb-5" style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.5 }}>
           {type === 'person'
             ? 'This will also delete all their gifts. This cannot be undone.'
             : 'This gift will be permanently deleted.'}
         </p>
         <div className="flex gap-2">
           <button onClick={onCancel} className="btn-ghost flex-1 justify-center">Cancel</button>
-          <button onClick={onConfirm} className="btn-danger flex-1 justify-center">Delete</button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 justify-center"
+            style={{ background: 'var(--rust)', color: 'var(--paper)', border: 'none', borderRadius: 999, padding: '10px 18px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>
@@ -383,21 +376,17 @@ export function Gifts() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-[22px] font-bold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.035em]">Gifts</h1>
-          {recipients.length > 0 && (
-            <p className="text-[12px] font-medium text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] mt-0.5 tracking-[0.01em]">
-              {recipients.length} {recipients.length === 1 ? 'person' : 'people'}
-            </p>
-          )}
+          <span className="tape-label">Gifts · {new Date().getFullYear()}</span>
+          <h1 className="display-lg mt-1" style={{ color: 'var(--ink)' }}>
+            Gifts<em style={{ color: 'var(--rust)', fontStyle: 'italic' }}>.</em>
+          </h1>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setPersonModal({ open: true })} className="btn-primary">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-              <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
-            </svg>
-            Add Person
-          </button>
-        </div>
+        <button onClick={() => setPersonModal({ open: true })} className="btn-primary btn-sm flex items-center gap-1.5">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
+          </svg>
+          Add Person
+        </button>
       </div>
 
       {/* Summary stats */}
@@ -414,8 +403,8 @@ export function Gifts() {
       {loading && (
         <div className="flex justify-center py-20">
           <div className="relative w-8 h-8">
-            <div className="absolute inset-0 rounded-full border border-[#E31937]/20" />
-            <div className="absolute inset-0 rounded-full border-t border-[#E31937] animate-spin" />
+            <div className="absolute inset-0 rounded-full" style={{ border: '1px solid rgba(184,69,31,0.2)' }} />
+            <div className="absolute inset-0 rounded-full border-t animate-spin" style={{ borderColor: 'var(--rust)' }} />
           </div>
         </div>
       )}
@@ -423,20 +412,10 @@ export function Gifts() {
       {/* Empty state */}
       {!loading && recipients.length === 0 && (
         <div className="text-center py-20">
-          <div className="w-12 h-12 rounded-2xl bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)] flex items-center justify-center mx-auto mb-4">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#E31937] dark:text-[#FF4D5C]">
-              <polyline points="20 12 20 22 4 22 4 12"/>
-              <rect x="2" y="7" width="20" height="5" rx="1"/>
-              <line x1="12" y1="22" x2="12" y2="7"/>
-              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
-              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-            </svg>
-          </div>
-          <h3 className="text-[15px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] mb-1.5 tracking-[-0.015em]">No people yet</h3>
-          <p className="text-[13px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-6">
-            Track gift ideas, budgets, and purchases for everyone on your list.
+          <p className="font-serif mb-4" style={{ fontSize: 22, fontStyle: 'italic', color: 'var(--ink-3)' }}>
+            No one on your list yet<em style={{ color: 'var(--rust)' }}>.</em>
           </p>
-          <button onClick={() => setPersonModal({ open: true })} className="btn-primary mx-auto">
+          <button onClick={() => setPersonModal({ open: true })} className="btn-ghost">
             Add First Person
           </button>
         </div>
@@ -445,13 +424,13 @@ export function Gifts() {
       {/* Person tiles grid */}
       {!loading && recipients.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
-          {recipients.map((r, i) => (
+          {recipients.map((r) => (
             <PersonTile
               key={r.id}
               recipient={r}
               gifts={gifts.filter(g => g.recipientId === r.id)}
               isSelected={selectedId === r.id}
-              colorIndex={i}
+
               onSelect={() => handleSelectPerson(r.id)}
               onEdit={e => { e.stopPropagation(); setPersonModal({ open: true, editing: r }); }}
             />
@@ -461,72 +440,63 @@ export function Gifts() {
 
       {/* Selected person gift panel */}
       {selectedRecipient && (
-        <div className="border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] rounded-2xl bg-[#ffffff] dark:bg-[#0f0f1a] overflow-hidden">
+        <div style={{ border: '1px solid var(--ink-line)', borderRadius: 14, background: 'var(--paper)', overflow: 'hidden' }}>
 
           {/* Panel header */}
-          <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-5 border-b border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)]">
+          <div className="flex flex-wrap items-start justify-between gap-4 px-6 py-5" style={{ borderBottom: '1px solid var(--ink-line)' }}>
             <div>
               <div className="flex items-center gap-2.5 flex-wrap mb-1">
-                <h2 className="text-[15px] font-semibold text-[#0a0a14] dark:text-[#e2e2f0] tracking-[-0.02em]">
+                <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>
                   {selectedRecipient.name}
                 </h2>
                 {selectedRecipient.occasion && (
-                  <span className="text-[11px] font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.38)] bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.05)] px-2 py-0.5 rounded-md">
+                  <span className="tape-label px-2 py-0.5 rounded" style={{ fontSize: 9, background: 'var(--paper-2)' }}>
                     {selectedRecipient.occasion}
                   </span>
                 )}
               </div>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[12px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)]">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 tape-label" style={{ fontSize: 9 }}>
                 <span>{personGifts.filter(g => g.status === 'want').length} on wish list</span>
-                <span className="text-[rgba(0,0,20,0.2)] dark:text-[rgba(255,255,255,0.15)]">·</span>
+                <span>·</span>
                 <span>{personGifts.filter(g => g.status === 'purchased').length} purchased</span>
                 {selectedRecipient.budget > 0 && (
-                  <>
-                    <span className="text-[rgba(0,0,20,0.2)] dark:text-[rgba(255,255,255,0.15)]">·</span>
-                    <span className="tabular-nums">{formatCurrency(personSpent)} / {formatCurrency(selectedRecipient.budget)}</span>
-                  </>
-                )}
-                {selectedRecipient.budget === 0 && personSpent > 0 && (
-                  <span className="tabular-nums">{formatCurrency(personSpent)} spent</span>
+                  <span className="tabular-nums">{formatCurrency(personSpent)} / {formatCurrency(selectedRecipient.budget)}</span>
                 )}
                 {personWant > 0 && (
-                  <span className="tabular-nums text-[#E31937] dark:text-[#FF4D5C]">{formatCurrency(personWant)} in wishlist</span>
+                  <span className="tabular-nums" style={{ color: 'var(--rust)' }}>{formatCurrency(personWant)} in wishlist</span>
                 )}
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => setPersonModal({ open: true, editing: selectedRecipient })}
-                className="btn-ghost text-[12px] px-3 py-1.5"
-              >
-                Edit
-              </button>
+              <button onClick={() => setPersonModal({ open: true, editing: selectedRecipient })} className="btn-ghost btn-sm">Edit</button>
               <button
                 onClick={() => setConfirmDelete({ type: 'person', id: selectedRecipient.id })}
-                className="text-[12px] font-medium px-3 py-1.5 rounded-[8px] border border-[rgba(220,38,38,0.2)] dark:border-[rgba(248,113,113,0.2)] text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                className="btn-sm"
+                style={{ background: 'transparent', border: '1px solid rgba(184,69,31,0.3)', borderRadius: 999, color: 'var(--rust)', padding: '6px 14px', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
               >
                 Delete
               </button>
-              <button onClick={() => setGiftModal({ open: true })} className="btn-primary text-[12px] px-3 py-1.5">
-                + Add Gift
-              </button>
+              <button onClick={() => setGiftModal({ open: true })} className="btn-primary btn-sm">+ Add Gift</button>
             </div>
           </div>
 
           {/* Budget bar */}
           {selectedRecipient.budget > 0 && (
-            <div className="px-6 py-3 border-b border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
-              <div className="flex justify-between text-[11px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] mb-1.5 tabular-nums">
+            <div className="px-6 py-3" style={{ borderBottom: '1px solid var(--ink-line)' }}>
+              <div className="flex justify-between mb-1.5 tabular-nums tape-label" style={{ fontSize: 9 }}>
                 <span>Budget progress</span>
-                <span className={personSpent > selectedRecipient.budget ? 'text-red-500 font-medium' : ''}>
+                <span style={{ color: personSpent > selectedRecipient.budget ? 'var(--rust)' : 'var(--ink-3)' }}>
                   {formatCurrency(personSpent)} / {formatCurrency(selectedRecipient.budget)}
                   {personSpent > selectedRecipient.budget && ' — over budget'}
                 </span>
               </div>
-              <div className="h-1.5 bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: 'var(--ink-line)' }}>
                 <div
-                  className={`h-full rounded-full transition-all ${personSpent > selectedRecipient.budget ? 'bg-red-400' : getColor(selectedRecipient.color).bar}`}
-                  style={{ width: `${Math.min(100, (personSpent / selectedRecipient.budget) * 100)}%` }}
+                  style={{
+                    width: `${Math.min(100, (personSpent / selectedRecipient.budget) * 100)}%`,
+                    height: '100%', borderRadius: 999, transition: 'width 0.3s',
+                    background: personSpent > selectedRecipient.budget ? 'var(--rust)' : 'var(--moss)',
+                  }}
                 />
               </div>
             </div>
@@ -534,16 +504,19 @@ export function Gifts() {
 
           {/* Status filter */}
           {personGifts.length > 0 && (
-            <div className="flex gap-1 px-6 py-3 border-b border-[rgba(0,0,20,0.05)] dark:border-[rgba(255,255,255,0.04)]">
+            <div className="flex gap-1 px-6 py-3" style={{ borderBottom: '1px solid var(--ink-line)' }}>
               {(['all', 'want', 'purchased', 'cancelled'] as const).map(s => (
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
-                  className={`text-[11.5px] font-medium px-3 py-1 rounded-[7px] transition-colors ${
-                    statusFilter === s
-                      ? 'bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.1)] text-[#E31937] dark:text-[#FF4D5C]'
-                      : 'text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.38)] hover:bg-[rgba(0,0,20,0.04)] dark:hover:bg-[rgba(255,255,255,0.05)]'
-                  }`}
+                  className="tape-label px-3 py-1 rounded-full transition-colors"
+                  style={{
+                    fontSize: 9,
+                    background: statusFilter === s ? 'var(--ink)' : 'transparent',
+                    color: statusFilter === s ? 'var(--paper)' : 'var(--ink-3)',
+                    border: `1px solid ${statusFilter === s ? 'var(--ink)' : 'var(--ink-line-2)'}`,
+                    cursor: 'pointer',
+                  }}
                 >
                   {s === 'all'
                     ? `All (${personGifts.length})`
@@ -555,7 +528,7 @@ export function Gifts() {
 
           {/* Gift list */}
           {filteredGifts.length === 0 ? (
-            <div className="py-12 text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)]">
+            <div className="py-12 text-center tape-label">
               {personGifts.length === 0 ? 'No gifts yet — click "+ Add Gift" to get started.' : 'No gifts match this filter.'}
             </div>
           ) : (() => {
@@ -564,17 +537,20 @@ export function Gifts() {
 
             function GiftRow({ gift }: { gift: Gift }) {
               return (
-                <div className={`flex items-center gap-3 px-6 py-3 hover:bg-[rgba(0,0,20,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors group ${gift.status === 'cancelled' ? 'opacity-45' : ''}`}>
-                  <div className={`w-[5px] h-[5px] rounded-full shrink-0 ${PRIORITY_DOT[gift.priority]}`} title={`${gift.priority} priority`} />
+                <div
+                  className="flex items-center gap-3 px-6 py-3 group transition-colors"
+                  style={{ opacity: gift.status === 'cancelled' ? 0.5 : 1, borderBottom: '1px solid var(--ink-line)' }}
+                >
+                  <div style={{ width: 5, height: 5, borderRadius: '50%', flexShrink: 0, background: PRIORITY_COLOR[gift.priority] }} title={`${gift.priority} priority`} />
                   <div className="flex-1 min-w-0">
-                    <div className={`text-[13px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] ${gift.status === 'cancelled' ? 'line-through' : ''}`}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', textDecoration: gift.status === 'cancelled' ? 'line-through' : 'none' }}>
                       {gift.idea}
                     </div>
                     {gift.notes && (
-                      <div className="text-[11.5px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] truncate">{gift.notes}</div>
+                      <div className="truncate" style={{ fontSize: 11, color: 'var(--ink-4)' }}>{gift.notes}</div>
                     )}
                   </div>
-                  <div className="text-[13px] font-semibold text-[rgba(10,10,20,0.65)] dark:text-[rgba(226,226,240,0.6)] w-16 text-right shrink-0 tabular-nums">
+                  <div className="w-16 text-right shrink-0 tabular-nums" style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-3)' }}>
                     {gift.cost > 0 ? formatCurrency(gift.cost) : '—'}
                   </div>
                   <button
@@ -582,63 +558,43 @@ export function Gifts() {
                       const cycle: GiftStatus[] = ['want', 'purchased', 'cancelled'];
                       updateGift({ ...gift, status: cycle[(cycle.indexOf(gift.status) + 1) % cycle.length] });
                     }}
-                    className={`text-[11px] font-medium px-2 py-0.5 rounded-md transition-opacity hover:opacity-75 shrink-0 ${STATUS_CONFIG[gift.status].cls}`}
+                    className="tape-label px-2 py-0.5 rounded-full shrink-0"
+                    style={{ fontSize: 9, color: STATUS_CONFIG[gift.status].color, background: STATUS_CONFIG[gift.status].bg, border: `1px solid ${STATUS_CONFIG[gift.status].color}40`, cursor: 'pointer' }}
                     title="Click to cycle status"
                   >
                     {STATUS_CONFIG[gift.status].label}
                   </button>
                   {gift.link && (
-                    <a
-                      href={gift.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={e => e.stopPropagation()}
-                      className="text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] transition-colors shrink-0"
-                      title="Open link"
-                    >
+                    <a href={gift.link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: 'var(--ink-4)', flexShrink: 0 }} title="Open link">
                       <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9"/>
-                        <polyline points="11 1 15 1 15 5"/>
-                        <line x1="7" y1="9" x2="15" y2="1"/>
+                        <polyline points="11 1 15 1 15 5"/><line x1="7" y1="9" x2="15" y2="1"/>
                       </svg>
                     </a>
                   )}
                   <div className="flex gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => setGiftModal({ open: true, editing: gift })}
-                      className="text-[11.5px] font-medium px-2 py-0.5 rounded-md text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] hover:text-[#E31937] dark:hover:text-[#FF4D5C] hover:bg-[rgba(227,25,55,0.08)] transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setConfirmDelete({ type: 'gift', id: gift.id })}
-                      className="text-[11.5px] font-medium px-2 py-0.5 rounded-md text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
-                    >
-                      Del
-                    </button>
+                    <button onClick={() => setGiftModal({ open: true, editing: gift })} className="tape-label px-2 py-0.5 rounded" style={{ fontSize: 9, color: 'var(--ink-3)', cursor: 'pointer', background: 'none', border: 'none' }}>Edit</button>
+                    <button onClick={() => setConfirmDelete({ type: 'gift', id: gift.id })} className="tape-label px-2 py-0.5 rounded" style={{ fontSize: 9, color: 'var(--rust)', cursor: 'pointer', background: 'none', border: 'none' }}>Del</button>
                   </div>
                 </div>
               );
             }
 
             return (
-              <div className="divide-y divide-[rgba(0,0,20,0.05)] dark:divide-[rgba(255,255,255,0.04)]">
+              <div>
                 {activeGifts.map(gift => <GiftRow key={gift.id} gift={gift} />)}
                 {purchasedGifts.length > 0 && (
                   <>
                     <button
                       onClick={() => setPurchasedExpanded(e => !e)}
-                      className="w-full flex items-center gap-2 px-6 py-2.5 bg-[rgba(0,0,20,0.02)] dark:bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.03)] transition-colors text-left"
+                      className="w-full flex items-center gap-2 px-6 py-2.5 text-left transition-colors"
+                      style={{ background: 'var(--paper-2)', border: 'none', cursor: 'pointer', borderBottom: '1px solid var(--ink-line)' }}
                     >
-                      <svg
-                        width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
-                        className={`text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)] transition-transform ${purchasedExpanded ? 'rotate-90' : ''}`}
-                      >
+                      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ color: 'var(--ink-4)', transform: purchasedExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
                         <polyline points="4 2 10 6 4 10"/>
                       </svg>
-                      <span className="text-[11.5px] font-medium text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.38)]">
-                        Purchased ({purchasedGifts.length})
-                      </span>
+                      <span className="tape-label" style={{ fontSize: 9 }}>Purchased ({purchasedGifts.length})</span>
                     </button>
                     {purchasedExpanded && purchasedGifts.map(gift => <GiftRow key={gift.id} gift={gift} />)}
                   </>

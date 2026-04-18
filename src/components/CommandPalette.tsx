@@ -144,10 +144,11 @@ export function CommandPalette({ open, onClose }: Props) {
   function renderGroup(items: PaletteItem[], groupLabel: string) {
     if (items.length === 0) return null;
     return (
-      <div className="py-1">
-        <div className="px-4 pt-2 pb-1 text-[10px] font-semibold tracking-[0.08em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(255,255,255,0.28)]">
+      <div>
+        <div className="tape-label px-4 pt-3 pb-1" style={{ color: 'var(--ink-4)' }}>
           {groupLabel}
         </div>
+        <div className="receipt-strip mx-4" />
         {items.map(item => {
           const idx = globalIdx++;
           const isActive = idx === activeIdx;
@@ -157,27 +158,28 @@ export function CommandPalette({ open, onClose }: Props) {
               data-idx={idx}
               onClick={() => handleSelect(item)}
               onMouseEnter={() => setActiveIdx(idx)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                isActive
-                  ? 'bg-[rgba(227,25,55,0.1)] dark:bg-[rgba(255,77,92,0.12)]'
-                  : 'hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.04)]'
-              }`}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
+              style={{
+                background: isActive ? 'var(--paper-2)' : 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
             >
-              <span className={`shrink-0 ${isActive ? 'text-[#E31937] dark:text-[#FF4D5C]' : 'text-[rgba(10,10,20,0.35)] dark:text-[rgba(255,255,255,0.3)]'}`}>
+              <span style={{ flexShrink: 0, color: isActive ? 'var(--rust)' : 'var(--ink-3)' }}>
                 {item.icon}
               </span>
-              <span className="flex-1 min-w-0">
-                <span className={`text-[13px] font-medium ${isActive ? 'text-[#E31937] dark:text-[#FF4D5C]' : 'text-[#0a0a14] dark:text-[#e2e2f0]'}`}>
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ fontSize: 14, fontWeight: 500, color: isActive ? 'var(--rust)' : 'var(--ink)' }}>
                   {item.label}
                 </span>
                 {item.sublabel && (
-                  <span className="ml-2 text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(255,255,255,0.28)] capitalize">
+                  <span className="tape-label ml-2" style={{ textTransform: 'capitalize', letterSpacing: '0.05em' }}>
                     {item.sublabel}
                   </span>
                 )}
               </span>
               {isActive && (
-                <span className="shrink-0 text-[rgba(227,25,55,0.6)] dark:text-[rgba(255,77,92,0.6)]">
+                <span style={{ flexShrink: 0, color: 'var(--rust)' }}>
                   <ArrowIcon />
                 </span>
               )}
@@ -195,27 +197,24 @@ export function CommandPalette({ open, onClose }: Props) {
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 dark:bg-black/65"
-        style={{ backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+        className="absolute inset-0"
+        style={{ background: 'rgba(26,22,18,0.45)' }}
         onClick={onClose}
       />
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-[560px] mx-4 rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-[560px] mx-4 overflow-hidden animate-cmd-modal"
         style={{
-          background: 'var(--c-surface)',
-          border: '1px solid var(--c-border-2)',
-          animation: 'cmd-modal 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.08)',
+          background: 'var(--paper)',
+          border: '1px solid var(--ink-line-2)',
+          borderRadius: 14,
+          boxShadow: '0 24px 60px rgba(26,22,18,0.25)',
         }}
       >
         {/* Input */}
-        <div
-          className="flex items-center gap-3 px-4 py-3.5"
-          style={{ borderBottom: '1px solid var(--c-border)' }}
-        >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-[rgba(10,10,20,0.35)] dark:text-[rgba(255,255,255,0.3)]">
+        <div className="flex items-center gap-3 px-4 py-3.5" style={{ borderBottom: '1px solid var(--ink-line)' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ink-3)', flexShrink: 0 }}>
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
@@ -225,18 +224,27 @@ export function CommandPalette({ open, onClose }: Props) {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search or jump to..."
-            className="flex-1 bg-transparent outline-none text-[14px] font-medium text-[#0a0a14] dark:text-[#e2e2f0] placeholder-[rgba(10,10,20,0.3)] dark:placeholder-[rgba(255,255,255,0.28)]"
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: 15,
+              fontWeight: 500,
+              fontFamily: "'Inter', sans-serif",
+              color: 'var(--ink)',
+            }}
           />
-          <kbd className="shrink-0 text-[11px] font-mono px-1.5 py-0.5 rounded text-[rgba(10,10,20,0.3)] dark:text-[rgba(255,255,255,0.28)] bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.07)] border border-[rgba(0,0,20,0.1)] dark:border-[rgba(255,255,255,0.1)]">
+          <kbd className="tape-label px-1.5 py-0.5 rounded" style={{ background: 'var(--paper-2)', border: '1px solid var(--ink-line)', fontSize: 9 }}>
             ESC
           </kbd>
         </div>
 
         {/* Results */}
-        <div ref={listRef} className="max-h-[380px] overflow-y-auto">
+        <div ref={listRef} className="max-h-[380px] overflow-y-auto scrollbar-hide">
           {flatResults.length === 0 ? (
-            <div className="px-4 py-8 text-center text-[13px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(255,255,255,0.3)]">
-              No results for "{query}"
+            <div className="tape-label px-4 py-8 text-center" style={{ color: 'var(--ink-4)' }}>
+              No results for &ldquo;{query}&rdquo;
             </div>
           ) : (
             <>
@@ -246,11 +254,8 @@ export function CommandPalette({ open, onClose }: Props) {
           )}
         </div>
 
-        {/* Footer hint */}
-        <div
-          className="flex items-center gap-4 px-4 py-2.5"
-          style={{ borderTop: '1px solid var(--c-border)' }}
-        >
+        {/* Footer */}
+        <div className="flex items-center gap-5 px-4 py-2.5" style={{ borderTop: '1px solid var(--ink-line)' }}>
           {[
             { keys: ['↑', '↓'], label: 'Navigate' },
             { keys: ['↵'], label: 'Select' },
@@ -260,12 +265,13 @@ export function CommandPalette({ open, onClose }: Props) {
               {keys.map(k => (
                 <kbd
                   key={k}
-                  className="text-[10px] font-mono px-1 py-0.5 rounded bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.07)] border border-[rgba(0,0,20,0.08)] dark:border-[rgba(255,255,255,0.1)] text-[rgba(10,10,20,0.45)] dark:text-[rgba(255,255,255,0.35)]"
+                  className="tape-label px-1 py-0.5 rounded"
+                  style={{ background: 'var(--paper-2)', border: '1px solid var(--ink-line)', fontSize: 9 }}
                 >
                   {k}
                 </kbd>
               ))}
-              <span className="text-[11px] text-[rgba(10,10,20,0.3)] dark:text-[rgba(255,255,255,0.25)]">{label}</span>
+              <span className="tape-label" style={{ color: 'var(--ink-4)' }}>{label}</span>
             </div>
           ))}
         </div>

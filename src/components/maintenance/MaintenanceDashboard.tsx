@@ -11,12 +11,12 @@ interface Props {
   onSelectTask: (id: string) => void;
 }
 
-const STATUS_STYLES: Record<string, { pill: string; badge: string }> = {
-  overdue:         { pill: 'bg-[rgba(220,38,38,0.1)] text-[#dc2626] dark:text-[#f87171]', badge: 'bg-[#dc2626]' },
-  'due-today':     { pill: 'bg-[rgba(217,119,6,0.1)] text-[#d97706] dark:text-[#fbbf24]', badge: 'bg-[#d97706]' },
-  'due-this-week': { pill: 'bg-[rgba(202,138,4,0.1)] text-[#ca8a04] dark:text-[#facc15]', badge: 'bg-[#ca8a04]' },
-  upcoming:        { pill: 'bg-[rgba(0,0,20,0.05)] dark:bg-[rgba(255,255,255,0.05)] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.35)]', badge: 'bg-[rgba(10,10,20,0.2)]' },
-  'no-date':       { pill: 'bg-[rgba(0,0,20,0.04)] text-[rgba(10,10,20,0.3)]', badge: 'bg-[rgba(10,10,20,0.15)]' },
+const STATUS_STYLES: Record<string, { color: string; bg: string }> = {
+  overdue:         { color: 'var(--rust)',   bg: 'rgba(184,69,31,0.10)'  },
+  'due-today':     { color: 'var(--rust)',   bg: 'rgba(184,69,31,0.08)'  },
+  'due-this-week': { color: 'var(--ochre)',  bg: 'rgba(200,146,46,0.10)' },
+  upcoming:        { color: 'var(--moss)',   bg: 'rgba(85,107,47,0.10)'  },
+  'no-date':       { color: 'var(--ink-4)',  bg: 'rgba(154,141,124,0.10)'},
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -121,9 +121,10 @@ export function MaintenanceDashboard({ tasks, completions, machines, onSelectTas
       })}
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.25)]">
-          <div className="text-3xl mb-2">🔧</div>
-          <p className="text-sm">No tasks found. Add tasks from the Library or create your own.</p>
+        <div className="text-center py-12">
+          <p className="font-serif" style={{ fontSize: 20, fontStyle: 'italic', color: 'var(--ink-3)' }}>
+            No tasks found<em style={{ color: 'var(--rust)' }}>.</em>
+          </p>
         </div>
       )}
     </div>
@@ -134,11 +135,9 @@ export function MaintenanceDashboard({ tasks, completions, machines, onSelectTas
 
 function StatCard({ label, value, accent }: { label: string; value: string | number; accent?: 'danger' }) {
   return (
-    <div className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4">
-      <div className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] mb-1.5">{label}</div>
-      <div className={`text-[18px] font-bold tracking-[-0.025em] tabular-nums ${
-        accent === 'danger' ? 'text-[#dc2626] dark:text-[#f87171]' : 'text-[#0a0a14] dark:text-[#e2e2f0]'
-      }`}>{value}</div>
+    <div style={{ background: 'var(--paper)', border: '1px solid var(--ink-line)', borderRadius: 12, padding: 16 }}>
+      <div className="tape-label mb-1">{label}</div>
+      <div className="display-md tabular-nums" style={{ color: accent === 'danger' ? 'var(--rust)' : 'var(--ink)' }}>{value}</div>
     </div>
   );
 }
@@ -147,11 +146,14 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-        active
-          ? 'bg-[#E31937] dark:bg-[#FF4D5C] text-white'
-          : 'bg-[rgba(0,0,20,0.04)] dark:bg-[rgba(255,255,255,0.04)] text-[rgba(10,10,20,0.5)] dark:text-[rgba(226,226,240,0.45)] hover:bg-[rgba(0,0,20,0.07)] dark:hover:bg-[rgba(255,255,255,0.07)]'
-      }`}
+      className="tape-label px-3 py-1.5 rounded-full transition-colors"
+      style={{
+        fontSize: 9,
+        background: active ? 'var(--ink)' : 'transparent',
+        color: active ? 'var(--paper)' : 'var(--ink-3)',
+        border: `1px solid ${active ? 'var(--ink)' : 'var(--ink-line-2)'}`,
+        cursor: 'pointer',
+      }}
     >
       {label}
     </button>
@@ -163,8 +165,8 @@ function Section({ status, count, children }: { status: MaintenanceDueStatus; co
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold text-[#0a0a14] dark:text-[#e2e2f0]">{STATUS_LABELS[status]}</h3>
-        <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold text-white ${style.badge}`}>
+        <span className="tape-label" style={{ color: style.color }}>{STATUS_LABELS[status]}</span>
+        <span className="tape-label px-1.5 py-0.5 rounded-full" style={{ fontSize: 9, color: style.color, background: style.bg }}>
           {count}
         </span>
       </div>
@@ -183,35 +185,35 @@ function TaskCard({ task, status, machine, onClick }: { task: MaintenanceTask; s
   return (
     <button
       onClick={onClick}
-      className="w-full text-left bg-[#ffffff] dark:bg-[#0f0f1a] rounded-xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] p-4 transition-all duration-150 hover:border-[rgba(227,25,55,0.25)] hover:shadow-md"
+      className="w-full text-left p-4 transition-all duration-150"
+      style={{ background: 'var(--paper)', border: '1px solid var(--ink-line)', borderRadius: 12, cursor: 'pointer' }}
     >
       <div className="flex items-start gap-3">
         <span className="text-lg shrink-0">{task.icon || meta.icon}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <h4 className="text-sm font-semibold text-[#0a0a14] dark:text-[#e2e2f0] truncate">{task.name}</h4>
-            <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold ${style.pill}`}>
+            <h4 className="text-[13px] font-semibold truncate" style={{ color: 'var(--ink)' }}>{task.name}</h4>
+            <span className="tape-label shrink-0 px-2 py-0.5 rounded-full" style={{ fontSize: 9, color: style.color, background: style.bg }}>
               {STATUS_LABELS[status]}
             </span>
           </div>
           {machine && (
             <div className="flex items-center gap-1 mb-1">
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[rgba(227,25,55,0.07)] dark:bg-[rgba(255,77,92,0.07)] text-[#E31937] dark:text-[#FF4D5C] font-medium truncate max-w-[140px]">
+              <span className="tape-label px-1.5 py-0.5 rounded" style={{ fontSize: 9, background: 'var(--paper-2)', color: 'var(--ink-3)' }}>
                 {machine.icon || CATEGORY_META[machine.category].icon} {machine.name}
               </span>
             </div>
           )}
-          <div className="text-xs text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] mb-1">
-            {formatDueInfo(task)}
-          </div>
-          <div className="text-[11px] text-[rgba(10,10,20,0.3)] dark:text-[rgba(226,226,240,0.25)]">
-            {formatRecurrence(task)}
-          </div>
+          <div className="tape-label mb-0.5" style={{ fontSize: 9 }}>{formatDueInfo(task)}</div>
+          <div className="tape-label" style={{ fontSize: 9, color: 'var(--ink-4)' }}>{formatRecurrence(task)}</div>
           {task.recurrenceType === 'usage' && (
-            <div className="mt-2 h-1.5 rounded-full bg-[rgba(0,0,20,0.06)] dark:bg-[rgba(255,255,255,0.06)]">
+            <div className="mt-2 h-1 rounded-full" style={{ background: 'var(--ink-line)' }}>
               <div
-                className={`h-full rounded-full transition-all ${progress >= 1 ? 'bg-[#dc2626]' : progress >= 0.9 ? 'bg-[#d97706]' : 'bg-[#E31937]'}`}
-                style={{ width: `${Math.min(100, progress * 100)}%` }}
+                style={{
+                  width: `${Math.min(100, progress * 100)}%`, height: '100%', borderRadius: 999,
+                  background: progress >= 1 ? 'var(--rust)' : progress >= 0.9 ? 'var(--ochre)' : 'var(--moss)',
+                  transition: 'width 0.3s',
+                }}
               />
             </div>
           )}

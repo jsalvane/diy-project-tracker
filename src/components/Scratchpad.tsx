@@ -38,23 +38,24 @@ function NoteItem({ note, isActive, onClick }: { note: Note; isActive: boolean; 
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-3 py-3 rounded-xl border transition-all duration-150 ${
-        isActive
-          ? 'bg-[rgba(227,25,55,0.08)] dark:bg-[rgba(255,77,92,0.1)] border-[rgba(227,25,55,0.2)] dark:border-[rgba(255,77,92,0.2)]'
-          : 'bg-transparent border-transparent hover:bg-[rgba(0,0,20,0.03)] dark:hover:bg-[rgba(255,255,255,0.04)]'
-      }`}
+      className="w-full text-left px-3 py-3 rounded-[10px] transition-all duration-150"
+      style={{
+        background: isActive ? 'var(--paper-2)' : 'transparent',
+        border: `1px solid ${isActive ? 'var(--ink-line-2)' : 'transparent'}`,
+      }}
     >
-      <div className={`text-[13px] font-semibold truncate mb-0.5 ${
-        isActive ? 'text-[#E31937] dark:text-[#FF4D5C]' : 'text-[#0a0a14] dark:text-[#e2e2f0]'
-      }`}>
+      <div
+        className="text-[13px] font-semibold truncate mb-0.5"
+        style={{ color: isActive ? 'var(--ink)' : 'var(--ink-2)' }}
+      >
         {title}
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.3)] shrink-0">
+        <span className="tape-label shrink-0" style={{ fontSize: 9 }}>
           {formatRelative(note.updatedAt)}
         </span>
         {snippet && (
-          <span className="text-[11.5px] text-[rgba(10,10,20,0.45)] dark:text-[rgba(226,226,240,0.4)] truncate">
+          <span className="truncate" style={{ fontSize: 11, color: 'var(--ink-4)' }}>
             {snippet}
           </span>
         )}
@@ -97,17 +98,17 @@ function Editor({
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)] shrink-0">
-        <span className="text-[11px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)]">
-          {formatRelative(note.updatedAt)}
-        </span>
+      <div className="flex items-center justify-between px-6 py-3 shrink-0" style={{ borderBottom: '1px solid var(--ink-line)' }}>
+        <span className="tape-label">{formatRelative(note.updatedAt)}</span>
         <button
           onClick={handleDelete}
-          className={`flex items-center gap-1.5 text-[11.5px] font-medium px-2.5 py-1.5 rounded-lg transition-all duration-150 ${
-            showDeleteConfirm
-              ? 'bg-rose-500 text-white hover:bg-rose-600'
-              : 'text-[rgba(10,10,20,0.38)] dark:text-[rgba(226,226,240,0.3)] hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-[rgba(239,68,68,0.08)]'
-          }`}
+          className="tape-label flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-150"
+          style={{
+            background: showDeleteConfirm ? 'var(--rust)' : 'transparent',
+            color: showDeleteConfirm ? 'var(--paper)' : 'var(--ink-4)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
         >
           <TrashIcon />
           {showDeleteConfirm ? 'Confirm delete' : 'Delete'}
@@ -122,17 +123,40 @@ function Editor({
           value={note.title}
           onChange={e => onUpdate(note.id, { title: e.target.value })}
           placeholder="Title"
-          className="w-full bg-transparent outline-none text-[22px] font-bold tracking-[-0.03em] text-[#0a0a14] dark:text-[#e2e2f0] placeholder:text-[rgba(10,10,20,0.2)] dark:placeholder:text-[rgba(226,226,240,0.15)]"
+          style={{
+            width: '100%',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            fontFamily: "'Instrument Serif', serif",
+            fontSize: 28,
+            fontWeight: 400,
+            color: 'var(--ink)',
+          }}
         />
       </div>
 
-      {/* Body */}
+      {/* Body — ruled paper */}
       <div className="flex-1 px-6 pb-6 min-h-0">
         <textarea
           value={note.content}
           onChange={e => onUpdate(note.id, { content: e.target.value })}
           placeholder="Start writing…"
-          className="w-full h-full bg-transparent outline-none resize-none text-[14.5px] leading-relaxed text-[#0a0a14] dark:text-[#e2e2f0] placeholder:text-[rgba(10,10,20,0.2)] dark:placeholder:text-[rgba(226,226,240,0.15)]"
+          style={{
+            width: '100%',
+            height: '100%',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            resize: 'none',
+            fontSize: 15,
+            lineHeight: '28px',
+            color: 'var(--ink)',
+            fontFamily: "'Inter', sans-serif",
+            backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, var(--ink-line) 27px, var(--ink-line) 28px)',
+            backgroundAttachment: 'local',
+            paddingTop: 4,
+          }}
         />
       </div>
     </div>
@@ -143,19 +167,10 @@ function Editor({
 function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-8">
-      <div className="w-12 h-12 rounded-2xl bg-[rgba(227,25,55,0.08)] dark:bg-[rgba(255,77,92,0.1)] flex items-center justify-center mb-1">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(227,25,55,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
-        </svg>
-      </div>
-      <p className="text-[13px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)]">
-        Select a note or create a new one
+      <p className="font-serif" style={{ fontSize: 22, fontStyle: 'italic', color: 'var(--ink-3)' }}>
+        Select a note or create a new one<em style={{ color: 'var(--rust)' }}>.</em>
       </p>
-      <button
-        onClick={onCreate}
-        className="mt-1 text-[12.5px] font-semibold text-[#E31937] dark:text-[#FF4D5C] hover:underline"
-      >
+      <button onClick={onCreate} className="btn-ghost btn-sm">
         New note
       </button>
     </div>
@@ -201,14 +216,14 @@ export function Scratchpad() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[18px] font-bold tracking-[-0.025em] text-[#0a0a14] dark:text-[#e2e2f0]">Scratchpad</h1>
-          <p className="text-[12.5px] text-[rgba(10,10,20,0.4)] dark:text-[rgba(226,226,240,0.32)] mt-0.5">
-            {notes.length} {notes.length === 1 ? 'note' : 'notes'}
+          <span className="tape-label">Scratchpad</span>
+          <p className="display-md" style={{ color: 'var(--ink)', marginTop: 4 }}>
+            Notes<em style={{ color: 'var(--rust)', fontStyle: 'italic' }}>.</em>
           </p>
         </div>
         <button
           onClick={handleNew}
-          className="flex items-center gap-1.5 text-[12.5px] font-semibold px-3 py-1.5 rounded-[9px] bg-[#E31937] hover:bg-[#C41230] text-white transition-colors"
+          className="btn-primary btn-sm flex items-center gap-1.5"
         >
           <PlusIcon />
           New note
@@ -217,22 +232,24 @@ export function Scratchpad() {
 
       {/* Two-panel layout */}
       <div
-        className="bg-[#ffffff] dark:bg-[#0f0f1a] rounded-2xl border border-[rgba(0,0,20,0.07)] dark:border-[rgba(255,255,255,0.06)] overflow-hidden"
-        style={{ height: 'calc(100vh - 180px)', minHeight: 400, display: 'flex' }}
+        style={{
+          background: 'var(--paper)',
+          border: '1px solid var(--ink-line)',
+          borderRadius: 14,
+          overflow: 'hidden',
+          height: 'calc(100vh - 220px)',
+          minHeight: 400,
+          display: 'flex',
+        }}
       >
         {/* Sidebar */}
         <div
-          className="shrink-0 border-r border-[rgba(0,0,20,0.06)] dark:border-[rgba(255,255,255,0.05)] overflow-y-auto"
-          style={{ width: 220 }}
+          style={{ width: 220, flexShrink: 0, borderRight: '1px solid var(--ink-line)', overflowY: 'auto' }}
         >
           {loading ? (
-            <div className="px-3 py-4 text-[12px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] text-center">
-              Loading…
-            </div>
+            <div className="px-3 py-4 text-center tape-label">Loading…</div>
           ) : notes.length === 0 ? (
-            <div className="px-3 py-4 text-[12px] text-[rgba(10,10,20,0.35)] dark:text-[rgba(226,226,240,0.28)] text-center">
-              No notes yet
-            </div>
+            <div className="px-3 py-4 text-center tape-label">No notes yet</div>
           ) : (
             <div className="p-2 flex flex-col gap-0.5">
               {notes.map(note => (

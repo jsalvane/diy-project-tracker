@@ -186,14 +186,13 @@ export function PinLock({ children }: { children: React.ReactNode }) {
         .pl-key:active,
         .pl-key.pl-pressed {
           transform: scale(0.91) !important;
-          background: rgba(255,255,255,0.16) !important;
-          border-color: rgba(255,255,255,0.2) !important;
-          box-shadow: inset 0 0 30px rgba(255,255,255,0.04) !important;
+          background: var(--paper-3) !important;
+          border-color: var(--ink-line-2) !important;
         }
         .pl-key-del:active,
         .pl-key-del.pl-pressed {
           transform: scale(0.91) !important;
-          background: rgba(255,255,255,0.07) !important;
+          background: var(--paper-2) !important;
         }
 
         /* ── Responsive sizing ────────────────────────────────────────────── */
@@ -213,34 +212,28 @@ export function PinLock({ children }: { children: React.ReactNode }) {
         }
       `}</style>
 
-      {/* White flash on success */}
+      {/* Flash on success */}
       {unlocking && (
         <div
           className="pl-flash"
           style={{
             position: 'fixed', inset: 0, zIndex: 1002,
-            background: '#ffffff',
+            background: 'var(--paper)',
             pointerEvents: 'none',
           }}
         />
       )}
 
       <div
-        className={`pl-wrap${unlocking ? ' pl-unlock-out' : ''}`}
+        className={`pl-wrap blueprint-grid${unlocking ? ' pl-unlock-out' : ''}`}
         style={{
           position: 'fixed', inset: 0, zIndex: 1001,
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
-          background: 'linear-gradient(160deg, #232325 0%, #2a0a10 55%, #9b1020 100%)',
           pointerEvents: unlocking ? 'none' : 'auto',
           overflow: 'hidden',
         }}
       >
-        {/* Subtle horizontal rule at bottom edge */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: 1,
-          background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%)',
-        }} />
 
         <div style={{
           display: 'flex', flexDirection: 'column',
@@ -266,31 +259,18 @@ export function PinLock({ children }: { children: React.ReactNode }) {
             />
           </div>
 
-          {/* App name — wide-tracked caps like TESLA */}
+          {/* App name */}
           <div
-            className={visible ? 'pl-rise-1' : ''}
-            style={{
-              fontSize: 14,
-              fontWeight: 300,
-              color: 'rgba(255,255,255,0.88)',
-              letterSpacing: '0.40em',
-              textTransform: 'uppercase',
-              marginBottom: 10,
-            }}
+            className={`font-serif ${visible ? 'pl-rise-1' : ''}`}
+            style={{ fontSize: 36, fontStyle: 'italic', color: 'var(--ink)', marginBottom: 6 }}
           >
-            Toolbox
+            Toolbox<em style={{ color: 'var(--rust)' }}>.</em>
           </div>
 
           {/* Subtitle */}
           <div
-            className={visible ? 'pl-rise-2' : ''}
-            style={{
-              fontSize: 11,
-              fontWeight: 400,
-              color: 'rgba(255,255,255,0.28)',
-              letterSpacing: '0.06em',
-              marginBottom: 56,
-            }}
+            className={`tape-label ${visible ? 'pl-rise-2' : ''}`}
+            style={{ marginBottom: 56 }}
           >
             Enter passcode to continue
           </div>
@@ -319,18 +299,14 @@ export function PinLock({ children }: { children: React.ReactNode }) {
                     borderRadius: '50%',
                     flexShrink: 0,
                     background: error
-                      ? '#ef4444'
+                      ? 'var(--rust)'
                       : filled
-                      ? '#ffffff'
+                      ? 'var(--ink)'
                       : 'transparent',
                     border: `1.5px solid ${
-                      error ? '#ef4444' : filled ? '#ffffff' : 'rgba(255,255,255,0.22)'
+                      error ? 'var(--rust)' : filled ? 'var(--ink)' : 'var(--ink-line-2)'
                     }`,
-                    boxShadow: filled && !error
-                      ? '0 0 16px rgba(255,255,255,0.6), 0 0 5px rgba(255,255,255,0.95)'
-                      : error
-                      ? '0 0 14px rgba(239,68,68,0.65)'
-                      : 'none',
+                    boxShadow: 'none',
                     transition: 'background 0.1s, border-color 0.1s, box-shadow 0.15s',
                   }}
                 />
@@ -369,13 +345,13 @@ export function PinLock({ children }: { children: React.ReactNode }) {
                         borderRadius: isDelete ? 'var(--kr)' : 'var(--kr)',
                         border: isDelete
                           ? '1px solid transparent'
-                          : '1px solid rgba(255,255,255,0.09)',
+                          : '1px solid var(--ink-line-2)',
                         background: isDelete
                           ? 'transparent'
-                          : 'rgba(255,255,255,0.055)',
+                          : 'var(--paper)',
                         color: isDelete
-                          ? 'rgba(255,255,255,0.42)'
-                          : 'rgba(255,255,255,0.92)',
+                          ? 'var(--ink-3)'
+                          : 'var(--ink)',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -383,35 +359,18 @@ export function PinLock({ children }: { children: React.ReactNode }) {
                         justifyContent: 'center',
                         gap: 3,
                         fontFamily: 'inherit',
-                        backdropFilter: isDelete ? 'none' : 'blur(10px)',
-                        WebkitBackdropFilter: isDelete ? 'none' : 'blur(10px)',
-                        boxShadow: isDelete
-                          ? 'none'
-                          : 'inset 0 1px 0 rgba(255,255,255,0.06)',
+                        boxShadow: 'none',
                       }}
                     >
                       {isDelete ? (
                         <BackspaceIcon />
                       ) : (
                         <>
-                          <span style={{
-                            fontSize: 32,
-                            fontWeight: 200,
-                            lineHeight: 1,
-                            letterSpacing: '-0.02em',
-                            color: 'rgba(255,255,255,0.92)',
-                          }}>
+                          <span className="font-serif" style={{ fontSize: 36, lineHeight: 1, color: 'var(--ink)' }}>
                             {key}
                           </span>
                           {LETTERS[key] && (
-                            <span style={{
-                              fontSize: 8,
-                              fontWeight: 500,
-                              letterSpacing: '0.20em',
-                              color: 'rgba(255,255,255,0.24)',
-                              lineHeight: 1,
-                              marginTop: 1,
-                            }}>
+                            <span className="tape-label" style={{ fontSize: 7, lineHeight: 1, marginTop: 1 }}>
                               {LETTERS[key]}
                             </span>
                           )}
@@ -425,14 +384,10 @@ export function PinLock({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Error label */}
-          <div style={{
+          <div className="tape-label" style={{
             marginTop: 32,
             height: 14,
-            fontSize: 10.5,
-            fontWeight: 500,
-            color: '#ef4444',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
+            color: 'var(--rust)',
             opacity: error ? 1 : 0,
             transition: 'opacity 0.18s ease',
           }}>
