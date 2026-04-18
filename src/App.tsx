@@ -9,6 +9,7 @@ import { Toast } from './components/Toast';
 import { Dashboard } from './components/Dashboard';
 import { useApp } from './context/AppContext';
 import { PinLock } from './components/PinLock';
+import { InstallPrompt } from './components/InstallPrompt';
 
 // Route-level code splitting — each chunk loads on first visit
 const ProjectList     = lazy(() => import('./components/ProjectList').then(m => ({ default: m.ProjectList })));
@@ -171,6 +172,7 @@ function AppShell() {
       <CommandPalette open={cmdOpen} onClose={closeCmd} />
 
       <Toast />
+      <InstallPrompt />
     </div>
   );
 }
