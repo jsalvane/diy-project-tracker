@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../lib/useEscapeKey';
 import type { HSAExpense, HSAPerson, HSACategory } from '../lib/types';
 import { useHSA } from '../hooks/useHSA';
 import { useFinancial } from '../context/FinancialContext';
@@ -86,6 +87,7 @@ function ExpenseModal({
   onSave: (form: ExpenseForm) => void;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose);
   const [form, setForm] = useState<ExpenseForm>(
     initial
       ? {
@@ -202,6 +204,7 @@ function ReceiptModal({
   onRemove: () => void;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose);
   const fileRef = useRef<HTMLInputElement>(null);
   const isPdf = Boolean(expense.receiptUrl && expense.receiptUrl.toLowerCase().includes('.pdf'));
 

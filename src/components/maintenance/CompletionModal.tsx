@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { MaintenanceTask } from '../../lib/types';
 import { parseCurrency } from '../../lib/utils';
+import { useEscapeKey } from '../../lib/useEscapeKey';
 
 interface Props {
   task: MaintenanceTask;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function CompletionModal({ task, onSave, onClose }: Props) {
+  useEscapeKey(onClose);
   const [notes, setNotes] = useState('');
   const [costStr, setCostStr] = useState('');
   const [usageStr, setUsageStr] = useState(task.currentUsage > 0 ? String(task.currentUsage) : '');

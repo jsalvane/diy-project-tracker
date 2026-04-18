@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../lib/useEscapeKey';
 
 interface Props {
   description: string;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function ReceiptModal({ description, receiptUrl, uploading, onUpload, onRemove, onClose }: Props) {
+  useEscapeKey(onClose);
   const fileRef = useRef<HTMLInputElement>(null);
   const isPdf = Boolean(receiptUrl && receiptUrl.toLowerCase().includes('.pdf'));
 

@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../lib/useEscapeKey';
 
 interface Props {
   title: string;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function ConfirmDialog({ title, message, confirmLabel = 'Delete', onConfirm, onCancel }: Props) {
+  useEscapeKey(onCancel);
   return createPortal(
     <div
       className="fixed inset-0 z-40 flex items-center justify-center p-4 animate-fade-in"

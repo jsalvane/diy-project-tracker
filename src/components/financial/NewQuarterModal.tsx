@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { todayStr } from '../../lib/utils';
 import type { FinancialQuarter } from '../../lib/financialTypes';
+import { useEscapeKey } from '../../lib/useEscapeKey';
 
 interface NewQuarterModalProps {
   previousQuarter: FinancialQuarter | null;
@@ -36,6 +37,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQuarterModalProps) {
+  useEscapeKey(onCancel);
   const suggested = previousQuarter ? suggestNextMonth(previousQuarter.quarterLabel) : '';
   const [label, setLabel] = useState(suggested);
   const [date, setDate] = useState(todayStr());

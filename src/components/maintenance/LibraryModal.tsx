@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { MAINTENANCE_PRESETS, CATEGORY_META, type PresetTask } from '../../lib/maintenancePresets';
 import type { MaintenanceCategory, MaintenanceTask } from '../../lib/types';
+import { useEscapeKey } from '../../lib/useEscapeKey';
 
 interface Props {
   existingTasks: MaintenanceTask[];
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
+  useEscapeKey(onClose);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [collapsed, setCollapsed] = useState<Set<MaintenanceCategory>>(new Set());

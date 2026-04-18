@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../../lib/useEscapeKey';
 import type { MaintenanceTask, MaintenanceCompletion, Machine } from '../../lib/types';
 import { CATEGORY_META } from '../../lib/maintenancePresets';
 import { formatRecurrence, formatDueInfo, computeDueStatus, usageProgress } from '../../lib/maintenanceCalc';
@@ -42,6 +43,12 @@ export function TaskDetail({ task, completions, machines = [], onComplete, onUpd
   const [showEdit, setShowEdit] = useState(false);
   const [showSnooze, setShowSnooze] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  useEscapeKey(() => {
+    if (showComplete) setShowComplete(false);
+    else if (confirmDelete) setConfirmDelete(false);
+    else if (showSnooze) setShowSnooze(false);
+  }, showComplete || confirmDelete || showSnooze);
 
   const status = computeDueStatus(task, todayStr());
   const meta = CATEGORY_META[task.category];

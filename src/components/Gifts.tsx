@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../lib/useEscapeKey';
 import { useGifts } from '../hooks/useGifts';
 import type { Gift, GiftRecipient, GiftStatus, GiftPriority } from '../lib/types';
 import { formatCurrency } from '../lib/utils';
@@ -132,6 +133,7 @@ function PersonTile({
 
 // ─── Modal shell ───────────────────────────────────────────────────────────────
 function ModalShell({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  useEscapeKey(onClose);
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>
@@ -299,6 +301,7 @@ function ConfirmDelete({ type, onConfirm, onCancel }: {
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  useEscapeKey(onCancel);
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>

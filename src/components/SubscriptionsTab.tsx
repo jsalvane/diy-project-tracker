@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../lib/useEscapeKey';
 import type { Subscription, SubscriptionCategory, SubscriptionFrequency, SubscriptionStatus } from '../lib/types';
 import { formatCurrency, todayStr } from '../lib/utils';
 
@@ -140,6 +141,7 @@ function SubscriptionModal({
   onSave: (form: SubForm) => void;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose);
   const [form, setForm] = useState<SubForm>(
     initial
       ? {

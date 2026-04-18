@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import type { Project, ProjectStatus } from '../lib/types';
 import { STATUS_OPTIONS } from '../lib/constants';
 import { todayStr } from '../lib/utils';
+import { useEscapeKey } from '../lib/useEscapeKey';
 
 interface Props {
   project?: Project;
@@ -15,6 +16,7 @@ function Label({ children }: { children: React.ReactNode }) {
 }
 
 export function ProjectForm({ project, onSave, onCancel }: Props) {
+  useEscapeKey(onCancel);
   const [name, setName]             = useState(project?.name ?? '');
   const [status, setStatus]         = useState<ProjectStatus>(project?.status ?? 'planned');
   const [startDate, setStartDate]   = useState(project?.startDate ?? todayStr());

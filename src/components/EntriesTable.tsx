@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import type { Entry } from '../lib/types';
 import { ENTRY_COLUMNS } from '../lib/constants';
@@ -7,6 +7,7 @@ import { ReceiptModal } from './ReceiptModal';
 import { useApp } from '../context/AppContext';
 import { uploadReceipt, deleteReceipt } from '../lib/receipts';
 import { todayStr, formatCurrency, formatDate } from '../lib/utils';
+import { useEscapeKey } from '../lib/useEscapeKey';
 
 interface Props {
   entries: Entry[];
@@ -37,11 +38,16 @@ function EntryFormModal({
   initial,
   onSave,
   onClose,
+  storeOptions = [],
+  categoryOptions = [],
 }: {
   initial?: Entry;
   onSave: (data: EntryFormData) => void;
   onClose: () => void;
+  storeOptions?: string[];
+  categoryOptions?: string[];
 }) {
+  useEscapeKey(onClose);
   const [form, setForm] = useState<EntryFormData>(
     initial
       ? { date: initial.date, store: initial.store, category: initial.category, description: initial.description, price: String(initial.price || ''), isPending: initial.isPending }
@@ -84,11 +90,17 @@ function EntryFormModal({
           </div>
           <div>
             <label className="tape-label block mb-1.5">Store</label>
-            <input className="field" value={form.store} onChange={e => set('store', e.target.value)} placeholder="e.g. Home Depot" />
+            <input className="field" value={form.store} onChange={e => set('store', e.target.value)} placeholder="e.g. Home Depot" list="store-options" autoComplete="off" />
+            <datalist id="store-options">
+              {storeOptions.map(s => <option key={s} value={s} />)}
+            </datalist>
           </div>
           <div>
             <label className="tape-label block mb-1.5">Category</label>
-            <input className="field" value={form.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Materials" />
+            <input className="field" value={form.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Materials" list="category-options" autoComplete="off" />
+            <datalist id="category-options">
+              {categoryOptions.map(c => <option key={c} value={c} />)}
+            </datalist>
           </div>
           <div>
             <label className="tape-label block mb-1.5">Description</label>
@@ -177,6 +189,9 @@ export function EntriesTable({ entries, projectId }: Props) {
   const [receiptEntryId, setReceiptEntryId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [mobileFormEntry, setMobileFormEntry] = useState<Entry | null | 'add'>(null);
+
+  const storeOptions = useMemo(() => [...new Set(entries.map(e => e.store).filter(Boolean))].sort(), [entries]);
+  const categoryOptions = useMemo(() => [...new Set(entries.map(e => e.category).filter(Boolean))].sort(), [entries]);
 
   // Sort: pending first, then newest date first
   const sorted = [...entries].sort((a, b) => {
@@ -458,6 +473,8 @@ export function EntriesTable({ entries, projectId }: Props) {
           initial={mobileFormEntry !== 'add' ? mobileFormEntry : undefined}
           onSave={handleMobileFormSave}
           onClose={() => setMobileFormEntry(null)}
+          storeOptions={storeOptions}
+          categoryOptions={categoryOptions}
         />
       )}
 

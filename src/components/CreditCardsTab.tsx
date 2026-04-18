@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../lib/useEscapeKey';
 import type { CreditCard } from '../lib/types';
 import { formatCurrency, formatDate, todayStr } from '../lib/utils';
 import type { AccountMapping } from '../hooks/useSimpleFin';
@@ -107,6 +108,7 @@ function CardModal({
   onSave: (form: CardForm) => void;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose);
   const [form, setForm] = useState<CardForm>(
     initial
       ? {
@@ -427,6 +429,7 @@ function MapAccountsModal({
   onFetch: () => Promise<boolean>;
   fetching: boolean;
 }) {
+  useEscapeKey(onClose);
   const [draft, setDraft] = useState<AccountMapping>({ ...mappings });
   const activeCards = creditCards.filter(c => c.status === 'active');
 

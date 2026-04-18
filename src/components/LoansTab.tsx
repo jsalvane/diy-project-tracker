@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../lib/useEscapeKey';
 import type { Loan, LoanPayment } from '../lib/types';
 import { formatCurrency, formatDate, todayStr } from '../lib/utils';
 
@@ -85,6 +86,7 @@ function LoanModal({
   onSave: (form: LoanForm) => void;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose);
   const [form, setForm] = useState<LoanForm>(
     initial
       ? { name: initial.name, owner: initial.owner, balance: String(initial.balance), interestRate: String(initial.interestRate) }
@@ -149,6 +151,7 @@ function PaymentModal({
   onSave: (form: PaymentForm) => void;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose);
   const [form, setForm] = useState<PaymentForm>({
     loanId: loans[0]?.id ?? '',
     paymentDate: todayStr(),

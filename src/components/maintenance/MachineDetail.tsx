@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscapeKey } from '../../lib/useEscapeKey';
 import type { Machine, MaintenanceTask, MaintenanceCompletion } from '../../lib/types';
 import { CATEGORY_META } from '../../lib/maintenancePresets';
 import { computeDueStatus, formatDueInfo, formatRecurrence } from '../../lib/maintenanceCalc';
@@ -39,6 +40,11 @@ export function MachineDetail({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [completingTask, setCompletingTask] = useState<MaintenanceTask | null>(null);
   const [historyExpanded, setHistoryExpanded] = useState(false);
+
+  useEscapeKey(() => {
+    if (confirmDelete) setConfirmDelete(false);
+    else if (completingTask) setCompletingTask(null);
+  }, confirmDelete || completingTask !== null);
 
   const today = todayStr();
   const meta = CATEGORY_META[machine.category];
