@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Project, ProjectStatus } from '../lib/types';
 import { STATUS_OPTIONS } from '../lib/constants';
 import { todayStr } from '../lib/utils';
@@ -26,14 +27,14 @@ export function ProjectForm({ project, onSave, onCancel }: Props) {
     onSave({ name: name.trim(), status, startDate, finishDate, notes: notes.trim() });
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center animate-fade-in"
+      className="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto animate-fade-in"
       style={{ background: 'rgba(26,22,18,0.5)' }}
       onClick={onCancel}
     >
       <div
-        className="rounded-[14px] p-6 max-w-md w-full mx-4 mb-4 sm:mb-0 animate-scale-in"
+        className="rounded-[14px] p-6 max-w-md w-full my-auto animate-scale-in"
         style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -80,6 +81,7 @@ export function ProjectForm({ project, onSave, onCancel }: Props) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
