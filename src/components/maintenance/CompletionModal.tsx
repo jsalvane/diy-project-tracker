@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { MaintenanceTask } from '../../lib/types';
 import { parseCurrency } from '../../lib/utils';
 
@@ -20,7 +21,7 @@ export function CompletionModal({ task, onSave, onClose }: Props) {
     onSave({ notes, cost, usageReading });
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[rgba(26,22,18,0.4)] " onClick={onClose} />
       <div className="relative w-full max-w-md bg-[var(--paper)] rounded-[14px] border border-[var(--ink-line)]  animate-[scale-in_0.28s_ease]">
@@ -91,5 +92,7 @@ export function CompletionModal({ task, onSave, onClose }: Props) {
         </div>
       </div>
     </div>
+  ,
+    document.body
   );
 }

@@ -1,3 +1,5 @@
+import { createPortal } from 'react-dom';
+
 interface Props {
   title: string;
   message: string;
@@ -7,14 +9,14 @@ interface Props {
 }
 
 export function ConfirmDialog({ title, message, confirmLabel = 'Delete', onConfirm, onCancel }: Props) {
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center animate-fade-in"
+      className="fixed inset-0 z-40 flex items-center justify-center p-4 animate-fade-in"
       style={{ background: 'rgba(26,22,18,0.5)' }}
       onClick={onCancel}
     >
       <div
-        className="rounded-[14px] p-6 max-w-sm w-full mx-4 mb-4 sm:mb-0 animate-scale-in"
+        className="rounded-[14px] p-6 max-w-sm w-full animate-scale-in"
         style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -33,6 +35,7 @@ export function ConfirmDialog({ title, message, confirmLabel = 'Delete', onConfi
           <button onClick={onConfirm} className="btn-danger btn-sm">{confirmLabel}</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

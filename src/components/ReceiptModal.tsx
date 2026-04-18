@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Props {
   description: string;
@@ -20,7 +21,7 @@ export function ReceiptModal({ description, receiptUrl, uploading, onUpload, onR
     e.target.value = '';
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(26,22,18,0.5)' }}
@@ -80,7 +81,8 @@ export function ReceiptModal({ description, receiptUrl, uploading, onUpload, onR
 
         <input ref={fileRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFile} />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

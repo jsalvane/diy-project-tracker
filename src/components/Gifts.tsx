@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useGifts } from '../hooks/useGifts';
 import type { Gift, GiftRecipient, GiftStatus, GiftPriority } from '../lib/types';
 import { formatCurrency } from '../lib/utils';
@@ -131,8 +132,9 @@ function PersonTile({
 
 // ─── Modal shell ───────────────────────────────────────────────────────────────
 function ModalShell({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>
       <div
         style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', width: '100%', maxWidth: 448 }}
         onClick={e => e.stopPropagation()}
@@ -148,6 +150,8 @@ function ModalShell({ title, onClose, children }: { title: string; onClose: () =
         <div className="p-6">{children}</div>
       </div>
     </div>
+  ,
+    document.body
   );
 }
 
@@ -295,8 +299,9 @@ function ConfirmDelete({ type, onConfirm, onCancel }: {
   onConfirm: () => void;
   onCancel: () => void;
 }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in p-4" style={{ background: 'rgba(26,22,18,0.45)' }}>
       <div
         style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', padding: 24, maxWidth: 380, width: '100%' }}
         onClick={e => e.stopPropagation()}
@@ -321,6 +326,8 @@ function ConfirmDelete({ type, onConfirm, onCancel }: {
         </div>
       </div>
     </div>
+  ,
+    document.body
   );
 }
 

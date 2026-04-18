@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { HSAExpense, HSAPerson, HSACategory } from '../lib/types';
 import { useHSA } from '../hooks/useHSA';
 import { useFinancial } from '../context/FinancialContext';
@@ -108,8 +109,9 @@ function ExpenseModal({
     onSave(form);
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26,22,18,0.45)' }} onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26,22,18,0.45)' }} onClick={onClose}>
       <div style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', width: '100%', maxWidth: 448, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--ink-line)' }}>
           <span className="tape-label">{initial ? 'Edit Expense' : 'Add HSA Expense'}</span>
@@ -180,6 +182,8 @@ function ExpenseModal({
         </form>
       </div>
     </div>
+  ,
+    document.body
   );
 }
 
@@ -208,8 +212,9 @@ function ReceiptModal({
     e.target.value = '';
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26,22,18,0.45)' }} onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(26,22,18,0.45)' }} onClick={onClose}>
       <div style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)', borderRadius: 14, boxShadow: '0 24px 60px rgba(26,22,18,0.25)', width: '100%', maxWidth: 380, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid var(--ink-line)' }}>
           <span className="tape-label truncate pr-4">Receipt — {expense.provider}</span>
@@ -264,6 +269,8 @@ function ReceiptModal({
         <input ref={fileRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFile} />
       </div>
     </div>
+  ,
+    document.body
   );
 }
 

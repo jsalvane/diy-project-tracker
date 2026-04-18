@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { todayStr } from '../../lib/utils';
 import type { FinancialQuarter } from '../../lib/financialTypes';
 
@@ -72,7 +73,7 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
     onConfirm(draft);
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-[rgba(26,22,18,0.45)]  animate-fade-in p-4">
       <div
         className="bg-[var(--paper)] border border-[var(--ink-line)] rounded-[14px] shadow-[0_24px_80px_rgba(0,0,0,0.18)] w-full max-w-md animate-scale-in"
@@ -136,6 +137,7 @@ export function NewQuarterModal({ previousQuarter, onConfirm, onCancel }: NewQua
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Machine, MaintenanceTask, MaintenanceCompletion } from '../../lib/types';
 import { CATEGORY_META } from '../../lib/maintenancePresets';
 import { computeDueStatus, formatDueInfo, formatRecurrence } from '../../lib/maintenanceCalc';
@@ -272,7 +273,7 @@ export function MachineDetail({
       )}
 
       {/* Delete confirm */}
-      {confirmDelete && (
+      {confirmDelete && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[rgba(26,22,18,0.4)] " onClick={() => setConfirmDelete(false)} />
           <div className="relative w-full max-w-sm bg-[var(--paper)] rounded-[14px] border border-[var(--ink-line)]  p-5">
@@ -295,7 +296,8 @@ export function MachineDetail({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

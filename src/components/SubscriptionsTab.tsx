@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import type { Subscription, SubscriptionCategory, SubscriptionFrequency, SubscriptionStatus } from '../lib/types';
 import { formatCurrency, todayStr } from '../lib/utils';
 
@@ -167,8 +168,9 @@ function SubscriptionModal({
     ? Array.from({ length: 30 }, (_, i) => ({ value: i + 1, label: ordinal(i + 1) }))
     : MONTHS.map((m, i) => ({ value: i + 1, label: m }));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
       <div className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ink-line)]">
           <h2 className="font-semibold text-[var(--ink)] text-sm">
@@ -266,6 +268,8 @@ function SubscriptionModal({
         </form>
       </div>
     </div>
+  ,
+    document.body
   );
 }
 

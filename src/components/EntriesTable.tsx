@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { Entry } from '../lib/types';
 import { ENTRY_COLUMNS } from '../lib/constants';
 import { EditableCell } from './EditableCell';
@@ -55,14 +56,14 @@ function EntryFormModal({
     onSave(form);
   }
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(26,22,18,0.45)' }}
       onClick={onClose}
     >
       <div
-        className="rounded-t-2xl sm:rounded-[14px] w-full sm:max-w-md overflow-hidden animate-slide-up"
+        className="rounded-[14px] w-full max-w-md overflow-hidden animate-scale-in"
         style={{ background: 'var(--paper)', border: '1px solid var(--ink-line-2)' }}
         onClick={e => e.stopPropagation()}
       >
@@ -108,7 +109,8 @@ function EntryFormModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

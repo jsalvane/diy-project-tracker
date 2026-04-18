@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { CreditCard } from '../lib/types';
 import { formatCurrency, formatDate, todayStr } from '../lib/utils';
 import type { AccountMapping } from '../hooks/useSimpleFin';
@@ -133,8 +134,9 @@ function CardModal({
     onSave(form);
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
       <div
         className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-lg overflow-hidden"
         onClick={e => e.stopPropagation()}
@@ -212,6 +214,8 @@ function CardModal({
         </form>
       </div>
     </div>
+  ,
+    document.body
   );
 }
 
@@ -435,8 +439,9 @@ function MapAccountsModal({
     onClose();
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
       <div
         className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-xl overflow-hidden"
         onClick={e => e.stopPropagation()}
@@ -588,6 +593,8 @@ function MapAccountsModal({
         )}
       </div>
     </div>
+  ,
+    document.body
   );
 }
 

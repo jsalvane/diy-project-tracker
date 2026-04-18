@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Loan, LoanPayment } from '../lib/types';
 import { formatCurrency, formatDate, todayStr } from '../lib/utils';
 
@@ -96,8 +97,9 @@ function LoanModal({
     onSave(form);
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
       <div className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ink-line)]">
           <h2 className="font-semibold text-[var(--ink)] text-sm">{initial ? 'Edit Loan' : 'Add Loan'}</h2>
@@ -133,6 +135,8 @@ function LoanModal({
         </form>
       </div>
     </div>
+  ,
+    document.body
   );
 }
 
@@ -157,8 +161,9 @@ function PaymentModal({
     onSave(form);
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(26,22,18,0.5)]" onClick={onClose}>
       <div className="bg-[var(--paper)] rounded-[14px] shadow-2xl w-full max-w-sm overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ink-line)]">
           <h2 className="font-semibold text-[var(--ink)] text-sm">Log Payment</h2>
@@ -192,6 +197,8 @@ function PaymentModal({
         </form>
       </div>
     </div>
+  ,
+    document.body
   );
 }
 

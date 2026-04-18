@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 
@@ -190,7 +191,7 @@ export function CommandPalette({ open, onClose }: Props) {
     );
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
       style={{ animation: 'cmd-backdrop 0.15s ease-out' }}
@@ -276,6 +277,7 @@ export function CommandPalette({ open, onClose }: Props) {
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

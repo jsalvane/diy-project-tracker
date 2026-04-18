@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { MAINTENANCE_PRESETS, CATEGORY_META, type PresetTask } from '../../lib/maintenancePresets';
 import type { MaintenanceCategory, MaintenanceTask } from '../../lib/types';
 
@@ -75,7 +76,7 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
     onClose();
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[rgba(26,22,18,0.4)] " onClick={onClose} />
       <div className="relative w-full max-w-lg max-h-[85vh] flex flex-col bg-[var(--paper)] rounded-[14px] border border-[var(--ink-line)]  animate-[scale-in_0.28s_ease]">
@@ -163,6 +164,7 @@ export function LibraryModal({ existingTasks, onImport, onClose }: Props) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
