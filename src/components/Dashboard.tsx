@@ -11,6 +11,7 @@ import { supabase } from '../lib/supabase';
 import { formatCurrency } from '../lib/utils';
 import { ReceiptStrip, TapeLabel, Numeral, StatusPill } from './ui';
 import { Skeleton } from './ui/Skeleton';
+import { DueAlerts } from './DueAlerts';
 
 function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
@@ -197,6 +198,11 @@ export function Dashboard() {
         </div>
 
         <ReceiptStrip />
+
+        {/* Alerts */}
+        <div style={{ marginTop: 20 }}>
+          <DueAlerts />
+        </div>
 
         {/* ON THE BENCH TODAY */}
         <div style={{ marginTop: 24 }}>
