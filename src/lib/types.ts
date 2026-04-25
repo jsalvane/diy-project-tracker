@@ -213,7 +213,7 @@ export interface Machine {
 
 export type MaintenanceCategory =
   | 'hvac' | 'electrical' | 'plumbing' | 'exterior' | 'interior'
-  | 'appliances' | 'safety' | 'windows-doors'
+  | 'appliances' | 'safety' | 'windows-doors' | 'landscaping'
   | 'vehicles' | 'power-tools' | 'lawn-garden' | 'snow-winter'
   | 'generator' | 'recreational' | 'other';
 

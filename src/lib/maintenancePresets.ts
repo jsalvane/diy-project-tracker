@@ -22,6 +22,7 @@ export const CATEGORY_META: Record<MaintenanceCategory, { label: string; group: 
   'windows-doors': { label: 'Windows/Doors', group: 'home',     icon: '🪟' },
   vehicles:      { label: 'Vehicles',        group: 'machines', icon: '🚗' },
   'power-tools': { label: 'Power Tools',     group: 'machines', icon: '⚙️' },
+  landscaping:   { label: 'Landscaping',      group: 'home',     icon: '🌿' },
   'lawn-garden': { label: 'Lawn/Garden',     group: 'machines', icon: '🌿' },
   'snow-winter': { label: 'Snow/Winter',     group: 'machines', icon: '❄️' },
   generator:     { label: 'Generator/Backup',group: 'machines', icon: '🔋' },
@@ -62,6 +63,13 @@ export const MAINTENANCE_PRESETS: PresetTask[] = [
   // ── Home > Windows/Doors ─────────────────────────────────────────────
   { name: 'Lube hinges',          group: 'home', category: 'windows-doors', recurrenceType: 'date', recurrenceUnit: 'months', recurrenceValue: 6,  icon: '🪟', instructions: 'Apply silicone or white lithium grease to all door hinges. Work door back and forth to distribute.' },
   { name: 'Caulk gaps',           group: 'home', category: 'windows-doors', recurrenceType: 'date', recurrenceUnit: 'years',  recurrenceValue: 1,  icon: '🪟', instructions: 'Inspect caulking around all windows and exterior doors. Remove old caulk where cracked. Apply new bead.' },
+
+  // ── Home > Landscaping ──────────────────────────────────────────────
+  { name: 'Fertilize lawn',        group: 'home', category: 'landscaping', recurrenceType: 'seasonal', recurrenceUnit: 'spring', recurrenceValue: 0, icon: '🌿', instructions: 'Apply slow-release lawn fertilizer per label rate. Water in if no rain expected within 24 hours.' },
+  { name: 'Aerate lawn',           group: 'home', category: 'landscaping', recurrenceType: 'date', recurrenceUnit: 'years',  recurrenceValue: 1,  icon: '🌿', instructions: 'Core aerate lawn in fall or spring. Water day before. Remove or break up cores after aerating.' },
+  { name: 'Mulch beds',            group: 'home', category: 'landscaping', recurrenceType: 'seasonal', recurrenceUnit: 'spring', recurrenceValue: 0, icon: '🌿', instructions: 'Pull weeds first. Apply 2-3 inches of mulch around plants. Keep mulch away from stems and trunks.' },
+  { name: 'Prune shrubs',          group: 'home', category: 'landscaping', recurrenceType: 'seasonal', recurrenceUnit: 'spring', recurrenceValue: 0, icon: '🌿', instructions: 'Remove dead, damaged, or crossing branches. Shape as needed. Disinfect pruners between plants.' },
+  { name: 'Irrigation check',      group: 'home', category: 'landscaping', recurrenceType: 'seasonal', recurrenceUnit: 'pre-season', recurrenceValue: 0, icon: '🌿', instructions: 'Turn on system zone by zone. Inspect heads for clogs, breaks, or misalignment. Adjust coverage.' },
 
   // ── Machines > Vehicles ──────────────────────────────────────────────
   { name: 'Oil change',           group: 'machines', category: 'vehicles', recurrenceType: 'usage', recurrenceUnit: 'miles', recurrenceValue: 5000,  icon: '🚗', instructions: 'Drain old oil. Replace oil filter. Refill with manufacturer-recommended oil weight and quantity.' },
