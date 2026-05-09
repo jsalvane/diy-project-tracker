@@ -102,7 +102,25 @@ export function useMaintenance() {
           setNeedsOnboarding(true);
         }
 
-        setTasks(mappedTasks);
+        // Auto-heal: 'custom' tasks completed on/after their stale nextDueDate
+        // never had it cleared (pre-fix), so they show as overdue forever. Clear
+        // the stale date now and persist.
+        const compsByTask = new Map<string, MaintenanceCompletion[]>();
+        for (const c of mappedComps) {
+          const arr = compsByTask.get(c.taskId);
+          if (arr) arr.push(c); else compsByTask.set(c.taskId, [c]);
+        }
+        const healedTasks = mappedTasks.map(t => {
+          if (t.recurrenceType !== 'custom' || !t.nextDueDate) return t;
+          const taskComps = compsByTask.get(t.id) ?? [];
+          const completedSinceDue = taskComps.some(c => c.completedAt.slice(0, 10) >= t.nextDueDate);
+          if (!completedSinceDue) return t;
+          const fixed: MaintenanceTask = { ...t, nextDueDate: '', updatedAt: now() };
+          supabase.from('maintenance_tasks').update(taskToRow(fixed)).eq('id', fixed.id);
+          return fixed;
+        });
+
+        setTasks(healedTasks);
         setCompletions(mappedComps);
       } catch (err) {
         console.error('Failed to load maintenance:', err);
@@ -189,9 +207,12 @@ export function useMaintenance() {
       if (t.id !== taskId) return t;
       const today = todayStr();
       const nextDue = computeNextDueDate(t.recurrenceType, t.recurrenceUnit, t.recurrenceValue, today);
+      // 'custom' recurrence has no auto-rollover — clear nextDueDate on
+      // completion so it doesn't remain stuck in the past as 'overdue'.
+      const newNextDueDate = t.recurrenceType === 'custom' ? '' : (nextDue || t.nextDueDate);
       const updated: MaintenanceTask = {
         ...t,
-        nextDueDate: nextDue || t.nextDueDate,
+        nextDueDate: newNextDueDate,
         lastCompletionUsage: data.usageReading > 0 ? data.usageReading : t.lastCompletionUsage,
         currentUsage: data.usageReading > 0 ? data.usageReading : t.currentUsage,
         snoozedUntil: '', // Clear snooze on completion
