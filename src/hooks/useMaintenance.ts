@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import type { MaintenanceTask, MaintenanceCompletion } from '../lib/types';
 import { generateId, now, todayStr } from '../lib/utils';
@@ -87,6 +87,13 @@ export function useMaintenance() {
   const [loading, setLoading] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
+  // Ref mirror so async callbacks can read the latest tasks without
+  // doing DB writes inside a setState updater (which is unsafe and
+  // also fails: a Supabase builder is lazy and never executes unless
+  // its .then()/await is consumed).
+  const tasksRef = useRef<MaintenanceTask[]>([]);
+  useEffect(() => { tasksRef.current = tasks; }, [tasks]);
+
   // Load from Supabase on mount
   useEffect(() => {
     async function load() {
@@ -102,26 +109,43 @@ export function useMaintenance() {
           setNeedsOnboarding(true);
         }
 
-        // Auto-heal: 'custom' tasks completed on/after their stale nextDueDate
-        // never had it cleared (pre-fix), so they show as overdue forever. Clear
-        // the stale date now and persist.
+        // Auto-heal: rows whose nextDueDate never advanced because the
+        // pre-fix completeTask fired the Supabase update without an await
+        // (lazy builder, request never sent). For each task with a
+        // completion on/after its current nextDueDate, recompute and persist.
         const compsByTask = new Map<string, MaintenanceCompletion[]>();
         for (const c of mappedComps) {
           const arr = compsByTask.get(c.taskId);
           if (arr) arr.push(c); else compsByTask.set(c.taskId, [c]);
         }
+        const pendingFixes: MaintenanceTask[] = [];
         const healedTasks = mappedTasks.map(t => {
-          if (t.recurrenceType !== 'custom' || !t.nextDueDate) return t;
+          if (!t.nextDueDate) return t;
+          if (t.recurrenceType === 'usage') return t; // usage status comes from currentUsage, not nextDueDate
           const taskComps = compsByTask.get(t.id) ?? [];
-          const completedSinceDue = taskComps.some(c => c.completedAt.slice(0, 10) >= t.nextDueDate);
-          if (!completedSinceDue) return t;
-          const fixed: MaintenanceTask = { ...t, nextDueDate: '', updatedAt: now() };
-          supabase.from('maintenance_tasks').update(taskToRow(fixed)).eq('id', fixed.id);
+          if (taskComps.length === 0) return t;
+          // Comps were loaded sorted desc by completed_at
+          const latest = taskComps[0].completedAt.slice(0, 10);
+          if (latest < t.nextDueDate) return t;
+          const newNextDue = t.recurrenceType === 'custom'
+            ? ''
+            : computeNextDueDate(t.recurrenceType, t.recurrenceUnit, t.recurrenceValue, latest);
+          if (newNextDue === t.nextDueDate) return t;
+          const fixed: MaintenanceTask = { ...t, nextDueDate: newNextDue, updatedAt: now() };
+          pendingFixes.push(fixed);
           return fixed;
         });
 
         setTasks(healedTasks);
         setCompletions(mappedComps);
+
+        // Persist heals — Promise.all consumes each thenable's .then(),
+        // which is what actually triggers the HTTP request.
+        if (pendingFixes.length) {
+          await Promise.all(pendingFixes.map(t =>
+            supabase.from('maintenance_tasks').update(taskToRow(t)).eq('id', t.id),
+          ));
+        }
       } catch (err) {
         console.error('Failed to load maintenance:', err);
       } finally {
@@ -189,6 +213,9 @@ export function useMaintenance() {
     taskId: string,
     data: { notes: string; cost: number; usageReading: number },
   ) => {
+    const t = tasksRef.current.find(x => x.id === taskId);
+    if (!t) return;
+
     const completion: MaintenanceCompletion = {
       id: generateId(),
       taskId,
@@ -199,54 +226,52 @@ export function useMaintenance() {
       usageAtCompletion: data.usageReading,
       createdAt: now(),
     };
-    setCompletions(prev => [completion, ...prev]);
-    await supabase.from('maintenance_completions').insert(completionToRow(completion));
 
-    // Update task with next due date and usage tracking
-    setTasks(prev => prev.map(t => {
-      if (t.id !== taskId) return t;
-      const today = todayStr();
-      const nextDue = computeNextDueDate(t.recurrenceType, t.recurrenceUnit, t.recurrenceValue, today);
-      // 'custom' recurrence has no auto-rollover — clear nextDueDate on
-      // completion so it doesn't remain stuck in the past as 'overdue'.
-      const newNextDueDate = t.recurrenceType === 'custom' ? '' : (nextDue || t.nextDueDate);
-      const updated: MaintenanceTask = {
-        ...t,
-        nextDueDate: newNextDueDate,
-        lastCompletionUsage: data.usageReading > 0 ? data.usageReading : t.lastCompletionUsage,
-        currentUsage: data.usageReading > 0 ? data.usageReading : t.currentUsage,
-        snoozedUntil: '', // Clear snooze on completion
-        updatedAt: now(),
-      };
-      supabase.from('maintenance_tasks').update(taskToRow(updated)).eq('id', updated.id);
-      return updated;
-    }));
+    const today = todayStr();
+    const nextDue = computeNextDueDate(t.recurrenceType, t.recurrenceUnit, t.recurrenceValue, today);
+    // 'custom' recurrence has no auto-rollover — clear nextDueDate on
+    // completion so it doesn't remain stuck in the past as 'overdue'.
+    const newNextDueDate = t.recurrenceType === 'custom' ? '' : (nextDue || t.nextDueDate);
+    const updated: MaintenanceTask = {
+      ...t,
+      nextDueDate: newNextDueDate,
+      lastCompletionUsage: data.usageReading > 0 ? data.usageReading : t.lastCompletionUsage,
+      currentUsage: data.usageReading > 0 ? data.usageReading : t.currentUsage,
+      snoozedUntil: '', // Clear snooze on completion
+      updatedAt: now(),
+    };
+
+    // Optimistic local update
+    setCompletions(prev => [completion, ...prev]);
+    setTasks(prev => prev.map(x => x.id === taskId ? updated : x));
+
+    // Persist — both awaits are required: a Supabase builder is lazy and
+    // never executes unless its .then()/await is consumed.
+    await supabase.from('maintenance_completions').insert(completionToRow(completion));
+    await supabase.from('maintenance_tasks').update(taskToRow(updated)).eq('id', updated.id);
   }, []);
 
   // ── Snooze ────────────────────────────────────────────────────────────
 
   const snoozeTask = useCallback(async (taskId: string, days: number) => {
+    const t = tasksRef.current.find(x => x.id === taskId);
+    if (!t) return;
     const snoozeDate = new Date();
     snoozeDate.setDate(snoozeDate.getDate() + days);
     const snoozedUntil = snoozeDate.toISOString().slice(0, 10);
-
-    setTasks(prev => prev.map(t => {
-      if (t.id !== taskId) return t;
-      const updated = { ...t, snoozedUntil, updatedAt: now() };
-      supabase.from('maintenance_tasks').update(taskToRow(updated)).eq('id', updated.id);
-      return updated;
-    }));
+    const updated = { ...t, snoozedUntil, updatedAt: now() };
+    setTasks(prev => prev.map(x => x.id === taskId ? updated : x));
+    await supabase.from('maintenance_tasks').update(taskToRow(updated)).eq('id', updated.id);
   }, []);
 
   // ── Update usage (odometer/hours) ─────────────────────────────────────
 
   const updateUsage = useCallback(async (taskId: string, newUsage: number) => {
-    setTasks(prev => prev.map(t => {
-      if (t.id !== taskId) return t;
-      const updated = { ...t, currentUsage: newUsage, updatedAt: now() };
-      supabase.from('maintenance_tasks').update(taskToRow(updated)).eq('id', updated.id);
-      return updated;
-    }));
+    const t = tasksRef.current.find(x => x.id === taskId);
+    if (!t) return;
+    const updated = { ...t, currentUsage: newUsage, updatedAt: now() };
+    setTasks(prev => prev.map(x => x.id === taskId ? updated : x));
+    await supabase.from('maintenance_tasks').update(taskToRow(updated)).eq('id', updated.id);
   }, []);
 
   // ── Import presets from library ───────────────────────────────────────
