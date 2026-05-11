@@ -10,16 +10,29 @@ import { Dashboard } from './components/Dashboard';
 import { useApp } from './context/AppContext';
 import { PinLock } from './components/PinLock';
 import { InstallPrompt } from './components/InstallPrompt';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+// Retry a dynamic import once on transient failure (e.g. network blip).
+// Persistent failures (e.g. stale chunk after deploy) bubble up to ErrorBoundary,
+// which reloads the page to fetch fresh chunk hashes.
+function importWithRetry<T>(factory: () => Promise<T>): Promise<T> {
+  return factory().catch(async (err) => {
+    await new Promise((r) => setTimeout(r, 800));
+    return factory().catch(() => {
+      throw err;
+    });
+  });
+}
 
 // Route-level code splitting — each chunk loads on first visit
-const ProjectList     = lazy(() => import('./components/ProjectList').then(m => ({ default: m.ProjectList })));
-const ProjectDetail   = lazy(() => import('./components/ProjectDetail').then(m => ({ default: m.ProjectDetail })));
-const FinancialHealth = lazy(() => import('./components/FinancialHealth').then(m => ({ default: m.FinancialHealth })));
-const Budget          = lazy(() => import('./components/Budget').then(m => ({ default: m.Budget })));
-const Money           = lazy(() => import('./components/Money').then(m => ({ default: m.Money })));
-const Gifts           = lazy(() => import('./components/Gifts').then(m => ({ default: m.Gifts })));
-const Maintenance     = lazy(() => import('./components/maintenance/Maintenance').then(m => ({ default: m.Maintenance })));
-const Scratchpad      = lazy(() => import('./components/Scratchpad').then(m => ({ default: m.Scratchpad })));
+const ProjectList     = lazy(() => importWithRetry(() => import('./components/ProjectList')).then(m => ({ default: m.ProjectList })));
+const ProjectDetail   = lazy(() => importWithRetry(() => import('./components/ProjectDetail')).then(m => ({ default: m.ProjectDetail })));
+const FinancialHealth = lazy(() => importWithRetry(() => import('./components/FinancialHealth')).then(m => ({ default: m.FinancialHealth })));
+const Budget          = lazy(() => importWithRetry(() => import('./components/Budget')).then(m => ({ default: m.Budget })));
+const Money           = lazy(() => importWithRetry(() => import('./components/Money')).then(m => ({ default: m.Money })));
+const Gifts           = lazy(() => importWithRetry(() => import('./components/Gifts')).then(m => ({ default: m.Gifts })));
+const Maintenance     = lazy(() => importWithRetry(() => import('./components/maintenance/Maintenance')).then(m => ({ default: m.Maintenance })));
+const Scratchpad      = lazy(() => importWithRetry(() => import('./components/Scratchpad')).then(m => ({ default: m.Scratchpad })));
 
 function RouteFallback() {
   return (
@@ -33,21 +46,24 @@ function RouteFallback() {
 
 function AnimatedRoutes() {
   const location = useLocation();
+  // ErrorBoundary keyed by pathname so leaving a broken route auto-recovers.
   return (
     <div key={location.pathname} className="animate-page-in">
-      <Suspense fallback={<RouteFallback />}>
-        <Routes location={location}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/projects" element={<ProjectList />} />
-          <Route path="/project/:id" element={<ProjectDetail />} />
-          <Route path="/money" element={<Money />} />
-          <Route path="/financial-health" element={<FinancialHealth />} />
-          <Route path="/budget" element={<Budget />} />
-          <Route path="/gifts" element={<Gifts />} />
-          <Route path="/maintenance" element={<Maintenance />} />
-          <Route path="/scratchpad" element={<Scratchpad />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary key={location.pathname}>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes location={location}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/projects" element={<ProjectList />} />
+            <Route path="/project/:id" element={<ProjectDetail />} />
+            <Route path="/money" element={<Money />} />
+            <Route path="/financial-health" element={<FinancialHealth />} />
+            <Route path="/budget" element={<Budget />} />
+            <Route path="/gifts" element={<Gifts />} />
+            <Route path="/maintenance" element={<Maintenance />} />
+            <Route path="/scratchpad" element={<Scratchpad />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }
@@ -179,14 +195,16 @@ function AppShell() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <PinLock>
-        <AppProvider>
-          <FinancialProvider>
-            <AppShell />
-          </FinancialProvider>
-        </AppProvider>
-      </PinLock>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <PinLock>
+          <AppProvider>
+            <FinancialProvider>
+              <AppShell />
+            </FinancialProvider>
+          </AppProvider>
+        </PinLock>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
