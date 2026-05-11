@@ -90,14 +90,17 @@ export function useHSA() {
   const addExpense = useCallback(async (data: Omit<HSAExpense, 'id' | 'createdAt' | 'updatedAt'>) => {
     const expense: HSAExpense = { ...data, id: generateId(), createdAt: now(), updatedAt: now() };
     setExpenses(prev => [expense, ...prev]);
-    await supabase.from('hsa_expenses').insert(expenseToRow(expense));
+    const { error } = await supabase.from('hsa_expenses').insert(expenseToRow(expense));
+    if (error) throw error;
     return expense;
   }, []);
 
   const updateExpense = useCallback(async (expense: HSAExpense) => {
     const updated = { ...expense, updatedAt: now() };
     setExpenses(prev => prev.map(e => e.id === updated.id ? updated : e));
-    await supabase.from('hsa_expenses').update(expenseToRow(updated)).eq('id', updated.id);
+    // upsert so an update racing an in-flight insert can't no-op against a missing row.
+    const { error } = await supabase.from('hsa_expenses').upsert(expenseToRow(updated), { onConflict: 'id' });
+    if (error) throw error;
   }, []);
 
   const deleteExpense = useCallback(async (id: string) => {

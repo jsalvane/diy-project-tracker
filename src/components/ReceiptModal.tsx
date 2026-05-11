@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useEscapeKey } from '../lib/useEscapeKey';
 
@@ -15,6 +15,19 @@ export function ReceiptModal({ description, receiptUrl, uploading, onUpload, onR
   useEscapeKey(onClose);
   const fileRef = useRef<HTMLInputElement>(null);
   const isPdf = Boolean(receiptUrl && receiptUrl.toLowerCase().includes('.pdf'));
+  // Track failure against the current URL so a new upload auto-resets the failure flag.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const loadFailed = failedUrl === receiptUrl && !!receiptUrl;
+
+  // For PDFs, actively probe so we can show a recovery UI instead of a silent broken link.
+  useEffect(() => {
+    if (!receiptUrl || !isPdf) return;
+    let cancelled = false;
+    fetch(receiptUrl, { method: 'HEAD', cache: 'no-store' })
+      .then((r) => { if (!cancelled && !r.ok) setFailedUrl(receiptUrl); })
+      .catch(() => { /* network error — let the user click through */ });
+    return () => { cancelled = true; };
+  }, [receiptUrl, isPdf]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,7 +59,15 @@ export function ReceiptModal({ description, receiptUrl, uploading, onUpload, onR
               <span className="tape-label">Uploading…</span>
             </div>
           ) : receiptUrl ? (
-            isPdf ? (
+            loadFailed ? (
+              <button onClick={() => fileRef.current?.click()}
+                className="w-full flex flex-col items-center justify-center h-48 rounded-xl gap-2 px-4 text-center"
+                style={{ background: 'var(--paper-2)', border: '2px dashed var(--rust)', cursor: 'pointer' }}>
+                <span style={{ fontSize: 28 }}>⚠️</span>
+                <span className="tape-label" style={{ color: 'var(--rust)' }}>Receipt file is missing</span>
+                <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>Tap to re-upload</span>
+              </button>
+            ) : isPdf ? (
               <div className="w-full flex flex-col items-center justify-center h-48 rounded-xl gap-3" style={{ background: 'var(--paper-2)' }}>
                 <PdfIcon className="w-14 h-14" style={{ color: 'var(--rust)' }} />
                 <a href={receiptUrl} target="_blank" rel="noopener noreferrer" download
@@ -56,7 +77,8 @@ export function ReceiptModal({ description, receiptUrl, uploading, onUpload, onR
               </div>
             ) : (
               <div className="relative group">
-                <img src={receiptUrl} alt="Receipt" className="w-full rounded-xl object-contain max-h-80" style={{ background: 'var(--paper-2)' }} />
+                <img src={receiptUrl} alt="Receipt" onError={() => setFailedUrl(receiptUrl)}
+                  className="w-full rounded-xl object-contain max-h-80" style={{ background: 'var(--paper-2)' }} />
                 <a href={receiptUrl} target="_blank" rel="noopener noreferrer" download
                   className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity tape-label px-2.5 py-1 rounded-lg"
                   style={{ background: 'rgba(26,22,18,0.7)', color: 'var(--paper)' }}>

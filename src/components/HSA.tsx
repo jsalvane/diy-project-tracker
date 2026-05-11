@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useEscapeKey } from '../lib/useEscapeKey';
 import type { HSAExpense, HSAPerson, HSACategory } from '../lib/types';
@@ -207,6 +207,16 @@ function ReceiptModal({
   useEscapeKey(onClose);
   const fileRef = useRef<HTMLInputElement>(null);
   const isPdf = Boolean(expense.receiptUrl && expense.receiptUrl.toLowerCase().includes('.pdf'));
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const loadFailed = failedUrl === expense.receiptUrl && !!expense.receiptUrl;
+  useEffect(() => {
+    if (!expense.receiptUrl || !isPdf) return;
+    let cancelled = false;
+    fetch(expense.receiptUrl, { method: 'HEAD', cache: 'no-store' })
+      .then((r) => { if (!cancelled && !r.ok) setFailedUrl(expense.receiptUrl); })
+      .catch(() => { /* ignore network errors */ });
+    return () => { cancelled = true; };
+  }, [expense.receiptUrl, isPdf]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -230,7 +240,14 @@ function ReceiptModal({
               <span className="text-sm text-[var(--ink-4)]">Uploading...</span>
             </div>
           ) : expense.receiptUrl ? (
-            isPdf ? (
+            loadFailed ? (
+              <button onClick={() => fileRef.current?.click()}
+                className="w-full flex flex-col items-center justify-center h-48 bg-[var(--paper-2)] rounded-xl border-2 border-dashed border-[var(--rust)] gap-2 px-4 text-center">
+                <span style={{ fontSize: 28 }}>⚠️</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--rust)' }}>Receipt file is missing</span>
+                <span className="text-xs" style={{ color: 'var(--ink-4)' }}>Tap to re-upload</span>
+              </button>
+            ) : isPdf ? (
               <div className="w-full flex flex-col items-center justify-center h-48 bg-[var(--paper-2)] rounded-xl gap-3">
                 <ReceiptIcon className="w-14 h-14 text-[var(--rust)]" />
                 <a href={expense.receiptUrl} target="_blank" rel="noopener noreferrer" download
@@ -240,7 +257,7 @@ function ReceiptModal({
               </div>
             ) : (
               <div className="relative group">
-                <img src={expense.receiptUrl} alt="Receipt" className="w-full rounded-xl object-contain max-h-80 bg-[var(--paper-2)]" />
+                <img src={expense.receiptUrl} alt="Receipt" onError={() => setFailedUrl(expense.receiptUrl)} className="w-full rounded-xl object-contain max-h-80 bg-[var(--paper-2)]" />
                 <a href={expense.receiptUrl} target="_blank" rel="noopener noreferrer" download
                   className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium px-2.5 py-1 rounded-lg bg-[rgba(26,22,18,0.5)] text-[var(--paper)] hover:bg-black/80">
                   Download
@@ -342,13 +359,17 @@ export function HSA() {
   async function handleReceiptUpload(file: File) {
     if (!receiptModal) return;
     setUploading(true);
+    let uploadedUrl: string | null = null;
     try {
-      const url = await uploadReceipt(receiptModal.id, file);
-      const updated = { ...receiptModal, receiptUrl: url };
+      uploadedUrl = await uploadReceipt(receiptModal.id, file);
+      const updated = { ...receiptModal, receiptUrl: uploadedUrl };
       await updateExpense(updated);
       setReceiptModal(updated);
     } catch (err) {
       console.error('Receipt upload failed:', err);
+      if (uploadedUrl) await deleteReceipt(receiptModal.id).catch(() => {});
+      const msg = err instanceof Error ? err.message : 'Upload failed';
+      alert(`Receipt upload failed: ${msg}`);
     } finally {
       setUploading(false);
     }
@@ -357,12 +378,13 @@ export function HSA() {
   async function handleReceiptRemove() {
     if (!receiptModal) return;
     try {
-      await deleteReceipt(receiptModal.id);
+      // Clear DB pointer first so a failed file delete can't leave a dangling URL.
       const updated = { ...receiptModal, receiptUrl: '' };
       await updateExpense(updated);
       setReceiptModal(updated);
+      await deleteReceipt(receiptModal.id).catch((e) => console.warn('deleteReceipt:', e));
     } catch (err) {
-      console.error('Receipt delete failed:', err);
+      console.error('Receipt remove failed:', err);
     }
   }
 

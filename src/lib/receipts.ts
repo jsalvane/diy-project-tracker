@@ -19,10 +19,26 @@ export async function uploadReceipt(entryId: string, file: File): Promise<string
     .from(BUCKET)
     .upload(path, uploadFile, { upsert: true, contentType: isPdf ? 'application/pdf' : 'image/jpeg' });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(`Receipt upload failed: ${error.message}`);
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return data.publicUrl;
+  // Cache-bust so the <img> can't serve a stale 404 from prior upload/delete cycles.
+  const publicUrl = `${data.publicUrl}?v=${Date.now()}`;
+
+  // Verify the object is actually retrievable before we persist the URL.
+  // This catches silent failures (bucket misconfigured, CDN lag, RLS blocking reads).
+  try {
+    const res = await fetch(publicUrl, { method: 'HEAD', cache: 'no-store' });
+    if (!res.ok) {
+      throw new Error(`Receipt not retrievable after upload (HTTP ${res.status}). Check that the 'receipts' bucket is public.`);
+    }
+  } catch (e) {
+    if (e instanceof Error && e.message.startsWith('Receipt not retrievable')) throw e;
+    // Network error during HEAD — don't block the upload, the file IS in storage.
+    console.warn('Post-upload verify HEAD failed (network):', e);
+  }
+
+  return publicUrl;
 }
 
 export async function deleteReceipt(entryId: string): Promise<void> {

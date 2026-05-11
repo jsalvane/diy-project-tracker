@@ -180,7 +180,7 @@ interface AppContextValue {
   updateProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   addEntry: (data: Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>) => Entry;
-  updateEntry: (entry: Entry) => void;
+  updateEntry: (entry: Entry) => Promise<Error | null>;
   deleteEntry: (id: string) => void;
   addTask: (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Task;
   updateTask: (task: Task) => void;
@@ -391,15 +391,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return entry;
   }, []);
 
-  const updateEntry = useCallback((entry: Entry) => {
+  // Returns null on success, Error on failure. Callers who need to know (e.g. receipt upload)
+  // can await & check; fire-and-forget callers can ignore.
+  const updateEntry = useCallback(async (entry: Entry): Promise<Error | null> => {
     const updated = { ...entry, updatedAt: now() };
     localChangeIds.add(updated.id);
     dispatch({ type: 'UPDATE_ENTRY', payload: updated });
-    supabase.from('entries').update(entryToRow(updated)).eq('id', updated.id)
-      .then(({ error }) => {
-        if (error) console.error('updateEntry error:', error);
-        setTimeout(() => localChangeIds.delete(updated.id), 3000);
-      });
+    // upsert (not update) so an update racing an in-flight insert can't no-op against
+    // a missing row — critical for receipt uploads right after addEntry.
+    const { error } = await supabase.from('entries').upsert(entryToRow(updated), { onConflict: 'id' });
+    setTimeout(() => localChangeIds.delete(updated.id), 3000);
+    if (error) {
+      console.error('updateEntry error:', error);
+      return error as unknown as Error;
+    }
+    return null;
   }, []);
 
   const deleteEntry = useCallback((id: string) => {

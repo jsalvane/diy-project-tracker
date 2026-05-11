@@ -204,22 +204,40 @@ export function EntriesTable({ entries, projectId }: Props) {
 
   const handleUploadReceipt = useCallback(async (entry: Entry, file: File) => {
     setUploading(true);
+    let uploadedUrl: string | null = null;
     try {
-      const url = await uploadReceipt(entry.id, file);
-      updateEntry({ ...entry, receiptUrl: url });
+      uploadedUrl = await uploadReceipt(entry.id, file);
+      const err = await updateEntry({ ...entry, receiptUrl: uploadedUrl });
+      if (err) {
+        // DB write failed — remove the orphaned file so we never store a URL the DB doesn't know about.
+        await deleteReceipt(entry.id).catch(() => {});
+        alert(`Failed to save receipt: ${err.message}\n\nPlease try again.`);
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Upload failed';
+      // If we had uploaded but something downstream threw, clean up the file.
+      if (uploadedUrl) await deleteReceipt(entry.id).catch(() => {});
+      alert(`Receipt upload failed: ${msg}`);
     } finally {
       setUploading(false);
     }
   }, [updateEntry]);
 
   const handleRemoveReceipt = useCallback(async (entry: Entry) => {
-    await deleteReceipt(entry.id);
-    updateEntry({ ...entry, receiptUrl: '' });
+    // Clear the DB pointer first so that if file-delete fails we don't leave a dangling URL.
+    const err = await updateEntry({ ...entry, receiptUrl: '' });
+    if (err) {
+      alert(`Failed to remove receipt: ${err.message}`);
+      return;
+    }
+    await deleteReceipt(entry.id).catch((e) => console.warn('deleteReceipt:', e));
     setReceiptEntryId(null);
   }, [updateEntry]);
 
   const handleDeleteEntry = useCallback((id: string) => {
-    deleteReceipt(id).catch(() => {});
+    // Do NOT delete the receipt file here — entry delete is undoable via toast, and eagerly
+    // deleting the file would leave the restored row pointing at a missing object.
+    // Orphan receipt files are cheap; broken receipt URLs are not.
     deleteEntry(id);
   }, [deleteEntry]);
 
