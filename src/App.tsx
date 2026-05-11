@@ -11,6 +11,7 @@ import { useApp } from './context/AppContext';
 import { PinLock } from './components/PinLock';
 import { InstallPrompt } from './components/InstallPrompt';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { GlobalErrorOverlay } from './components/GlobalErrorOverlay';
 
 // Retry a dynamic import once on transient failure (e.g. network blip).
 // Persistent failures (e.g. stale chunk after deploy) bubble up to ErrorBoundary,
@@ -196,6 +197,7 @@ function AppShell() {
 export default function App() {
   return (
     <ErrorBoundary>
+      <GlobalErrorOverlay />
       <BrowserRouter>
         <PinLock>
           <AppProvider>
